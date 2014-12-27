@@ -32,8 +32,9 @@
   <ItemGroup>
     <Reference Include="Dapper, Version=1.38.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Dapper.1.38\lib\net45\Dapper.dll</HintPath>
+      <HintPath>..\..\packages\Dapper.1.38\lib\net45\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
