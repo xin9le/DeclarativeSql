@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql", "Source\De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.Dapper", "Source\DeclarativeSql.Dapper\DeclarativeSql.Dapper.csproj", "{C4705693-AB4F-4D34-9EED-A1F4D6279800}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{DF1AFD52-D64C-4E20-9D10-EF79B466F96F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{1207B665-EAAC-4ECD-A9B0-AE97E7DB112E}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\DeclarativeSql.Core.nuspec = NuGet\DeclarativeSql.Core.nuspec
+		NuGet\DeclarativeSql.Dapper.nuspec = NuGet\DeclarativeSql.Dapper.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +32,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AA2BB595-C375-4BB2-BB31-514680B30AD3} = {DF1AFD52-D64C-4E20-9D10-EF79B466F96F}
+		{C4705693-AB4F-4D34-9EED-A1F4D6279800} = {DF1AFD52-D64C-4E20-9D10-EF79B466F96F}
 	EndGlobalSection
 EndGlobal
