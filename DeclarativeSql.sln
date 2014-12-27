@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22310.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql", "Source\DeclarativeSql\DeclarativeSql.csproj", "{AA2BB595-C375-4BB2-BB31-514680B30AD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.Dapper", "Source\DeclarativeSql.Dapper\DeclarativeSql.Dapper.csproj", "{C4705693-AB4F-4D34-9EED-A1F4D6279800}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA2BB595-C375-4BB2-BB31-514680B30AD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA2BB595-C375-4BB2-BB31-514680B30AD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA2BB595-C375-4BB2-BB31-514680B30AD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA2BB595-C375-4BB2-BB31-514680B30AD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4705693-AB4F-4D34-9EED-A1F4D6279800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4705693-AB4F-4D34-9EED-A1F4D6279800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4705693-AB4F-4D34-9EED-A1F4D6279800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4705693-AB4F-4D34-9EED-A1F4D6279800}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
