@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>DeclarativeSql.Dapper</id>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
         <title>DeclarativeSql.Dapper</title>
         <authors>xin9le</authors>
         <owners>xin9le</owners>
@@ -14,10 +14,10 @@
         <tags>Database, SQL, CRUD, Micro-ORM, Dapper</tags>
         <dependencies>
             <dependency id="Dapper" version="1.38" />
-            <dependency id="DeclarativeSql.Core" version="0.1.0" />
+            <dependency id="DeclarativeSql.Core" version="0.1.1" />
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Source\DeclarativeSql.Dapper\bin\Release\DeclarativeSql.Dapper.dll" target="content\net45\DeclarativeSql.Dapper.dll" />
+        <file src="..\Source\DeclarativeSql.Dapper\bin\Release\DeclarativeSql.Dapper.dll" target="lib\net45\DeclarativeSql.Dapper.dll" />
     </files>
 </package>
