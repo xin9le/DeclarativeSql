@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DeclarativeSql")]
-[assembly: AssemblyCopyright("Copyright © 2014 xin9le, All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2014 - 2015 xin9le, All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
