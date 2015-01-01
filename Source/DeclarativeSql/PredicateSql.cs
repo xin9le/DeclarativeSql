@@ -103,7 +103,7 @@ namespace DeclarativeSql
                         default:                                throw new InvalidOperationException();
                     }
 
-                    var parameterName = "$\{index++}";
+                    var parameterName = "\{index++}";
                     parameter.Add(parameterName, element.Value);  //--- cache parameter
 
                     var prefix = targetDatabase.GetBindParameterPrefix();
