@@ -23,6 +23,14 @@ namespace DeclarativeSql
         SqlServer,
 
         /// <summary>
+        /// SQL Server Compact
+        /// </summary>
+        [ProviderName("System.Data.SqlServerCe.4.0")]
+        [DbConnection("SqlCeConnection")]
+        [BindParameterPrefix('@')]
+        SqlServerCe,
+
+        /// <summary>
         /// Oracle
         /// </summary>
         [ProviderName("Oracle.DataAccess.Client")]
