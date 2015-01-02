@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>DeclarativeSql.Dapper</id>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
         <title>DeclarativeSql.Dapper</title>
         <authors>xin9le</authors>
         <owners>xin9le</owners>
@@ -10,11 +10,11 @@
         <projectUrl>https://github.com/xin9le/DeclarativeSql</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>Provides very simple CRUD operation using Dapper.</description>
-        <copyright>Copyright© 2014 xin9le, All rights reserved.</copyright>
+        <copyright>Copyright© 2014 - 2015 xin9le, All rights reserved.</copyright>
         <tags>Database, SQL, CRUD, Micro-ORM, Dapper</tags>
         <dependencies>
             <dependency id="Dapper" version="1.38" />
-            <dependency id="DeclarativeSql.Core" version="0.1.1" />
+            <dependency id="DeclarativeSql.Core" version="0.1.2" />
         </dependencies>
     </metadata>
     <files>
