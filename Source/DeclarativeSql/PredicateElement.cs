@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq.Expressions;
 
 
 
-namespace DeclarativeSql.Helpers
+namespace DeclarativeSql
 {
     /// <summary>
     /// 条件式を分解した要素を表します。
@@ -14,7 +13,7 @@ namespace DeclarativeSql.Helpers
         /// <summary>
         /// 演算子を取得します。
         /// </summary>
-        public ExpressionType Operator { get; }
+        public PredicateOperator Operator { get; }
 
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace DeclarativeSql.Helpers
         /// <param name="type">左辺のインスタンスの型</param>
         /// <param name="propertyName">プロパティ名</param>
         /// <param name="value">値</param>
-        internal PredicateElement(ExpressionType @operator, Type type = null, string propertyName = null, object value = null)
+        internal PredicateElement(PredicateOperator @operator, Type type = null, string propertyName = null, object value = null)
         {
             this.Operator = @operator;
             this.Type = type;

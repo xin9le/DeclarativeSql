@@ -56,54 +56,98 @@ namespace DeclarativeSql.Helpers
         /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            //--- AND/OR : 左右を保持する要素として生成
-            //--- 比較演算子 (<, <=, >=, >, ==, !=) : 左辺のプロパティ名と右辺の値を抽出
-            PredicateElement item;
-            switch (node.NodeType)
+            return this.VisitCore(() =>
             {
-                case ExpressionType.AndAlso:
-                case ExpressionType.OrElse:
-                    item = new PredicateElement(node.NodeType);
-                    break;
+                //--- AND/OR : 左右を保持する要素として生成
+                //--- 比較演算子 (<, <=, >=, >, ==, !=) : 左辺のプロパティ名と右辺の値を抽出
+                switch (node.NodeType)
+                {
+                    case ExpressionType.AndAlso:
+                    case ExpressionType.OrElse:
+                        return new PredicateElement(node.NodeType.ToPredicateOperator());
 
-                case ExpressionType.LessThan:
-                case ExpressionType.LessThanOrEqual:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.GreaterThanOrEqual:
-                case ExpressionType.Equal:
-                case ExpressionType.NotEqual:
-                    item = this.ParseBinary(node);
-                    break;
+                    case ExpressionType.LessThan:
+                    case ExpressionType.LessThanOrEqual:
+                    case ExpressionType.GreaterThan:
+                    case ExpressionType.GreaterThanOrEqual:
+                    case ExpressionType.Equal:
+                    case ExpressionType.NotEqual:
+                        return this.ParseBinary(node);
 
-                default:
-                    throw new InvalidOperationException();
-            }
+                    default:
+                        throw new InvalidOperationException();
+                }
+            },
+            () => base.VisitBinary(node));
+        }
 
-            //--- 親要素と関連付け
-            var parent = this.cache.Count == 0 ? null : this.cache.Peek();
-            if (parent != null)
+
+        /// <summary>
+        /// MethodCallExpressionの子を走査します。
+        /// </summary>
+        /// <param name="node">走査する式</param>
+        /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            return this.VisitCore(() =>
             {
-                if      (parent.Left == null)   parent.Left = item;
-                else if (parent.Right == null)  parent.Right = item;
-                else                            throw new InvalidOperationException();
-            }
+                //--- Enumerable.Contains
+                if (node.Method.DeclaringType == typeof(Enumerable))
+                if (node.Method.Name == nameof(Enumerable.Contains))
+                {
+                    var property = ExpressionHelper.ExtractMemberExpression(node.Arguments[1]);
+                    if (property.Expression == this.parameter)
+                    {
+                        //--- 要素生成
+                        var propertyName = property.Member.Name;
+                        var value = this.ExtractValue(node.Arguments[0]);
+                        return new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, value);
+                    }
+                }
 
-            //--- 子要素を解析
-            this.cache.Push(item);
-            var result = base.VisitBinary(node);
-            this.cache.Pop();
-
-            //--- キャッシュがなくなった場合 (= Root)
-            if (this.cache.Count == 0)
-                this.Root = item;
-
-            //--- ok
-            return result;
+                //--- not supported
+                throw new InvalidOperationException();
+            },
+            () => base.VisitMethodCall(node));
         }
         #endregion
 
 
         #region 補助
+        /// <summary>
+        /// 式を走査します。
+        /// </summary>
+        /// <param name="elementGenerator">要素生成デリゲート</param>
+        /// <param name="baseCall">基底メソッド呼び出しデリゲート</param>
+        /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
+        private Expression VisitCore(Func<PredicateElement> elementGenerator, Func<Expression> baseCall)
+        {
+            //--- 要素生成
+            var element = elementGenerator();
+
+            //--- 親要素と関連付け
+            var parent = this.cache.Count == 0 ? null : this.cache.Peek();
+            if (parent != null)
+            {
+                if      (parent.Left == null)   parent.Left = element;
+                else if (parent.Right == null)  parent.Right = element;
+                else                            throw new InvalidOperationException();
+            }
+
+            //--- 子要素を解析
+            this.cache.Push(element);
+            var result = baseCall();
+            this.cache.Pop();
+
+            //--- キャッシュがなくなった場合 (= Root)
+            if (this.cache.Count == 0)
+                this.Root = element;
+
+            //--- ok
+            return result;
+        }
+
+
         /// <summary>
         /// 二項演算子を持つ式を解析します。
         /// </summary>
@@ -115,7 +159,7 @@ namespace DeclarativeSql.Helpers
             var propertyName = this.ExtractPropertyName(node.Left);
             if (propertyName != null)
             {
-                var @operator = node.NodeType;
+                var @operator = node.NodeType.ToPredicateOperator();
                 var value = this.ExtractValue(node.Right);
                 return new PredicateElement(@operator, this.parameter.Type, propertyName, value);
             }
@@ -124,7 +168,7 @@ namespace DeclarativeSql.Helpers
             propertyName = this.ExtractPropertyName(node.Right);
             if (propertyName != null)
             {
-                var @operator = This.FilpOperator(node.NodeType);
+                var @operator = node.NodeType.ToPredicateOperator().Flip();
                 var value = this.ExtractValue(node.Left);
                 return new PredicateElement(@operator, this.parameter.Type, propertyName, value);
             }
@@ -162,9 +206,25 @@ namespace DeclarativeSql.Helpers
             //--- インスタンス生成
             if (expression is NewExpression)
             {
-                var @new = (NewExpression)expression;
-                var parameters = @new.Arguments.Select(this.ExtractValue).ToArray();
-                return @new.Constructor.Invoke(parameters);
+                var expr = (NewExpression)expression;
+                var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
+                return expr.Constructor.Invoke(parameters);
+            }
+
+            //--- 配列生成
+            if (expression is NewArrayExpression)
+            {
+                var expr = (NewArrayExpression)expression;
+                return expr.Expressions.Select(this.ExtractValue).ToArray();
+            }
+
+            //--- メソッド呼び出し
+            if (expression is MethodCallExpression)
+            {
+                var expr = (MethodCallExpression)expression;
+                var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
+                var ret = expr.Method.Invoke(expr.Object, parameters);
+                return ret;
             }
 
             //--- 変数
@@ -191,24 +251,6 @@ namespace DeclarativeSql.Helpers
                 value = getter(value);
             }
             return value;
-        }
-
-
-        /// <summary>
-        /// 指定された比較演算子の反転します。
-        /// </summary>
-        /// <param name="@operator">演算子</param>
-        /// <returns>反転された演算子</returns>
-        private static ExpressionType FilpOperator(ExpressionType @operator)
-        {
-            switch (@operator)
-            {
-                case ExpressionType.LessThan:           return ExpressionType.GreaterThan;
-                case ExpressionType.LessThanOrEqual:    return ExpressionType.GreaterThanOrEqual;
-                case ExpressionType.GreaterThan:        return ExpressionType.LessThan;
-                case ExpressionType.GreaterThanOrEqual: return ExpressionType.LessThanOrEqual;
-            }
-            return @operator;
         }
         #endregion
 

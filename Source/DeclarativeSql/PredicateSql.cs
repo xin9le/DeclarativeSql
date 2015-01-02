@@ -68,8 +68,8 @@ namespace DeclarativeSql
                     var right = sqlBuilder(element.Right);
                     if (element.Operator != element.Left .Operator && element.Left .HasChildren)  left  = "(\{left})";
                     if (element.Operator != element.Right.Operator && element.Right.HasChildren)  right = "(\{right})";
-                    if (element.Operator == ExpressionType.AndAlso)  return "\{left} and \{right}";
-                    if (element.Operator == ExpressionType.OrElse)   return "\{left} or \{right}";
+                    if (element.Operator == PredicateOperator.AndAlso)  return "\{left} and \{right}";
+                    if (element.Operator == PredicateOperator.OrElse)   return "\{left} or \{right}";
                     throw new InvalidOperationException();
                 }
                 else
@@ -78,7 +78,7 @@ namespace DeclarativeSql
                     builder.Append(columnMap[element.PropertyName].ColumnName);
                     switch (element.Operator)
                     {
-                        case ExpressionType.Equal:
+                        case PredicateOperator.Equal:
                             if (element.Value == null)
                             {
                                 builder.Append(" is null");
@@ -87,7 +87,7 @@ namespace DeclarativeSql
                             builder.Append(" = ");
                             break;
 
-                        case ExpressionType.NotEqual:
+                        case PredicateOperator.NotEqual:
                             if (element.Value == null)
                             {
                                 builder.Append(" is not null");
@@ -96,11 +96,12 @@ namespace DeclarativeSql
                             builder.Append(" <> ");
                             break;
 
-                        case ExpressionType.LessThan:           builder.Append(" < ");  break;
-                        case ExpressionType.LessThanOrEqual:    builder.Append(" <= "); break;
-                        case ExpressionType.GreaterThan:        builder.Append(" > ");  break;
-                        case ExpressionType.GreaterThanOrEqual: builder.Append(" >= "); break;
-                        default:                                throw new InvalidOperationException();
+                        case PredicateOperator.LessThan:            builder.Append(" < ");  break;
+                        case PredicateOperator.LessThanOrEqual:     builder.Append(" <= "); break;
+                        case PredicateOperator.GreaterThan:         builder.Append(" > ");  break;
+                        case PredicateOperator.GreaterThanOrEqual:  builder.Append(" >= "); break;
+                        case PredicateOperator.Contains:            builder.Append(" in "); break;
+                        default:                                    throw new InvalidOperationException();
                     }
 
                     var parameterName = "\{index++}";
