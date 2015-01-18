@@ -52,7 +52,7 @@ namespace DeclarativeSql.Mapping
         /// </summary>
         public string FullName => string.IsNullOrWhiteSpace(this.Schema)
                                 ? this.Name
-                                : "\{this.Schema}.\{this.Name}";
+                                : $"{this.Schema}.{this.Name}";
         #endregion
 
 

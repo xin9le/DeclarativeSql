@@ -66,10 +66,10 @@ namespace DeclarativeSql
                 {
                     var left  = sqlBuilder(element.Left);
                     var right = sqlBuilder(element.Right);
-                    if (element.Operator != element.Left .Operator && element.Left .HasChildren)  left  = "(\{left})";
-                    if (element.Operator != element.Right.Operator && element.Right.HasChildren)  right = "(\{right})";
-                    if (element.Operator == PredicateOperator.AndAlso)  return "\{left} and \{right}";
-                    if (element.Operator == PredicateOperator.OrElse)   return "\{left} or \{right}";
+                    if (element.Operator != element.Left .Operator && element.Left .HasChildren)  left  = $"({left})";
+                    if (element.Operator != element.Right.Operator && element.Right.HasChildren)  right = $"({right})";
+                    if (element.Operator == PredicateOperator.AndAlso)  return $"{left} and {right}";
+                    if (element.Operator == PredicateOperator.OrElse)   return $"{left} or {right}";
                     throw new InvalidOperationException();
                 }
                 else
@@ -104,11 +104,11 @@ namespace DeclarativeSql
                         default:                                    throw new InvalidOperationException();
                     }
 
-                    var parameterName = "\{index++}";
+                    var parameterName = $"{index++}";
                     parameter.Add(parameterName, element.Value);  //--- cache parameter
 
                     var prefix = targetDatabase.GetBindParameterPrefix();
-                    builder.Append("\{prefix}\{parameterName}");                    
+                    builder.Append($"{prefix}{parameterName}");                    
                     return builder.ToString();
                 }
             };

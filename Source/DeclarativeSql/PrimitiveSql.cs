@@ -36,7 +36,7 @@ namespace DeclarativeSql
         public static string CreateCount(Type type)
         {
             var table = TableMappingInfo.Create(type);
-            return "select count(*) as Count from \{table.FullName}";
+            return $"select count(*) as Count from {table.FullName}";
         }
         #endregion
 
@@ -81,11 +81,11 @@ namespace DeclarativeSql
                             y => y,
                             (x, y) => x
                         );
-            var columnNames = columns.Select(x => "    \{x.ColumnName} as \{x.PropertyName}");
+            var columnNames = columns.Select(x => $"    {x.ColumnName} as {x.PropertyName}");
             var builder = new StringBuilder();
             builder.AppendLine("select");
-            builder.AppendLine(string.Join(",\{Environment.NewLine}", columnNames));
-            builder.Append("from \{table.FullName}");
+            builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
+            builder.Append($"from {table.FullName}");
             return builder.ToString();
         }
         #endregion
@@ -128,21 +128,21 @@ namespace DeclarativeSql
                             if (x.Sequence != null)
                             switch (targetDatabase)
                             {
-                                case DbKind.SqlServer:  return "next value for \{x.Sequence.FullName}";
-                                case DbKind.Oracle:     return "\{x.Sequence.FullName}.nextval";
+                                case DbKind.SqlServer:  return $"next value for {x.Sequence.FullName}";
+                                case DbKind.Oracle:     return $"{x.Sequence.FullName}.nextval";
                             }
-                            return "\{prefix}\{x.PropertyName}";
+                            return $"{prefix}{x.PropertyName}";
                         })
                         .Select(x => "    " + x);
             var columnNames = columns.Select(x => "    " + x.ColumnName);
             var builder = new StringBuilder();
-            builder.AppendLine("insert into \{table.FullName}");
+            builder.AppendLine($"insert into {table.FullName}");
             builder.AppendLine("(");
-            builder.AppendLine(string.Join(",\{Environment.NewLine}", columnNames));
+            builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
             builder.AppendLine(")");
             builder.AppendLine("values");
             builder.AppendLine("(");
-            builder.AppendLine(string.Join(",\{Environment.NewLine}", values));
+            builder.AppendLine(string.Join($",{Environment.NewLine}", values));
             builder.Append(")");
             return builder.ToString();
         }
@@ -212,11 +212,11 @@ namespace DeclarativeSql
             var columns = table.Columns.Where(x => setIdentity ? true : !x.IsIdentity);
             if (propertyNames.Length != 0)
                 columns = columns.Join(propertyNames, x => x.PropertyName, y => y, (x, y) => x);
-            var setters = columns.Select(x => "    \{x.ColumnName} = \{prefix}\{x.PropertyName}");
+            var setters = columns.Select(x => $"    {x.ColumnName} = {prefix}{x.PropertyName}");
             var builder = new StringBuilder();
-            builder.AppendLine("update \{table.FullName}");
+            builder.AppendLine($"update {table.FullName}");
             builder.AppendLine("set");
-            builder.Append(string.Join(",\{Environment.NewLine}", setters));
+            builder.Append(string.Join($",{Environment.NewLine}", setters));
             return builder.ToString();
         }
         #endregion
@@ -245,7 +245,7 @@ namespace DeclarativeSql
                 throw new ArgumentNullException(nameof(type));
 
             var table = TableMappingInfo.Create(type);
-            return "delete from \{table.FullName}";
+            return $"delete from {table.FullName}";
         }
         #endregion
 
@@ -273,7 +273,7 @@ namespace DeclarativeSql
                 throw new ArgumentNullException(nameof(type));
 
             var table = TableMappingInfo.Create(type);
-            return "truncate table \{table.FullName}";
+            return $"truncate table {table.FullName}";
         }
         #endregion
     }

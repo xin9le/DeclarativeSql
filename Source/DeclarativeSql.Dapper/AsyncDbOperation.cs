@@ -52,7 +52,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             var result = await connection.QueryAsync<CountResult>(builder.ToString(), where.Parameter).ConfigureAwait(false);
             return result.Single().Count;
         }
@@ -97,7 +97,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(select);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             var result = await connection.QueryAsync<T>(builder.ToString(), where.Parameter).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
@@ -206,7 +206,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(update);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.ExecuteAsync(builder.ToString(), where.Parameter.Merge(data));
         }
         #endregion
@@ -246,7 +246,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(delete);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.ExecuteAsync(builder.ToString(), where.Parameter);
         }
         #endregion

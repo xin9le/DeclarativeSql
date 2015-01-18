@@ -50,7 +50,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.Query<CountResult>(builder.ToString(), where.Parameter).Single().Count;
         }
         #endregion
@@ -93,7 +93,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(select);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.Query<T>(builder.ToString(), where.Parameter) as IReadOnlyList<T>;
         }
         #endregion
@@ -201,7 +201,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(update);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.Execute(builder.ToString(), where.Parameter.Merge(data));
         }
         #endregion
@@ -241,7 +241,7 @@ namespace DeclarativeSql.Dapper
             var builder = new StringBuilder();
             builder.AppendLine(delete);
             builder.AppendLine(nameof(where));
-            builder.Append("    \{where.Statement}");
+            builder.Append($"    {where.Statement}");
             return connection.Execute(builder.ToString(), where.Parameter);
         }
         #endregion

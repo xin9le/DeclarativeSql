@@ -116,7 +116,7 @@ namespace DeclarativeSql
             var setting = This.cache[kind];
             if (setting.ProviderName == null)           return null;
             if (setting.DbConnectionTypeName == null)   return null;
-            return "\{setting.ProviderName}.\{setting.DbConnectionTypeName}";
+            return $"{setting.ProviderName}.{setting.DbConnectionTypeName}";
         }
 
 
