@@ -232,6 +232,9 @@ namespace DeclarativeSql.Helpers
             var temp = expression;
             while (!(temp is ConstantExpression))
             {
+                if (temp is NewExpression)
+                    return this.ExtractValue(temp);
+
                 if (temp is UnaryExpression)
                 if (temp.NodeType == ExpressionType.Convert)
                 {
