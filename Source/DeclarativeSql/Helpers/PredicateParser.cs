@@ -89,11 +89,11 @@ namespace DeclarativeSql.Helpers
         /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            return this.VisitCore(() =>
+            //--- Enumerable.Contains
+            if (node.Method.DeclaringType == typeof(Enumerable))
+            if (node.Method.Name == nameof(Enumerable.Contains))
             {
-                //--- Enumerable.Contains
-                if (node.Method.DeclaringType == typeof(Enumerable))
-                if (node.Method.Name == nameof(Enumerable.Contains))
+                return this.VisitCore(() =>
                 {
                     var property = ExpressionHelper.ExtractMemberExpression(node.Arguments[1]);
                     if (property.Expression == this.parameter)
@@ -103,12 +103,13 @@ namespace DeclarativeSql.Helpers
                         var value = this.ExtractValue(node.Arguments[0]);
                         return new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, value);
                     }
-                }
+                    throw new InvalidOperationException();
+                },
+                () => base.VisitMethodCall(node));
+            }
 
-                //--- not supported
-                throw new InvalidOperationException();
-            },
-            () => base.VisitMethodCall(node));
+            //--- default
+            return base.VisitMethodCall(node);
         }
         #endregion
 
@@ -232,9 +233,6 @@ namespace DeclarativeSql.Helpers
             var temp = expression;
             while (!(temp is ConstantExpression))
             {
-                if (temp is NewExpression)
-                    return this.ExtractValue(temp);
-
                 if (temp is UnaryExpression)
                 if (temp.NodeType == ExpressionType.Convert)
                 {
@@ -242,7 +240,10 @@ namespace DeclarativeSql.Helpers
                     continue;
                 }
 
-                var member = (MemberExpression)temp;
+                var member = temp as MemberExpression;
+                if (member == null)
+                    return this.ExtractValue(temp);
+
                 memberNames.Add(member.Member.Name);
                 temp = member.Expression;
             }
