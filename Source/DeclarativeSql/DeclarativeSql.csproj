@@ -62,6 +62,7 @@
     <Compile Include="Annotations\DbConnectionAttribute.cs" />
     <Compile Include="Annotations\ProviderNameAttribute.cs" />
     <Compile Include="Mapping\TableMappingInfo.cs" />
+    <Compile Include="Helpers\TransactionScope.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

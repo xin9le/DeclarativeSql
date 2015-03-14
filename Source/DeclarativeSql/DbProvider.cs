@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using DeclarativeSql.Helpers;
 using This = DeclarativeSql.DbProvider;
 
 
@@ -50,6 +51,61 @@ namespace DeclarativeSql
             var connection = dbKind.CreateConnection();
             connection.ConnectionString = connectionString;
             return connection;
+        }
+
+
+        /// <summary>
+        /// 指定されたデータベーストランザクションをTransactionScopeに変換します。
+        /// </summary>
+        /// <param name="transaction">対象となるトランザクション</param>
+        /// <returns>生成されたITransactionScopeインスタンス</returns>
+        public static ITransactionScope Wrap(this IDbTransaction transaction)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            return new TransactionScope(transaction);
+        }
+
+
+        /// <summary>
+        /// 指定されたデータベース接続に対してトランザクションを開始します。
+        /// </summary>
+        /// <param name="connection">トランザクションを開始するデータベース接続</param>
+        /// <returns>トランザクション</returns>
+        public static ITransactionScope StartTransaction(this IDbConnection connection)
+        {
+            return connection.StartTransactionCore(null);
+        }
+
+
+        /// <summary>
+        /// 指定されたデータベース接続に対して、指定の分離レベルのトランザクションを開始します。
+        /// </summary>
+        /// <param name="connection">トランザクションを開始するデータベース接続</param>
+        /// <param name="isolationLevel">分離レベル</param>
+        /// <returns>トランザクション</returns>
+        public static ITransactionScope StartTransaction(this IDbConnection connection, IsolationLevel isolationLevel)
+        {
+            return connection.StartTransactionCore(isolationLevel);
+        }
+
+
+        /// <summary>
+        /// 指定されたデータベース接続に対して、指定の分離レベルのトランザクションを開始します。
+        /// </summary>
+        /// <param name="connection">トランザクションを開始するデータベース接続</param>
+        /// <param name="isolationLevel">分離レベル</param>
+        /// <returns>トランザクション</returns>
+        private static ITransactionScope StartTransactionCore(this IDbConnection connection, IsolationLevel? isolationLevel)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            connection.Open();
+            var transaction = isolationLevel.HasValue
+                            ? connection.BeginTransaction(isolationLevel.Value)
+                            : connection.BeginTransaction();
+            return transaction.Wrap();
         }
         #endregion
     }
