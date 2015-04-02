@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using Dapper;
 using DeclarativeSql.Helpers;
+using DeclarativeSql.Mapping;
 
 
 

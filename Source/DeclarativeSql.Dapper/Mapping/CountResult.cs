@@ -1,4 +1,4 @@
-﻿namespace DeclarativeSql.Dapper
+﻿namespace DeclarativeSql.Mapping
 {
     /// <summary>
     /// count文の結果をマッピングするためのモデルを表します。

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
+using DeclarativeSql.Mapping;
 
 
 
