@@ -191,11 +191,12 @@ namespace DeclarativeSql.Dapper
             var dbKind  = connection.GetDbKind();
             var update  = PrimitiveSql.CreateUpdate(dbKind, setIdentity, properties);
             var where   = PredicateSql.From(dbKind, predicate);
+            var param   = where.Parameter.Merge(data, properties);
             var builder = new StringBuilder();
             builder.AppendLine(update);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return connection.Execute(builder.ToString(), where.Parameter.Merge(data));
+            return connection.Execute(builder.ToString(), param);
         }
         #endregion
 
