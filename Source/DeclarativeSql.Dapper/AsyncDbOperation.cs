@@ -119,15 +119,7 @@ namespace DeclarativeSql.Dapper
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
 
-            var type = typeof(T);
-            var elementType = type.GetInterfaces()
-                            .Where(x => x.IsGenericType)
-                            .Where(x => x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                            .Select(x => x.GetGenericArguments()[0])
-                            .FirstOrDefault();
-            if (elementType != null)
-                type = elementType;
-
+            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
             var sql = PrimitiveSql.CreateInsert(connection.GetDbKind(), type, useSequence, setIdentity);
             return connection.ExecuteAsync(sql, data);
         }
