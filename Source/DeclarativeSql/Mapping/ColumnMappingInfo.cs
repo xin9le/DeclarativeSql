@@ -92,8 +92,8 @@ namespace DeclarativeSql.Mapping
         /// <returns>列情報のマッピングインスタンス</returns>
         public static This From(PropertyInfo info)
         {
-            var isPrimary = info.HasAttribute<KeyAttribute>();
-            var required  = info.HasAttribute<RequiredAttribute>();
+            var isPrimary = info.Has<KeyAttribute>();
+            var required  = info.Has<RequiredAttribute>();
             var sequence  = info.GetCustomAttribute<SequenceAttribute>();
             return new This()
             {
