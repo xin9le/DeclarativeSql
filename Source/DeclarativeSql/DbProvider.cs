@@ -101,7 +101,9 @@ namespace DeclarativeSql
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
 
-            connection.Open();
+            if (connection.State == ConnectionState.Closed)
+                connection.Open();
+
             var transaction = isolationLevel.HasValue
                             ? connection.BeginTransaction(isolationLevel.Value)
                             : connection.BeginTransaction();
