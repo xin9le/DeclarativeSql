@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using This = DeclarativeSql.Helpers.PredicateParser;
 
 
@@ -224,15 +225,18 @@ namespace DeclarativeSql.Helpers
             {
                 var expr = (MethodCallExpression)expression;
                 var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                var ret = expr.Method.Invoke(expr.Object, parameters);
-                return ret;
+                var obj = expr.Object == null
+                        ? null                              //--- static
+                        : this.ExtractValue(expr.Object);   //--- instance
+                return expr.Method.Invoke(obj, parameters);
             }
 
-            //--- 変数
+            //--- フィールド / プロパティ
             var memberNames = new List<string>();
             var temp = expression;
             while (!(temp is ConstantExpression))
             {
+                //--- cast
                 if (temp is UnaryExpression)
                 if (temp.NodeType == ExpressionType.Convert)
                 {
@@ -240,10 +244,28 @@ namespace DeclarativeSql.Helpers
                     continue;
                 }
 
+                //--- not member
                 var member = temp as MemberExpression;
                 if (member == null)
                     return this.ExtractValue(temp);
 
+                //--- static
+                if (member.Expression == null)
+                {
+                    if (member.Member.MemberType == MemberTypes.Property)
+                    {
+                        var info = (PropertyInfo)member.Member;
+                        return info.GetValue(null);
+                    }
+                    if (member.Member.MemberType == MemberTypes.Field)
+                    {
+                        var info = (FieldInfo)member.Member;
+                        return info.GetValue(null);
+                    }
+                    throw new InvalidOperationException("Not field or property.");
+                }
+
+                //--- instance
                 memberNames.Add(member.Member.Name);
                 temp = member.Expression;
             }
