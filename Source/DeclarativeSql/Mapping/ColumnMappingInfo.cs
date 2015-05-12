@@ -92,15 +92,18 @@ namespace DeclarativeSql.Mapping
         /// <returns>列情報のマッピングインスタンス</returns>
         public static This From(PropertyInfo info)
         {
-            var isPrimary = info.Has<KeyAttribute>();
-            var required  = info.Has<RequiredAttribute>();
-            var sequence  = info.GetCustomAttribute<SequenceAttribute>();
+            var isPrimary   = info.Has<KeyAttribute>();
+            var required    = info.Has<RequiredAttribute>();
+            var sequence    = info.GetCustomAttribute<SequenceAttribute>();
+            var propType    = info.PropertyType.IsEnum
+                            ? Enum.GetUnderlyingType(info.PropertyType)
+                            : info.PropertyType;
             return new This()
             {
                 PropertyName    = info.Name,
                 PropertyType    = info.PropertyType,
                 ColumnName      = This.GetColumnName(info),
-                ColumnType      = This.typeMap[info.PropertyType],
+                ColumnType      = This.typeMap[propType],
                 IsPrimaryKey    = isPrimary,
                 IsNullable      = !(isPrimary || required),
                 IsIdentity      = This.GetDatabaseGeneratedOption(info) == DatabaseGeneratedOption.Identity,
