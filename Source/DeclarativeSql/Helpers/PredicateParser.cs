@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -96,15 +97,32 @@ namespace DeclarativeSql.Helpers
             {
                 return this.VisitCore(() =>
                 {
-                    var property = ExpressionHelper.ExtractMemberExpression(node.Arguments[1]);
-                    if (property.Expression == this.parameter)
+                    //--- プロパティ名を取得
+                    var propertyName = this.ExtractPropertyName(node.Arguments[1]);
+                    if (propertyName == null)
+                        throw new InvalidOperationException();
+
+                    //--- 要素生成
+                    //--- in句は1000件以上あるとエラーが発生するためorでつなぐ
+                    var source  = (this.ExtractValue(node.Arguments[0]) as IEnumerable)
+                                .Cast<object>()
+                                .Buffer(1000)
+                                .Select(x => x.ToArray());
+
+                    PredicateElement root = null;
+                    foreach (var x in source)
                     {
-                        //--- 要素生成
-                        var propertyName = property.Member.Name;
-                        var value = this.ExtractValue(node.Arguments[0]);
-                        return new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, value);
+                        if (root != null)
+                        {
+                            var parent   = new PredicateElement(PredicateOperator.OrElse);
+                            parent.Left  = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                            parent.Right = root;
+                            root         = parent;
+                            continue;
+                        }
+                        root = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
                     }
-                    throw new InvalidOperationException();
+                    return root;
                 },
                 () => base.VisitMethodCall(node));
             }
