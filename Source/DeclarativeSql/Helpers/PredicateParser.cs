@@ -15,21 +15,19 @@ namespace DeclarativeSql.Helpers
     /// </summary>
     public sealed class PredicateParser : ExpressionVisitor
     {
-        #region フィールド
-        /// <summary>
-        /// 計算中の要素キャッシュを保持します。
-        /// </summary>
-        private readonly Stack<PredicateElement> cache;
-
-
-        /// <summary>
-        /// 式の左辺パラメーターを保持します。
-        /// </summary>
-        private readonly ParameterExpression parameter;
-        #endregion
-
-
         #region プロパティ
+        /// <summary>
+        /// 計算中の要素キャッシュを取得します。
+        /// </summary>
+        private Stack<PredicateElement> Cache { get; } = new Stack<PredicateElement>();
+
+
+        /// <summary>
+        /// 式の左辺パラメーターを取得します。
+        /// </summary>
+        private ParameterExpression Parameter { get; }
+
+
         /// <summary>
         /// 最上位要素を取得または設定します。
         /// </summary>
@@ -44,8 +42,7 @@ namespace DeclarativeSql.Helpers
         /// <param name="parameter">左辺パラメーター</param>
         private PredicateParser(ParameterExpression parameter)
         {
-            this.cache = new Stack<PredicateElement>();
-            this.parameter = parameter;
+            this.Parameter = parameter;
         }
         #endregion
 
@@ -113,12 +110,12 @@ namespace DeclarativeSql.Helpers
                     if (root != null)
                     {
                         var parent   = new PredicateElement(PredicateOperator.OrElse);
-                        parent.Left  = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                        parent.Left  = new PredicateElement(PredicateOperator.Contains, this.Parameter.Type, propertyName, x);
                         parent.Right = root;
                         root         = parent;
                         continue;
                     }
-                    root = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                    root = new PredicateElement(PredicateOperator.Contains, this.Parameter.Type, propertyName, x);
                 }
                 return this.VisitCore(root, () => base.VisitMethodCall(node));
             }
@@ -139,7 +136,7 @@ namespace DeclarativeSql.Helpers
         private Expression VisitCore(PredicateElement element, Func<Expression> baseCall)
         {
             //--- 親要素と関連付け
-            var parent = this.cache.Count == 0 ? null : this.cache.Peek();
+            var parent = this.Cache.Count == 0 ? null : this.Cache.Peek();
             if (parent != null)
             {
                 if      (parent.Left == null)   parent.Left = element;
@@ -148,12 +145,12 @@ namespace DeclarativeSql.Helpers
             }
 
             //--- 子要素を解析
-            this.cache.Push(element);
+            this.Cache.Push(element);
             var result = baseCall();
-            this.cache.Pop();
+            this.Cache.Pop();
 
             //--- キャッシュがなくなった場合 (= Root)
-            if (this.cache.Count == 0)
+            if (this.Cache.Count == 0)
                 this.Root = element;
 
             //--- ok
@@ -174,7 +171,7 @@ namespace DeclarativeSql.Helpers
             {
                 var @operator = node.NodeType.ToPredicateOperator();
                 var value = this.ExtractValue(node.Right);
-                return new PredicateElement(@operator, this.parameter.Type, propertyName, value);
+                return new PredicateElement(@operator, this.Parameter.Type, propertyName, value);
             }
 
             //--- 'value == x.Hoge'
@@ -183,7 +180,7 @@ namespace DeclarativeSql.Helpers
             {
                 var @operator = node.NodeType.ToPredicateOperator().Flip();
                 var value = this.ExtractValue(node.Left);
-                return new PredicateElement(@operator, this.parameter.Type, propertyName, value);
+                return new PredicateElement(@operator, this.Parameter.Type, propertyName, value);
             }
 
             throw new InvalidOperationException();
@@ -199,7 +196,7 @@ namespace DeclarativeSql.Helpers
         {
             var member = ExpressionHelper.ExtractMemberExpression(expression);
             if (member != null)
-            if (member.Expression == this.parameter)
+            if (member.Expression == this.Parameter)
                 return member.Member.Name;
             return null;
         }
