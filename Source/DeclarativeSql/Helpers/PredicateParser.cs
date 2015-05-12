@@ -98,7 +98,7 @@ namespace DeclarativeSql.Helpers
                 return this.VisitCore(() =>
                 {
                     //--- プロパティ名を取得
-                    var propertyName = this.ExtractPropertyName(node.Arguments[1]);
+                    var propertyName = this.ExtractMemberName(node.Arguments[1]);
                     if (propertyName == null)
                         throw new InvalidOperationException();
 
@@ -176,7 +176,7 @@ namespace DeclarativeSql.Helpers
         private PredicateElement ParseBinary(BinaryExpression node)
         {
             //--- 'x.Hoge == value'
-            var propertyName = this.ExtractPropertyName(node.Left);
+            var propertyName = this.ExtractMemberName(node.Left);
             if (propertyName != null)
             {
                 var @operator = node.NodeType.ToPredicateOperator();
@@ -185,7 +185,7 @@ namespace DeclarativeSql.Helpers
             }
 
             //--- 'value == x.Hoge'
-            propertyName = this.ExtractPropertyName(node.Right);
+            propertyName = this.ExtractMemberName(node.Right);
             if (propertyName != null)
             {
                 var @operator = node.NodeType.ToPredicateOperator().Flip();
@@ -198,11 +198,11 @@ namespace DeclarativeSql.Helpers
 
 
         /// <summary>
-        /// 指定された式からプロパティ名を抽出します。
+        /// 指定された式からメンバー名を抽出します。
         /// </summary>
         /// <param name="expression">抽出対象の式</param>
-        /// <returns>プロパティ名</returns>
-        private string ExtractPropertyName(Expression expression)
+        /// <returns>メンバー名</returns>
+        private string ExtractMemberName(Expression expression)
         {
             var member = ExpressionHelper.ExtractMemberExpression(expression);
             if (member != null)
