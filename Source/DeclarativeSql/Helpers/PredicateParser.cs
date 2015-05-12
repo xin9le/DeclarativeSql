@@ -58,29 +58,29 @@ namespace DeclarativeSql.Helpers
         /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            return this.VisitCore(() =>
+            //--- AND/OR : 左右を保持する要素として生成
+            //--- 比較演算子 (<, <=, >=, >, ==, !=) : 左辺のプロパティ名と右辺の値を抽出
+            PredicateElement element;
+            switch (node.NodeType)
             {
-                //--- AND/OR : 左右を保持する要素として生成
-                //--- 比較演算子 (<, <=, >=, >, ==, !=) : 左辺のプロパティ名と右辺の値を抽出
-                switch (node.NodeType)
-                {
-                    case ExpressionType.AndAlso:
-                    case ExpressionType.OrElse:
-                        return new PredicateElement(node.NodeType.ToPredicateOperator());
+                case ExpressionType.AndAlso:
+                case ExpressionType.OrElse:
+                    element = new PredicateElement(node.NodeType.ToPredicateOperator());
+                    break;
 
-                    case ExpressionType.LessThan:
-                    case ExpressionType.LessThanOrEqual:
-                    case ExpressionType.GreaterThan:
-                    case ExpressionType.GreaterThanOrEqual:
-                    case ExpressionType.Equal:
-                    case ExpressionType.NotEqual:
-                        return this.ParseBinary(node);
+                case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                    element = this.ParseBinary(node);
+                    break;
 
-                    default:
-                        throw new InvalidOperationException();
-                }
-            },
-            () => base.VisitBinary(node));
+                default:
+                    throw new InvalidOperationException();
+            }
+            return this.VisitCore(element, () => base.VisitBinary(node));
         }
 
 
@@ -95,36 +95,32 @@ namespace DeclarativeSql.Helpers
             if (node.Method.DeclaringType == typeof(Enumerable))
             if (node.Method.Name == nameof(Enumerable.Contains))
             {
-                return this.VisitCore(() =>
+                //--- プロパティ名を取得
+                var propertyName = this.ExtractMemberName(node.Arguments[1]);
+                if (propertyName == null)
+                    throw new InvalidOperationException();
+
+                //--- 要素生成
+                //--- in句は1000件以上あるとエラーが発生するためorでつなぐ
+                var source  = (this.ExtractValue(node.Arguments[0]) as IEnumerable)
+                            .Cast<object>()
+                            .Buffer(1000)
+                            .Select(x => x.ToArray());
+
+                PredicateElement root = null;
+                foreach (var x in source)
                 {
-                    //--- プロパティ名を取得
-                    var propertyName = this.ExtractMemberName(node.Arguments[1]);
-                    if (propertyName == null)
-                        throw new InvalidOperationException();
-
-                    //--- 要素生成
-                    //--- in句は1000件以上あるとエラーが発生するためorでつなぐ
-                    var source  = (this.ExtractValue(node.Arguments[0]) as IEnumerable)
-                                .Cast<object>()
-                                .Buffer(1000)
-                                .Select(x => x.ToArray());
-
-                    PredicateElement root = null;
-                    foreach (var x in source)
+                    if (root != null)
                     {
-                        if (root != null)
-                        {
-                            var parent   = new PredicateElement(PredicateOperator.OrElse);
-                            parent.Left  = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
-                            parent.Right = root;
-                            root         = parent;
-                            continue;
-                        }
-                        root = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                        var parent   = new PredicateElement(PredicateOperator.OrElse);
+                        parent.Left  = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                        parent.Right = root;
+                        root         = parent;
+                        continue;
                     }
-                    return root;
-                },
-                () => base.VisitMethodCall(node));
+                    root = new PredicateElement(PredicateOperator.Contains, this.parameter.Type, propertyName, x);
+                }
+                return this.VisitCore(root, () => base.VisitMethodCall(node));
             }
 
             //--- default
@@ -137,14 +133,11 @@ namespace DeclarativeSql.Helpers
         /// <summary>
         /// 式を走査します。
         /// </summary>
-        /// <param name="elementGenerator">要素生成デリゲート</param>
+        /// <param name="element">要素生成</param>
         /// <param name="baseCall">基底メソッド呼び出しデリゲート</param>
         /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
-        private Expression VisitCore(Func<PredicateElement> elementGenerator, Func<Expression> baseCall)
+        private Expression VisitCore(PredicateElement element, Func<Expression> baseCall)
         {
-            //--- 要素生成
-            var element = elementGenerator();
-
             //--- 親要素と関連付け
             var parent = this.cache.Count == 0 ? null : this.cache.Peek();
             if (parent != null)
