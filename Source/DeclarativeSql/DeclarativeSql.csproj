@@ -42,6 +42,9 @@
   <ItemGroup>
     <Compile Include="Annotations\BindParameterPrefixAttribute.cs" />
     <Compile Include="Annotations\SequenceAttribute.cs" />
+    <Compile Include="Helpers\CompareSelector.cs" />
+    <Compile Include="Helpers\IndexedItem.cs" />
+    <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Helpers\AccessorCache.cs" />
     <Compile Include="Helpers\AccessorFactory.cs" />
     <Compile Include="Helpers\AttributeHelper.cs" />
