@@ -137,9 +137,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, params Expression<Func<T, object>>[] properties)
-        {
-            return connection.UpdateAsync(data, false, properties);
-        }
+            => connection.UpdateAsync(data, false, properties);
 
 
         /// <summary>
@@ -172,9 +170,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
-        {
-            return connection.UpdateAsync(data, predicate, false, properties);
-        }
+            => connection.UpdateAsync(data, predicate, false, properties);
 
 
         /// <summary>

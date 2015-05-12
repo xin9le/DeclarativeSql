@@ -31,10 +31,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="dbKind">データーベースの種類</param>
         /// <returns>データーベース接続</returns>
-        public static IDbConnection CreateConnection(this DbKind dbKind)
-        {
-            return This.GetFactory(dbKind).CreateConnection();
-        }
+        public static IDbConnection CreateConnection(this DbKind dbKind) => This.GetFactory(dbKind).CreateConnection();
 
 
         /// <summary>
@@ -72,10 +69,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="connection">トランザクションを開始するデータベース接続</param>
         /// <returns>トランザクション</returns>
-        public static ITransactionScope StartTransaction(this IDbConnection connection)
-        {
-            return connection.StartTransactionCore(null);
-        }
+        public static ITransactionScope StartTransaction(this IDbConnection connection) => connection.StartTransactionCore(null);
 
 
         /// <summary>
@@ -84,10 +78,7 @@ namespace DeclarativeSql
         /// <param name="connection">トランザクションを開始するデータベース接続</param>
         /// <param name="isolationLevel">分離レベル</param>
         /// <returns>トランザクション</returns>
-        public static ITransactionScope StartTransaction(this IDbConnection connection, IsolationLevel isolationLevel)
-        {
-            return connection.StartTransactionCore(isolationLevel);
-        }
+        public static ITransactionScope StartTransaction(this IDbConnection connection, IsolationLevel isolationLevel) => connection.StartTransactionCore(isolationLevel);
 
 
         /// <summary>

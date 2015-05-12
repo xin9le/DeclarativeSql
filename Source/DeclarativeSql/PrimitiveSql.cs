@@ -22,10 +22,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <returns>生成されたSQL</returns>
-        public static string CreateCount<T>()
-        {
-            return This.CreateCount(typeof(T));
-        }
+        public static string CreateCount<T>() => This.CreateCount(typeof(T));
 
 
         /// <summary>
@@ -101,9 +98,7 @@ namespace DeclarativeSql
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateInsert<T>(DbKind targetDatabase, bool useSequence = true, bool setIdentity = false)
-        {
-            return This.CreateInsert(targetDatabase, typeof(T), useSequence, setIdentity);
-        }
+            => This.CreateInsert(targetDatabase, typeof(T), useSequence, setIdentity);
 
 
         /// <summary>
@@ -158,9 +153,7 @@ namespace DeclarativeSql
         /// <param name="properties">プロパティ式のコレクション</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateUpdate<T>(DbKind targetDatabase, params Expression<Func<T, object>>[] properties)
-        {
-            return This.CreateUpdate<T>(targetDatabase, false, properties);
-        }
+            => This.CreateUpdate<T>(targetDatabase, false, properties);
 
 
         /// <summary>
@@ -171,9 +164,7 @@ namespace DeclarativeSql
         /// <param name="propertyNames">プロパティ名のコレクション</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateUpdate(DbKind targetDatabase, Type type, params string[] propertyNames)
-        {
-            return This.CreateUpdate(targetDatabase, type, false, propertyNames);
-         }
+            => This.CreateUpdate(targetDatabase, type, false, propertyNames);
 
 
         /// <summary>
@@ -228,10 +219,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <returns>生成されたSQL</returns>
-        public static string CreateDelete<T>()
-        {
-            return This.CreateDelete(typeof(T));
-        }
+        public static string CreateDelete<T>() => This.CreateDelete(typeof(T));
 
 
         /// <summary>
@@ -256,10 +244,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <returns>生成されたSQL</returns>
-        public static string CreateTruncate<T>()
-        {
-            return This.CreateTruncate(typeof(T));
-        }
+        public static string CreateTruncate<T>() => This.CreateTruncate(typeof(T));
 
 
         /// <summary>

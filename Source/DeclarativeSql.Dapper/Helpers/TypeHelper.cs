@@ -17,10 +17,7 @@ namespace DeclarativeSql.Helpers
         /// </summary>
         /// <typeparam name="TCollection">コレクションの型情報</typeparam>
         /// <returns></returns>
-        public static Type GetElementType<TCollection>()
-        {
-            return This.GetElementType(typeof(TCollection));
-        }
+        public static Type GetElementType<TCollection>() => This.GetElementType(typeof(TCollection));
 
 
         /// <summary>

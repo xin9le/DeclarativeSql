@@ -71,10 +71,7 @@ namespace DeclarativeSql.Mapping
         /// </summary>
         /// <typeparam name="T">対象となる型情報</typeparam>
         /// <returns>テーブルマッピング情報</returns>
-        public static This Create<T>()
-        {
-            return This.Create(typeof(T));
-        }
+        public static This Create<T>() => This.Create(typeof(T));
 
 
         /// <summary>

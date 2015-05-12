@@ -100,10 +100,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="kind">データベースの種類</param>
         /// <returns>データプロバイダー名</returns>
-        public static string GetProviderName(this DbKind kind)
-        {
-            return This.cache[kind].ProviderName;
-        }
+        public static string GetProviderName(this DbKind kind) => This.cache[kind].ProviderName;
 
 
         /// <summary>
