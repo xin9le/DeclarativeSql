@@ -49,10 +49,10 @@
     <Compile Include="Helpers\AccessorFactory.cs" />
     <Compile Include="Helpers\AttributeHelper.cs" />
     <Compile Include="Helpers\ExpandoObjectExtensions.cs" />
-    <Compile Include="PredicateElement.cs" />
+    <Compile Include="Helpers\PredicateElement.cs" />
     <Compile Include="Helpers\ExpressionHelper.cs" />
     <Compile Include="Helpers\PredicateParser.cs" />
-    <Compile Include="PredicateOperator.cs" />
+    <Compile Include="Helpers\PredicateOperator.cs" />
     <Compile Include="PredicateSql.cs" />
     <Compile Include="Mapping\ColumnMappingInfo.cs" />
     <Compile Include="DbKind.cs" />

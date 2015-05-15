@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 
 
-namespace DeclarativeSql
+namespace DeclarativeSql.Helpers
 {
     /// <summary>
     /// 条件式の演算子を表します。

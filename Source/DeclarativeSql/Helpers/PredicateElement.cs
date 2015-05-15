@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 
 
-namespace DeclarativeSql
+namespace DeclarativeSql.Helpers
 {
     /// <summary>
     /// 条件式を分解した要素を表します。
