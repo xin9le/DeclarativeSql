@@ -55,9 +55,21 @@ namespace DeclarativeSql
         /// <returns>条件SQL</returns>
         public static This From<T>(DbKind targetDatabase, Expression<Func<T, bool>> predicate)
         {
+            //--- 解析実行
+            var root = PredicateParser.Parse(predicate);
+
             //--- SQL文 / パラメーター生成の定義
             uint index = 0;
             var columnMap = TableMappingInfo.Create<T>().Columns.ToDictionary(x => x.PropertyName);
+            var prefix = targetDatabase.GetBindParameterPrefix();
+            var parameterCount  = root.DescendantsAndSelf().Count(x =>
+                                {
+                                    return  x.Operator != PredicateOperator.AndAlso
+                                        &&  x.Operator != PredicateOperator.OrElse
+                                        &&  x.Value != null;
+                                });
+            var digit = (parameterCount - 1).ToString().Length;
+            var digitFormat = $"D{digit}";
             IDictionary<string, object> parameter = new ExpandoObject();
             Func<PredicateElement, string> sqlBuilder = null;
             sqlBuilder = element =>
@@ -104,17 +116,15 @@ namespace DeclarativeSql
                         default:                                    throw new InvalidOperationException();
                     }
 
-                    var parameterName = $"p{index++}";
+                    var parameterName = $"p{index.ToString(digitFormat)}";
+                    ++index;
                     parameter.Add(parameterName, element.Value);  //--- cache parameter
-
-                    var prefix = targetDatabase.GetBindParameterPrefix();
                     builder.Append($"{prefix}{parameterName}");                    
                     return builder.ToString();
                 }
             };
 
-            //--- 解析実行
-            var root = PredicateParser.Parse(predicate);
+            //--- 組み立て            
             return new This(sqlBuilder(root), parameter as ExpandoObject);
         }
         #endregion
