@@ -41,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncDbOperation.cs" />
-    <Compile Include="Mapping\CountResult.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbOperation.cs" />

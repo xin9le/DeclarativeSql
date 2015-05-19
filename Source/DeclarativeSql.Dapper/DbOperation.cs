@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Dapper;
 using DeclarativeSql.Helpers;
-using DeclarativeSql.Mapping;
 
 
 
@@ -30,7 +28,7 @@ namespace DeclarativeSql.Dapper
                 throw new ArgumentNullException(nameof(connection));
 
             var sql = PrimitiveSql.CreateCount<T>();
-            return connection.Query<CountResult>(sql).Single().Count;
+            return connection.ExecuteScalar<ulong>(sql);
         }
 
 
@@ -52,7 +50,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return connection.Query<CountResult>(builder.ToString(), where.Parameter).Single().Count;
+            return connection.ExecuteScalar<ulong>(builder.ToString(), where.Parameter);
         }
         #endregion
 

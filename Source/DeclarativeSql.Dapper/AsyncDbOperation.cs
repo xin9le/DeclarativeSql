@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
-using DeclarativeSql.Mapping;
 
 
 
@@ -25,14 +23,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <returns>レコード数</returns>
-        public static async Task<ulong> CountAsync<T>(this IDbConnection connection)
+        public static Task<ulong> CountAsync<T>(this IDbConnection connection)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
 
             var sql = PrimitiveSql.CreateCount<T>();
-            var result = await connection.QueryAsync<CountResult>(sql).ConfigureAwait(false);
-            return result.Single().Count;
+            return connection.ExecuteScalarAsync<ulong>(sql);
         }
 
 
@@ -43,7 +40,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">抽出条件</param>
         /// <returns>レコード数</returns>
-        public static async Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
+        public static Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
@@ -54,8 +51,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            var result = await connection.QueryAsync<CountResult>(builder.ToString(), where.Parameter).ConfigureAwait(false);
-            return result.Single().Count;
+            return connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter);
         }
         #endregion
 
