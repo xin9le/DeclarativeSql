@@ -53,10 +53,10 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">トランザクション</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public static IReadOnlyList<T> Select<T>(this IDbTransaction transaction, params Expression<Func<T, object>>[] properties)
+        public static IReadOnlyList<T> Select<T>(this IDbTransaction transaction, Expression<Func<T, object>> properties = null)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
             return DbOperation.Create(transaction).Select(properties);
         }
 
@@ -69,11 +69,10 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public static IReadOnlyList<T> Select<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
+        public static IReadOnlyList<T> Select<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
             return DbOperation.Create(transaction).Select(predicate, properties);
         }
         #endregion
@@ -106,26 +105,13 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">トランザクション</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbTransaction transaction, T data, params Expression<Func<T, object>>[] properties)
-            => transaction.Update(data, false, properties);
-
-
-        /// <summary>
-        /// 指定された情報でレコードを更新します。
-        /// </summary>
-        /// <typeparam name="T">テーブルの型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">更新するデータ</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbTransaction transaction, T data, bool setIdentity, params Expression<Func<T, object>>[] properties)
+        public static int Update<T>(this IDbTransaction transaction, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (data == null)        throw new ArgumentNullException(nameof(data));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(transaction).Update(data, setIdentity, properties);
+            return DbOperation.Create(transaction).Update(data, properties, setIdentity);
         }
 
 
@@ -137,28 +123,14 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
-            => transaction.Update(data, predicate, false, properties);
-
-
-        /// <summary>
-        /// 指定の条件に一致するレコードを指定された情報で更新します。
-        /// </summary>
-        /// <typeparam name="T">テーブルの型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">更新するデータ</param>
-        /// <param name="predicate">更新条件</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, bool setIdentity, params Expression<Func<T, object>>[] properties)
+        public static int Update<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (data == null)        throw new ArgumentNullException(nameof(data));
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(transaction).Update(data, predicate, setIdentity, properties);
+            return DbOperation.Create(transaction).Update(data, predicate, properties, setIdentity);
         }
         #endregion
 
@@ -251,10 +223,10 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">トランザクション</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, params Expression<Func<T, object>>[] properties)
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, object>> properties = null)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
             return DbOperation.Create(transaction).SelectAsync(properties);
         }
 
@@ -267,11 +239,10 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
             return DbOperation.Create(transaction).SelectAsync(predicate, properties);
         }
         #endregion
@@ -304,26 +275,13 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">トランザクション</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, params Expression<Func<T, object>>[] properties)
-            => transaction.UpdateAsync(data, false, properties);
-
-
-        /// <summary>
-        /// 指定された情報でレコードを非同期的に更新します。
-        /// </summary>
-        /// <typeparam name="T">テーブルの型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">更新するデータ</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, bool setIdentity, params Expression<Func<T, object>>[] properties)
+        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (data == null)        throw new ArgumentNullException(nameof(data));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(transaction).UpdateAsync(data, setIdentity, properties);
+            return DbOperation.Create(transaction).UpdateAsync(data, properties, setIdentity);
         }
 
 
@@ -335,27 +293,14 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] properties)
-            => transaction.UpdateAsync(data, predicate, false, properties);
-
-
-        /// <summary>
-        /// 指定の条件に一致するレコードを指定された情報で非同期的に更新します。
-        /// </summary>
-        /// <typeparam name="T">テーブルの型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">更新するデータ</param>
-        /// <param name="predicate">更新条件</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, bool setIdentity, params Expression<Func<T, object>>[] properties)
+        public static Task<int> UpdateAsync<T>(this IDbTransaction transaction, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (data == null)        throw new ArgumentNullException(nameof(data));
-            if (properties == null)  throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(transaction).UpdateAsync(data, predicate, setIdentity, properties);
+            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
+            return DbOperation.Create(transaction).UpdateAsync(data, predicate, properties, setIdentity);
         }
         #endregion
 

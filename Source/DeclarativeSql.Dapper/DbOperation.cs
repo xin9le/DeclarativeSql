@@ -133,7 +133,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>>[] properties)
+        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>> properties = null)
         {
             var sql = PrimitiveSql.CreateSelect(properties);
             return this.Connection.Query<T>(sql, null, this.Transaction) as IReadOnlyList<T>;
@@ -147,7 +147,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>>[] properties)
+        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
         {
             var select  = PrimitiveSql.CreateSelect(properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
@@ -184,12 +184,12 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual int Update<T>(T data, bool setIdentity, Expression<Func<T, object>>[] properties)
+        public virtual int Update<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var sql = PrimitiveSql.CreateUpdate(this.DbKind, setIdentity, properties);
+            var sql = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
             return this.Connection.Execute(sql, data, this.Transaction);
         }
 
@@ -200,12 +200,12 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, bool setIdentity, Expression<Func<T, object>>[] properties)
+        public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var update  = PrimitiveSql.CreateUpdate(this.DbKind, setIdentity, properties);
+            var update  = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var param   = where.Parameter.Merge(data, properties);
             var builder = new StringBuilder();
@@ -304,7 +304,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>>[] properties)
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties = null)
         {
             var sql = PrimitiveSql.CreateSelect(properties);
             var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction).ConfigureAwait(false);
@@ -319,7 +319,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>>[] properties)
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
         {
             var select  = PrimitiveSql.CreateSelect(properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
@@ -357,12 +357,12 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, bool setIdentity, Expression<Func<T, object>>[] properties)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var sql = PrimitiveSql.CreateUpdate(this.DbKind, setIdentity, properties);
+            var sql = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
             return this.Connection.ExecuteAsync(sql, data, this.Transaction);
         }
 
@@ -373,12 +373,12 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, bool setIdentity, Expression<Func<T, object>>[] properties)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var update  = PrimitiveSql.CreateUpdate(this.DbKind, setIdentity, properties);
+            var update  = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var param   = where.Parameter.Merge(data, properties);
             var builder = new StringBuilder();
