@@ -99,6 +99,23 @@ namespace DeclarativeSql.Dapper
             if (data == null)        throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(transaction, timeout).Insert(data, useSequence, setIdentity);
         }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public static int BulkInsert<T>(this IDbTransaction transaction, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (data == null)        throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(transaction, timeout).BulkInsert(data, useSequence, setIdentity);
+        }
         #endregion
 
 
@@ -279,6 +296,24 @@ namespace DeclarativeSql.Dapper
             if (data == null)        throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(transaction, timeout).InsertAsync(data, useSequence, setIdentity);
         }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public static Task<int> BulkInsertAsync<T>(this IDbTransaction transaction, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (data == null)        throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(transaction, timeout).BulkInsertAsync(data, useSequence, setIdentity);
+        }
+
         #endregion
 
 

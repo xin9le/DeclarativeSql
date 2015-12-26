@@ -243,6 +243,20 @@ namespace DeclarativeSql.Dapper
             var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
             return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public virtual int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
         #endregion
 
 
@@ -416,6 +430,20 @@ namespace DeclarativeSql.Dapper
             var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
             return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
         #endregion
 
 
@@ -508,6 +536,56 @@ namespace DeclarativeSql.Dapper
 
 
     /// <summary>
+    /// SqlServerデータベースに対する操作を提供します。
+    /// </summary>
+    internal sealed class SqlServerOperation : DbOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        public SqlServerOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
+        #endregion
+
+
+        #region Insert
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
+
+
+    /// <summary>
     /// Oracleデータベースに対する操作を提供します。
     /// </summary>
     internal sealed class OracleOperation : DbOperation
@@ -522,6 +600,86 @@ namespace DeclarativeSql.Dapper
         public OracleOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
             : base(connection, transaction, timeout)
         {}
+        #endregion
+
+
+        #region Insert
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
+
+
+    /// <summary>
+    /// MySqlデータベースに対する操作を提供します。
+    /// </summary>
+    internal sealed class MySqlOperation : DbOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        public MySqlOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
+        #endregion
+
+
+        #region Insert
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
         #endregion
     }
 }
