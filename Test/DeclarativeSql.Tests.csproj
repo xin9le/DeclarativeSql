@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ChainingAssertion.MSTest.cs" />
     <Compile Include="Person.cs" />
+    <Compile Include="PredicateSqlTest.cs" />
     <Compile Include="PrimitiveSqlTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
