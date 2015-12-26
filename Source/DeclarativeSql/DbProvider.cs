@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using DeclarativeSql.Helpers;
 using This = DeclarativeSql.DbProvider;
 
 
@@ -52,15 +51,15 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// 指定されたデータベーストランザクションをTransactionScopeに変換します。
+        /// 指定されたデータベーストランザクションをスコープ管理可能なデータベーストランザクションに変換します。
         /// </summary>
         /// <param name="transaction">対象となるトランザクション</param>
-        /// <returns>生成されたITransactionScopeインスタンス</returns>
-        public static ITransactionScope Wrap(this IDbTransaction transaction)
+        /// <returns>生成されたトランザクションインスタンス</returns>
+        public static ScopeTransaction Wrap(this IDbTransaction transaction)
         {
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
-            return new TransactionScope(transaction);
+            return new ScopeTransaction(transaction);
         }
 
 
@@ -69,7 +68,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="connection">トランザクションを開始するデータベース接続</param>
         /// <returns>トランザクション</returns>
-        public static ITransactionScope StartTransaction(this IDbConnection connection) => connection.StartTransactionCore(null);
+        public static ScopeTransaction StartTransaction(this IDbConnection connection) => connection.StartTransactionCore(null);
 
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace DeclarativeSql
         /// <param name="connection">トランザクションを開始するデータベース接続</param>
         /// <param name="isolationLevel">分離レベル</param>
         /// <returns>トランザクション</returns>
-        public static ITransactionScope StartTransaction(this IDbConnection connection, IsolationLevel isolationLevel) => connection.StartTransactionCore(isolationLevel);
+        public static ScopeTransaction StartTransaction(this IDbConnection connection, IsolationLevel isolationLevel) => connection.StartTransactionCore(isolationLevel);
 
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace DeclarativeSql
         /// <param name="connection">トランザクションを開始するデータベース接続</param>
         /// <param name="isolationLevel">分離レベル</param>
         /// <returns>トランザクション</returns>
-        private static ITransactionScope StartTransactionCore(this IDbConnection connection, IsolationLevel? isolationLevel)
+        private static ScopeTransaction StartTransactionCore(this IDbConnection connection, IsolationLevel? isolationLevel)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
