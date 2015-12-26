@@ -7,6 +7,7 @@ namespace DeclarativeSql.Tests
     [TestClass]
     public class PrimitiveSqlTest
     {
+#pragma warning disable 0618
         #region Count
         [TestMethod]
         public void Count文生成()
@@ -38,7 +39,7 @@ from dbo.Person";
 
 
         [TestMethod]
-        public void 特定列のSelect文生成()
+        public void 特定1列のSelect文生成()
         {
             var actual1 = PrimitiveSql.CreateSelect(typeof(Person), "Name");
             var actual2 = PrimitiveSql.CreateSelect<Person>(x => x.Name);
@@ -46,6 +47,23 @@ from dbo.Person";
             var expect =
 @"select
     名前 as Name
+from dbo.Person";
+            actual1.Is(expect);
+            actual2.Is(expect);
+            actual3.Is(expect);
+        }
+
+
+        [TestMethod]
+        public void 特定2列のSelect文生成()
+        {
+            var actual1 = PrimitiveSql.CreateSelect(typeof(Person), "Name", "Age");
+            var actual2 = PrimitiveSql.CreateSelect<Person>(x => x.Name, x => x.Age);
+            var actual3 = PrimitiveSql.CreateSelect<Person>(x => new { x.Name, x.Age });
+            var expect =
+@"select
+    名前 as Name,
+    Age as Age
 from dbo.Person";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -138,7 +156,7 @@ set
 
 
         [TestMethod]
-        public void 特定列のUpdate文生成()
+        public void 特定1列のUpdate文生成()
         {
             var actual1 = PrimitiveSql.CreateUpdate(DbKind.SqlServer, typeof(Person), new [] { "Name" });
             var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => x.Name);
@@ -147,6 +165,23 @@ set
 @"update dbo.Person
 set
     名前 = @Name";
+            actual1.Is(expect);
+            actual2.Is(expect);
+            actual3.Is(expect);
+        }
+
+
+        [TestMethod]
+        public void 特定2列のUpdate文生成()
+        {
+            var actual1 = PrimitiveSql.CreateUpdate(DbKind.SqlServer, typeof(Person), new [] { "Name", "Age" });
+            var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => x.Name, x => x.Age);
+            var actual3 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => new { x.Name, x.Age });
+            var expect =
+@"update dbo.Person
+set
+    名前 = @Name,
+    Age = @Age";
             actual1.Is(expect);
             actual2.Is(expect);
             actual3.Is(expect);
@@ -194,6 +229,6 @@ set
             actual2.Is(expect);
         }
         #endregion
-
+#pragma warning restore 0618
     }
 }
