@@ -195,5 +195,16 @@ namespace DeclarativeSql.Helpers
         public static IEnumerable<T> Except<T, TKey>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, TKey> selector)
             => first.Except(second, new CompareSelector<T, TKey>(selector));
         #endregion
+
+
+        #region IsEmpty
+        /// <summary>
+        /// 指定されたコレクションが空かどうかを確認します。
+        /// </summary>
+        /// <typeparam name="T">コレクション要素の型</typeparam>
+        /// <param name="collection">コレクション</param>
+        /// <returns>空の場合true</returns>
+        public static bool IsEmpty<T>(this IEnumerable<T> collection) => !collection.Any();
+        #endregion
     }
 }
