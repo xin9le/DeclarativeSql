@@ -33,6 +33,12 @@ namespace DeclarativeSql.Dapper
         /// データベースの種類を取得します。
         /// </summary>
         protected DbKind DbKind { get; }
+
+
+        /// <summary>
+        /// タイムアウト時間を取得します。
+        /// </summary>
+        protected int? Timeout { get; }
         #endregion
 
 
@@ -41,10 +47,12 @@ namespace DeclarativeSql.Dapper
         /// インスタンスを生成します。
         /// </summary>
         /// <param name="connection">データベース接続</param>
-        protected DbOperation(IDbConnection connection)
+        /// <param name="timeout">タイムアウト時間</param>
+        protected DbOperation(IDbConnection connection, int? timeout)
         {
             this.Connection = connection;
             this.DbKind = connection.GetDbKind();
+            this.Timeout = timeout;
         }
 
 
@@ -52,11 +60,13 @@ namespace DeclarativeSql.Dapper
         /// インスタンスを生成します。
         /// </summary>
         /// <param name="transaction">トランザクション</param>
-        protected DbOperation(IDbTransaction transaction)
+        /// <param name="timeout">タイムアウト時間</param>
+        protected DbOperation(IDbTransaction transaction, int? timeout)
         {
             this.Connection = transaction.Connection;
             this.Transaction = transaction;
             this.DbKind = transaction.Connection.GetDbKind();
+            this.Timeout = timeout;
         }
         #endregion
 
@@ -66,14 +76,15 @@ namespace DeclarativeSql.Dapper
         /// データベース接続からデータベース操作のインスタンスを生成します。
         /// </summary>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>データベース操作</returns>
-        public static DbOperation Create(IDbConnection connection)
+        public static DbOperation Create(IDbConnection connection, int? timeout)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
 
             //--- todo : create DbOperation for specified database if need customization.
-            return new DbOperation(connection);
+            return new DbOperation(connection, timeout);
         }
 
 
@@ -81,14 +92,15 @@ namespace DeclarativeSql.Dapper
         /// トランザクションからデータベース操作のインスタンスを生成します。
         /// </summary>
         /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>データベース操作</returns>
-        public static DbOperation Create(IDbTransaction transaction)
+        public static DbOperation Create(IDbTransaction transaction, int? timeout)
         {
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
 
             //--- todo : create DbOperation for specified database if need customization.
-            return new DbOperation(transaction);
+            return new DbOperation(transaction, timeout);
         }
         #endregion
 
@@ -103,7 +115,7 @@ namespace DeclarativeSql.Dapper
         public virtual ulong Count<T>()
         {
             var sql = PrimitiveSql.CreateCount<T>();
-            return this.Connection.ExecuteScalar<ulong>(sql, null, this.Transaction);
+            return this.Connection.ExecuteScalar<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
 
@@ -121,7 +133,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteScalar<ulong>(builder.ToString(), where.Parameter, this.Transaction);
+            return this.Connection.ExecuteScalar<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -133,10 +145,10 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>> properties = null)
+        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>> properties)
         {
             var sql = PrimitiveSql.CreateSelect(properties);
-            return this.Connection.Query<T>(sql, null, this.Transaction) as IReadOnlyList<T>;
+            return this.Connection.Query<T>(sql, null, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
 
 
@@ -147,7 +159,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
+        public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
             var select  = PrimitiveSql.CreateSelect(properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
@@ -155,7 +167,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(select);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.Query<T>(builder.ToString(), where.Parameter, this.Transaction) as IReadOnlyList<T>;
+            return this.Connection.Query<T>(builder.ToString(), where.Parameter, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
         #endregion
 
@@ -173,7 +185,7 @@ namespace DeclarativeSql.Dapper
         {
             var type = TypeHelper.GetElementType<T>() ?? typeof(T);
             var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
-            return this.Connection.Execute(sql, data, this.Transaction);
+            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -190,7 +202,7 @@ namespace DeclarativeSql.Dapper
         public virtual int Update<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
             var sql = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
-            return this.Connection.Execute(sql, data, this.Transaction);
+            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
 
@@ -212,7 +224,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(update);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.Execute(builder.ToString(), param, this.Transaction);
+            return this.Connection.Execute(builder.ToString(), param, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -226,7 +238,7 @@ namespace DeclarativeSql.Dapper
         public virtual int Delete<T>()
         {
             var sql = PrimitiveSql.CreateDelete<T>();
-            return this.Connection.Execute(sql, null, this.Transaction);
+            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
 
 
@@ -244,7 +256,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(delete);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.Execute(builder.ToString(), where.Parameter, this.Transaction);
+            return this.Connection.Execute(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -258,7 +270,7 @@ namespace DeclarativeSql.Dapper
         public virtual int Truncate<T>()
         {
             var sql = PrimitiveSql.CreateTruncate<T>();
-            return this.Connection.Execute(sql, null, this.Transaction);
+            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
         #endregion
         #endregion
@@ -274,7 +286,7 @@ namespace DeclarativeSql.Dapper
         public virtual Task<ulong> CountAsync<T>()
         {
             var sql = PrimitiveSql.CreateCount<T>();
-            return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction);
+            return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
 
@@ -292,7 +304,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(count);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter, this.Transaction);
+            return this.Connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -304,10 +316,10 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties = null)
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
         {
             var sql = PrimitiveSql.CreateSelect(properties);
-            var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction).ConfigureAwait(false);
+            var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
 
@@ -319,7 +331,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
         /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
             var select  = PrimitiveSql.CreateSelect(properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
@@ -327,7 +339,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(select);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            var result = await this.Connection.QueryAsync<T>(builder.ToString(), where.Parameter, this.Transaction).ConfigureAwait(false);
+            var result = await this.Connection.QueryAsync<T>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
         #endregion
@@ -346,7 +358,7 @@ namespace DeclarativeSql.Dapper
         {
             var type = TypeHelper.GetElementType<T>() ?? typeof(T);
             var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
-            return this.Connection.ExecuteAsync(sql, data, this.Transaction);
+            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -363,7 +375,7 @@ namespace DeclarativeSql.Dapper
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
             var sql = PrimitiveSql.CreateUpdate(this.DbKind, properties, setIdentity);
-            return this.Connection.ExecuteAsync(sql, data, this.Transaction);
+            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
 
 
@@ -385,7 +397,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(update);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteAsync(builder.ToString(), param, this.Transaction);
+            return this.Connection.ExecuteAsync(builder.ToString(), param, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -399,7 +411,7 @@ namespace DeclarativeSql.Dapper
         public virtual Task<int> DeleteAsync<T>()
         {
             var sql = PrimitiveSql.CreateDelete<T>();
-            return this.Connection.ExecuteAsync(sql, null, this.Transaction);
+            return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
 
 
@@ -417,7 +429,7 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(delete);
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteAsync(builder.ToString(), where.Parameter, this.Transaction);
+            return this.Connection.ExecuteAsync(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -431,7 +443,7 @@ namespace DeclarativeSql.Dapper
         public virtual Task<int> TruncateAsync<T>()
         {
             var sql = PrimitiveSql.CreateTruncate<T>();
-            return this.Connection.ExecuteAsync(sql, null, this.Transaction);
+            return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
         #endregion
         #endregion

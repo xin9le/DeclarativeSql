@@ -23,12 +23,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>レコード数</returns>
-        public static ulong Count<T>(this IDbConnection connection)
+        public static ulong Count<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).Count<T>();
+            return DbOperation.Create(connection, timeout).Count<T>();
         }
 
 
@@ -38,12 +39,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">抽出条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>レコード数</returns>
-        public static ulong Count<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
+        public static ulong Count<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).Count(predicate);
+            return DbOperation.Create(connection, timeout).Count(predicate);
         }
         #endregion
 
@@ -55,12 +57,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>取得したレコード</returns>
-        public static IReadOnlyList<T> Select<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null)
+        public static IReadOnlyList<T> Select<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).Select(properties);
+            return DbOperation.Create(connection, timeout).Select(properties);
         }
 
 
@@ -71,12 +74,13 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>取得したレコード</returns>
-        public static IReadOnlyList<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
+        public static IReadOnlyList<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).Select(predicate, properties);
+            return DbOperation.Create(connection, timeout).Select(predicate, properties);
         }
         #endregion
 
@@ -88,14 +92,15 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="data">挿入するデータ</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static int Insert<T>(this IDbConnection connection, T data, bool useSequence = true, bool setIdentity = false)
+        public static int Insert<T>(this IDbConnection connection, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection).Insert(data, useSequence, setIdentity);
+            return DbOperation.Create(connection, timeout).Insert(data, useSequence, setIdentity);
         }
         #endregion
 
@@ -108,13 +113,14 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection).Update(data, properties, setIdentity);
+            return DbOperation.Create(connection, timeout).Update(data, properties, setIdentity);
         }
 
 
@@ -126,14 +132,15 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).Update(data, predicate, properties, setIdentity);
+            return DbOperation.Create(connection, timeout).Update(data, predicate, properties, setIdentity);
         }
         #endregion
 
@@ -144,12 +151,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>影響した行数</returns>
-        public static int Delete<T>(this IDbConnection connection)
+        public static int Delete<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).Delete<T>();
+            return DbOperation.Create(connection, timeout).Delete<T>();
         }
 
 
@@ -159,12 +167,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">削除条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>影響した行数</returns>
-        public static int Delete<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
+        public static int Delete<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).Delete(predicate);
+            return DbOperation.Create(connection, timeout).Delete(predicate);
         }
         #endregion
 
@@ -175,12 +184,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>-1</returns>
-        public static int Truncate<T>(this IDbConnection connection)
+        public static int Truncate<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).Truncate<T>();
+            return DbOperation.Create(connection, timeout).Truncate<T>();
         }
         #endregion
         #endregion
@@ -193,12 +203,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>レコード数</returns>
-        public static Task<ulong> CountAsync<T>(this IDbConnection connection)
+        public static Task<ulong> CountAsync<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).CountAsync<T>();
+            return DbOperation.Create(connection, timeout).CountAsync<T>();
         }
 
 
@@ -208,12 +219,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">抽出条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>レコード数</returns>
-        public static Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
+        public static Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).CountAsync(predicate);
+            return DbOperation.Create(connection, timeout).CountAsync(predicate);
         }
         #endregion
 
@@ -225,12 +237,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null)
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(connection).SelectAsync(properties);
+            return DbOperation.Create(connection, timeout).SelectAsync(properties);
         }
 
 
@@ -241,13 +254,14 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">抽出条件</param>
         /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null)
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
-            return DbOperation.Create(connection).SelectAsync(predicate, properties);
+            return DbOperation.Create(connection, timeout).SelectAsync(predicate, properties);
         }
         #endregion
 
@@ -259,14 +273,15 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="data">挿入するデータ</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> InsertAsync<T>(this IDbConnection connection, T data, bool useSequence = true, bool setIdentity = false)
+        public static Task<int> InsertAsync<T>(this IDbConnection connection, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection).InsertAsync(data, useSequence, setIdentity);
+            return DbOperation.Create(connection, timeout).InsertAsync(data, useSequence, setIdentity);
         }
         #endregion
 
@@ -279,13 +294,14 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection).UpdateAsync(data, properties, setIdentity);
+            return DbOperation.Create(connection, timeout).UpdateAsync(data, properties, setIdentity);
         }
 
 
@@ -297,14 +313,15 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).UpdateAsync(data, predicate, properties, setIdentity);
+            return DbOperation.Create(connection, timeout).UpdateAsync(data, predicate, properties, setIdentity);
         }
         #endregion
 
@@ -315,12 +332,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> DeleteAsync<T>(this IDbConnection connection)
+        public static Task<int> DeleteAsync<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).DeleteAsync<T>();
+            return DbOperation.Create(connection, timeout).DeleteAsync<T>();
         }
 
 
@@ -330,12 +348,13 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="predicate">削除条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> DeleteAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate)
+        public static Task<int> DeleteAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection).DeleteAsync(predicate);
+            return DbOperation.Create(connection, timeout).DeleteAsync(predicate);
         }
         #endregion
 
@@ -346,12 +365,13 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
+        /// <param name="timeout">タイムアウト時間</param>
         /// <returns>-1</returns>
-        public static Task<int> TruncateAsync<T>(this IDbConnection connection)
+        public static Task<int> TruncateAsync<T>(this IDbConnection connection, int? timeout = null)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection).TruncateAsync<T>();
+            return DbOperation.Create(connection, timeout).TruncateAsync<T>();
         }
         #endregion
         #endregion
