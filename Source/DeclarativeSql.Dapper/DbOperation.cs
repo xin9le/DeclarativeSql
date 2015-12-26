@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
+using This = DeclarativeSql.Dapper.DbOperation;
 
 
 
@@ -39,33 +42,74 @@ namespace DeclarativeSql.Dapper
         /// タイムアウト時間を取得します。
         /// </summary>
         protected int? Timeout { get; }
+
+
+        /// <summary>
+        /// コンストラクタのデリゲートのキャッシュを取得します。
+        /// </summary>
+        private static IReadOnlyDictionary<DbKind, Func<IDbConnection, IDbTransaction, int?, This>> Constructors { get; }
         #endregion
 
 
         #region コンストラクタ
         /// <summary>
-        /// インスタンスを生成します。
+        /// この型に最初にアクセスされたときに呼び出されます。
         /// </summary>
-        /// <param name="connection">データベース接続</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        protected DbOperation(IDbConnection connection, int? timeout)
+        static DbOperation()
         {
-            this.Connection = connection;
-            this.DbKind = connection.GetDbKind();
-            this.Timeout = timeout;
+            This.Constructors
+                = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.IsSubclassOf(typeof(This)))
+                .Where(x => !x.IsAbstract)
+                .Where(x => x.IsClass)
+                .Where(x => x.IsSealed)
+                .Where(x => x.IsNotPublic)
+                .Join
+                (
+                    Enum.GetValues(typeof(DbKind))
+                    .Cast<DbKind>()
+                    .Select(x => new
+                    {
+                        Name = Enum.GetName(typeof(DbKind), x),
+                        Value = x,
+                    }),
+                    x => x.Name,
+                    y => y.Name + "Operation",
+                    (x, y) => new { Type = x, DbKind = y.Value }
+                )
+                .Select(x =>
+                {
+                    var type1 = typeof(IDbConnection);
+                    var type2 = typeof(IDbTransaction);
+                    var type3 = typeof(int?);
+                    var param1 = Expression.Parameter(type1, "p1");
+                    var param2 = Expression.Parameter(type2, "p2");
+                    var param3 = Expression.Parameter(type3, "p3");
+                    var ctor = x.Type.GetConstructor(new [] { type1, type2, type3 });
+                    var @new = Expression.New(ctor, param1, param2, param3);
+                    var lambda = Expression.Lambda<Func<IDbConnection, IDbTransaction, int?, This>>(@new, param1, param2, param3);
+                    return new
+                    {
+                        DbKind = x.DbKind,
+                        Constructor = lambda.Compile(),
+                    };
+                })
+                .ToDictionary(x => x.DbKind, x => x.Constructor);
         }
 
 
         /// <summary>
         /// インスタンスを生成します。
         /// </summary>
+        /// <param name="connection">データベース接続</param>
         /// <param name="transaction">トランザクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        protected DbOperation(IDbTransaction transaction, int? timeout)
+        protected DbOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
         {
-            this.Connection = transaction.Connection;
+            this.Connection = connection;
             this.Transaction = transaction;
-            this.DbKind = transaction.Connection.GetDbKind();
+            this.DbKind = connection.GetDbKind();
             this.Timeout = timeout;
         }
         #endregion
@@ -78,13 +122,11 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="timeout">タイムアウト時間</param>
         /// <returns>データベース操作</returns>
-        public static DbOperation Create(IDbConnection connection, int? timeout)
+        public static This Create(IDbConnection connection, int? timeout)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
-
-            //--- todo : create DbOperation for specified database if need customization.
-            return new DbOperation(connection, timeout);
+            return This.Create(connection, null, timeout);
         }
 
 
@@ -94,13 +136,27 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">トランザクション</param>
         /// <param name="timeout">タイムアウト時間</param>
         /// <returns>データベース操作</returns>
-        public static DbOperation Create(IDbTransaction transaction, int? timeout)
+        public static This Create(IDbTransaction transaction, int? timeout)
         {
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
+            return This.Create(transaction.Connection, transaction, timeout);
+        }
 
-            //--- todo : create DbOperation for specified database if need customization.
-            return new DbOperation(transaction, timeout);
+
+        /// <summary>
+        /// データベース接続とトランザクションからデータベース操作のインスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>データベース操作</returns>
+        private static This Create(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        {
+            var dbKind = connection.GetDbKind();
+            return  This.Constructors.ContainsKey(dbKind)
+                ?   This.Constructors[dbKind](connection, transaction, timeout)
+                :   new This(connection, transaction, timeout);
         }
         #endregion
 
@@ -446,6 +502,26 @@ namespace DeclarativeSql.Dapper
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
         #endregion
+        #endregion
+    }
+
+
+
+    /// <summary>
+    /// Oracleデータベースに対する操作を提供します。
+    /// </summary>
+    internal sealed class OracleOperation : DbOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        public OracleOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
         #endregion
     }
 }
