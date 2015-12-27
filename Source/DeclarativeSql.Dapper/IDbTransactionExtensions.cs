@@ -13,7 +13,6 @@ namespace DeclarativeSql.Dapper
     /// </summary>
     public static class IDbTransactionExtensions
     {
-        #region 同期
         #region Count
         /// <summary>
         /// 指定されたテーブルのレコード数を取得します。
@@ -43,6 +42,37 @@ namespace DeclarativeSql.Dapper
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(transaction, timeout).Count(predicate);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルのレコード数を非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>レコード数</returns>
+        public static Task<ulong> CountAsync<T>(this IDbTransaction transaction, int? timeout = null)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            return DbOperation.Create(transaction, timeout).CountAsync<T>();
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルにおいて指定の条件に一致するレコード数を非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="predicate">抽出条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>レコード数</returns>
+        public static Task<ulong> CountAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, int? timeout = null)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
+            return DbOperation.Create(transaction, timeout).CountAsync(predicate);
         }
         #endregion
 
@@ -78,6 +108,39 @@ namespace DeclarativeSql.Dapper
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(transaction, timeout).Select(predicate, properties);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルからすべてのレコードを非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>取得したレコード</returns>
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, object>> properties = null, int? timeout = null)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            return DbOperation.Create(transaction, timeout).SelectAsync(properties);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルから指定の条件に一致するレコードを非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="predicate">抽出条件</param>
+        /// <param name="properties">取得対象の列</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>取得したレコード</returns>
+        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
+            return DbOperation.Create(transaction, timeout).SelectAsync(predicate, properties);
         }
         #endregion
 
@@ -115,6 +178,41 @@ namespace DeclarativeSql.Dapper
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (data == null)        throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(transaction, timeout).BulkInsert(data, useSequence, setIdentity);
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public static Task<int> InsertAsync<T>(this IDbTransaction transaction, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (data == null)        throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(transaction, timeout).InsertAsync(data, useSequence, setIdentity);
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public static Task<int> BulkInsertAsync<T>(this IDbTransaction transaction, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (data == null)        throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(transaction, timeout).BulkInsertAsync(data, useSequence, setIdentity);
         }
         #endregion
 
@@ -156,168 +254,8 @@ namespace DeclarativeSql.Dapper
             if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(transaction, timeout).Update(data, predicate, properties, setIdentity);
         }
-        #endregion
 
 
-        #region Delete
-        /// <summary>
-        /// 指定されたテーブルからすべてのレコードを削除します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>影響した行数</returns>
-        public static int Delete<T>(this IDbTransaction transaction, int? timeout = null)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-            return DbOperation.Create(transaction, timeout).Delete<T>();
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルから指定の条件に一致するレコードを削除します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="predicate">削除条件</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>影響した行数</returns>
-        public static int Delete<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, int? timeout = null)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(transaction, timeout).Delete(predicate);
-        }
-        #endregion
-
-
-        #region Truncate
-        /// <summary>
-        /// 指定されたテーブルを切り捨てます。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>-1</returns>
-        public static int Truncate<T>(this IDbTransaction transaction, int? timeout = null)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-            return DbOperation.Create(transaction, timeout).Truncate<T>();
-        }
-        #endregion
-        #endregion
-
-
-        #region 非同期
-        #region Count
-        /// <summary>
-        /// 指定されたテーブルのレコード数を非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>レコード数</returns>
-        public static Task<ulong> CountAsync<T>(this IDbTransaction transaction, int? timeout = null)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-            return DbOperation.Create(transaction, timeout).CountAsync<T>();
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルにおいて指定の条件に一致するレコード数を非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="predicate">抽出条件</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>レコード数</returns>
-        public static Task<ulong> CountAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, int? timeout = null)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(transaction, timeout).CountAsync(predicate);
-        }
-        #endregion
-
-
-        #region Select
-        /// <summary>
-        /// 指定されたテーブルからすべてのレコードを非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="properties">取得対象の列</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, object>> properties = null, int? timeout = null)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-            return DbOperation.Create(transaction, timeout).SelectAsync(properties);
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルから指定の条件に一致するレコードを非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="predicate">抽出条件</param>
-        /// <param name="properties">取得対象の列</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <returns>取得したレコード</returns>
-        public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(transaction, timeout).SelectAsync(predicate, properties);
-        }
-        #endregion
-
-
-        #region Insert
-        /// <summary>
-        /// 指定されたレコードをテーブルに非同期的に挿入します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">挿入するデータ</param>
-        /// <param name="timeout">タイムアウト時間</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <returns>影響した行数</returns>
-        public static Task<int> InsertAsync<T>(this IDbTransaction transaction, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (data == null)        throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(transaction, timeout).InsertAsync(data, useSequence, setIdentity);
-        }
-
-
-        /// <summary>
-        /// 指定されたレコードをテーブルに非同期的に挿入します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="transaction">トランザクション</param>
-        /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <returns>影響した行数</returns>
-        public static Task<int> BulkInsertAsync<T>(this IDbTransaction transaction, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (data == null)        throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(transaction, timeout).BulkInsertAsync(data, useSequence, setIdentity);
-        }
-
-        #endregion
-
-
-        #region Update
         /// <summary>
         /// 指定された情報でレコードを非同期的に更新します。
         /// </summary>
@@ -359,6 +297,37 @@ namespace DeclarativeSql.Dapper
 
         #region Delete
         /// <summary>
+        /// 指定されたテーブルからすべてのレコードを削除します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>影響した行数</returns>
+        public static int Delete<T>(this IDbTransaction transaction, int? timeout = null)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            return DbOperation.Create(transaction, timeout).Delete<T>();
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルから指定の条件に一致するレコードを削除します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="predicate">削除条件</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>影響した行数</returns>
+        public static int Delete<T>(this IDbTransaction transaction, Expression<Func<T, bool>> predicate, int? timeout = null)
+        {
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (predicate == null)   throw new ArgumentNullException(nameof(predicate));
+            return DbOperation.Create(transaction, timeout).Delete(predicate);
+        }
+
+
+        /// <summary>
         /// 指定されたテーブルからすべてのレコードを非同期的に削除します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -392,6 +361,21 @@ namespace DeclarativeSql.Dapper
 
         #region Truncate
         /// <summary>
+        /// 指定されたテーブルを切り捨てます。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>-1</returns>
+        public static int Truncate<T>(this IDbTransaction transaction, int? timeout = null)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            return DbOperation.Create(transaction, timeout).Truncate<T>();
+        }
+
+
+        /// <summary>
         /// 指定されたテーブルを非同期的に切り捨てます。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -404,7 +388,6 @@ namespace DeclarativeSql.Dapper
                 throw new ArgumentNullException(nameof(transaction));
             return DbOperation.Create(transaction, timeout).TruncateAsync<T>();
         }
-        #endregion
         #endregion
     }
 }

@@ -161,7 +161,6 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
-        #region 同期
         #region Count
         /// <summary>
         /// 指定されたテーブルのレコード数を取得します。
@@ -190,6 +189,36 @@ namespace DeclarativeSql.Dapper
             builder.AppendLine(nameof(where));
             builder.Append($"    {where.Statement}");
             return this.Connection.ExecuteScalar<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルのレコード数を非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>レコード数</returns>
+        public virtual Task<ulong> CountAsync<T>()
+        {
+            var sql = PrimitiveSql.CreateCount<T>();
+            return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルにおいて指定の条件に一致するレコード数を非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="predicate">抽出条件</param>
+        /// <returns>レコード数</returns>
+        public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
+        {
+            var count = PrimitiveSql.CreateCount<T>();
+            var where = PredicateSql.From(this.DbKind, predicate);
+            var builder = new StringBuilder();
+            builder.AppendLine(count);
+            builder.AppendLine(nameof(where));
+            builder.Append($"    {where.Statement}");
+            return this.Connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -225,6 +254,40 @@ namespace DeclarativeSql.Dapper
             builder.Append($"    {where.Statement}");
             return this.Connection.Query<T>(builder.ToString(), where.Parameter, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
+
+
+        /// <summary>
+        /// 指定されたテーブルからすべてのレコードを非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="properties">取得対象の列</param>
+        /// <returns>取得したレコード</returns>
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
+        {
+            var sql = PrimitiveSql.CreateSelect(properties);
+            var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction, this.Timeout).ConfigureAwait(false);
+            return result as IReadOnlyList<T>;
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルから指定の条件に一致するレコードを非同期的に取得します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="predicate">抽出条件</param>
+        /// <param name="properties">取得対象の列</param>
+        /// <returns>取得したレコード</returns>
+        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
+        {
+            var select  = PrimitiveSql.CreateSelect(properties);
+            var where   = PredicateSql.From(this.DbKind, predicate);
+            var builder = new StringBuilder();
+            builder.AppendLine(select);
+            builder.AppendLine(nameof(where));
+            builder.Append($"    {where.Statement}");
+            var result = await this.Connection.QueryAsync<T>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout).ConfigureAwait(false);
+            return result as IReadOnlyList<T>;
+        }
         #endregion
 
 
@@ -246,6 +309,22 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public virtual Task<int> InsertAsync<T>(T data, bool useSequence, bool setIdentity)
+        {
+            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
+            var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
+            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
         /// 指定されたレコードをバルク方式でテーブルに挿入します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -254,6 +333,20 @@ namespace DeclarativeSql.Dapper
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
         {
             throw new NotSupportedException();
         }
@@ -296,158 +389,8 @@ namespace DeclarativeSql.Dapper
             builder.Append($"    {where.Statement}");
             return this.Connection.Execute(builder.ToString(), param, this.Transaction, this.Timeout);
         }
-        #endregion
 
 
-        #region Delete
-        /// <summary>
-        /// 指定されたテーブルからすべてのレコードを削除します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>影響した行数</returns>
-        public virtual int Delete<T>()
-        {
-            var sql = PrimitiveSql.CreateDelete<T>();
-            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルから指定の条件に一致するレコードを削除します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="predicate">削除条件</param>
-        /// <returns>影響した行数</returns>
-        public virtual int Delete<T>(Expression<Func<T, bool>> predicate)
-        {
-            var delete  = PrimitiveSql.CreateDelete<T>();
-            var where   = PredicateSql.From(this.DbKind, predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(delete);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.Execute(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
-        }
-        #endregion
-
-
-        #region Truncate
-        /// <summary>
-        /// 指定されたテーブルを切り捨てます。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>-1</returns>
-        public virtual int Truncate<T>()
-        {
-            var sql = PrimitiveSql.CreateTruncate<T>();
-            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
-        }
-        #endregion
-        #endregion
-
-
-        #region 非同期
-        #region Count
-        /// <summary>
-        /// 指定されたテーブルのレコード数を非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>レコード数</returns>
-        public virtual Task<ulong> CountAsync<T>()
-        {
-            var sql = PrimitiveSql.CreateCount<T>();
-            return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction, this.Timeout);
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルにおいて指定の条件に一致するレコード数を非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="predicate">抽出条件</param>
-        /// <returns>レコード数</returns>
-        public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
-        {
-            var count = PrimitiveSql.CreateCount<T>();
-            var where = PredicateSql.From(this.DbKind, predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(count);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
-        }
-        #endregion
-
-
-        #region Select
-        /// <summary>
-        /// 指定されたテーブルからすべてのレコードを非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="properties">取得対象の列</param>
-        /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
-        {
-            var sql = PrimitiveSql.CreateSelect(properties);
-            var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction, this.Timeout).ConfigureAwait(false);
-            return result as IReadOnlyList<T>;
-        }
-
-
-        /// <summary>
-        /// 指定されたテーブルから指定の条件に一致するレコードを非同期的に取得します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="predicate">抽出条件</param>
-        /// <param name="properties">取得対象の列</param>
-        /// <returns>取得したレコード</returns>
-        public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
-        {
-            var select  = PrimitiveSql.CreateSelect(properties);
-            var where   = PredicateSql.From(this.DbKind, predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(select);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            var result = await this.Connection.QueryAsync<T>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout).ConfigureAwait(false);
-            return result as IReadOnlyList<T>;
-        }
-        #endregion
-
-
-        #region Insert
-        /// <summary>
-        /// 指定されたレコードをテーブルに非同期的に挿入します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <returns>影響した行数</returns>
-        public virtual Task<int> InsertAsync<T>(T data, bool useSequence, bool setIdentity)
-        {
-            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
-            var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
-            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
-        }
-
-
-        /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <returns>影響した行数</returns>
-        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
-        {
-            throw new NotSupportedException();
-        }
-        #endregion
-
-
-        #region Update
         /// <summary>
         /// 指定された情報でレコードを非同期的に更新します。
         /// </summary>
@@ -488,6 +431,36 @@ namespace DeclarativeSql.Dapper
 
         #region Delete
         /// <summary>
+        /// 指定されたテーブルからすべてのレコードを削除します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>影響した行数</returns>
+        public virtual int Delete<T>()
+        {
+            var sql = PrimitiveSql.CreateDelete<T>();
+            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
+        /// 指定されたテーブルから指定の条件に一致するレコードを削除します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="predicate">削除条件</param>
+        /// <returns>影響した行数</returns>
+        public virtual int Delete<T>(Expression<Func<T, bool>> predicate)
+        {
+            var delete  = PrimitiveSql.CreateDelete<T>();
+            var where   = PredicateSql.From(this.DbKind, predicate);
+            var builder = new StringBuilder();
+            builder.AppendLine(delete);
+            builder.AppendLine(nameof(where));
+            builder.Append($"    {where.Statement}");
+            return this.Connection.Execute(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
         /// 指定されたテーブルからすべてのレコードを非同期的に削除します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -520,6 +493,18 @@ namespace DeclarativeSql.Dapper
 
         #region Truncate
         /// <summary>
+        /// 指定されたテーブルを切り捨てます。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>-1</returns>
+        public virtual int Truncate<T>()
+        {
+            var sql = PrimitiveSql.CreateTruncate<T>();
+            return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
+        }
+
+
+        /// <summary>
         /// 指定されたテーブルを非同期的に切り捨てます。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -529,7 +514,6 @@ namespace DeclarativeSql.Dapper
             var sql = PrimitiveSql.CreateTruncate<T>();
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
-        #endregion
         #endregion
     }
 
