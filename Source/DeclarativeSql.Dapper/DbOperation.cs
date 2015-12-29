@@ -65,7 +65,6 @@ namespace DeclarativeSql.Dapper
                 .Where(x => x.IsSubclassOf(typeof(This)))
                 .Where(x => !x.IsAbstract)
                 .Where(x => x.IsClass)
-                .Where(x => x.IsSealed)
                 .Where(x => x.IsNotPublic)
                 .Join
                 (
@@ -88,7 +87,9 @@ namespace DeclarativeSql.Dapper
                     var param1 = Expression.Parameter(type1, "p1");
                     var param2 = Expression.Parameter(type2, "p2");
                     var param3 = Expression.Parameter(type3, "p3");
-                    var ctor = x.Type.GetConstructor(new [] { type1, type2, type3 });
+                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                    var args = new [] { type1, type2, type3 };
+                    var ctor = x.Type.GetConstructor(flags, null, CallingConventions.Standard, args, null);
                     var @new = Expression.New(ctor, param1, param2, param3);
                     var lambda = Expression.Lambda<Func<IDbConnection, IDbTransaction, int?, This>>(@new, param1, param2, param3);
                     return new
@@ -526,7 +527,7 @@ namespace DeclarativeSql.Dapper
     /// <summary>
     /// SqlServerデータベースに対する操作を提供します。
     /// </summary>
-    internal sealed class SqlServerOperation : DbOperation
+    internal class SqlServerOperation : DbOperation
     {
         #region コンストラクタ
         /// <summary>
@@ -535,7 +536,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="transaction">トランザクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        public SqlServerOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        protected SqlServerOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
             : base(connection, transaction, timeout)
         {}
         #endregion
@@ -576,7 +577,7 @@ namespace DeclarativeSql.Dapper
     /// <summary>
     /// Oracleデータベースに対する操作を提供します。
     /// </summary>
-    internal sealed class OracleOperation : DbOperation
+    internal class OracleOperation : DbOperation
     {
         #region コンストラクタ
         /// <summary>
@@ -585,7 +586,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="transaction">トランザクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        public OracleOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        protected OracleOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
             : base(connection, transaction, timeout)
         {}
         #endregion
@@ -661,7 +662,7 @@ namespace DeclarativeSql.Dapper
     /// <summary>
     /// MySqlデータベースに対する操作を提供します。
     /// </summary>
-    internal sealed class MySqlOperation : DbOperation
+    internal class MySqlOperation : DbOperation
     {
         #region コンストラクタ
         /// <summary>
@@ -670,7 +671,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="transaction">トランザクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        public MySqlOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        protected MySqlOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
             : base(connection, transaction, timeout)
         {}
         #endregion
