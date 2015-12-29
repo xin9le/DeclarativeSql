@@ -324,8 +324,10 @@ namespace DeclarativeSql.Dapper
             var sql = PrimitiveSql.CreateInsert(this.DbKind, type, useSequence, setIdentity);
             return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
+        #endregion
 
 
+        #region BulkInsert
         /// <summary>
         /// 指定されたレコードをバルク方式でテーブルに挿入します。
         /// </summary>
@@ -539,7 +541,7 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
-        #region Insert
+        #region BulkInsert
         /// <summary>
         /// 指定されたレコードをバルク方式でテーブルに挿入します。
         /// </summary>
@@ -589,7 +591,7 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
-        #region Insert
+        #region BulkInsert
         /// <summary>
         /// 指定されたレコードをバルク方式でテーブルに挿入します。
         /// </summary>
@@ -674,7 +676,7 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
-        #region Insert
+        #region BulkInsert
         /// <summary>
         /// 指定されたレコードをバルク方式でテーブルに挿入します。
         /// </summary>

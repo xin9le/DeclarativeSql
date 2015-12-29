@@ -169,23 +169,6 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに挿入します。
-        /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="connection">データベース接続</param>
-        /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
-        /// <returns>影響した行数</returns>
-        public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
-        {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).BulkInsert(data, useSequence, setIdentity);
-        }
-
-        
-        /// <summary>
         /// 指定されたレコードをテーブルに非同期的に挿入します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
@@ -200,6 +183,25 @@ namespace DeclarativeSql.Dapper
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertAsync(data, useSequence, setIdentity);
+        }
+        #endregion
+
+
+        #region BulkInsert
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>影響した行数</returns>
+        public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (data == null)       throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(connection, timeout).BulkInsert(data, useSequence, setIdentity);
         }
 
 
