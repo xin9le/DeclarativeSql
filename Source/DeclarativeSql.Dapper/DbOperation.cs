@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
+using DeclarativeSql.Mapping;
 using This = DeclarativeSql.Dapper.DbOperation;
 
 
@@ -597,9 +599,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
-        {
-            throw new NotSupportedException();
-        }
+            => this.CreateBulkInsertCommand(data, useSequence, setIdentity).ExecuteNonQuery();
 
 
         /// <summary>
@@ -611,8 +611,45 @@ namespace DeclarativeSql.Dapper
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+            => this.CreateBulkInsertCommand(data, useSequence, setIdentity).ExecuteNonQueryAsync();
+
+
+        /// <summary>
+        /// バルク方式で指定のデータを挿入するためのコマンドを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="useSequence">シーケンスを利用するかどうか</param>
+        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <returns>コマンド</returns>
+        private DbCommand CreateBulkInsertCommand<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
         {
-            throw new NotSupportedException();
+            //--- 実体化
+            data = data.Materialize();
+
+            //--- build DbCommand
+            var factory = DbProvider.GetFactory(this.DbKind);
+            dynamic command = factory.CreateCommand();
+            command.Connection = (DbConnection)this.Connection;
+            command.CommandText = PrimitiveSql.CreateInsert<T>(this.DbKind, useSequence, setIdentity);
+            command.ArrayBindCount = data.Count();
+            if (this.Timeout.HasValue)
+                command.CommandTimeout = this.Timeout.Value;
+
+            //--- bind params
+            var columns = TableMappingInfo.Create<T>().Columns
+                        .Where(x => setIdentity ? true : !x.IsIdentity)
+                        .Where(x => !useSequence || x.Sequence == null);
+            foreach (var x in columns)
+            {
+                var getter = AccessorCache<T>.LookupGet(x.PropertyName);
+                dynamic parameter = factory.CreateParameter();
+                parameter.ParameterName = x.PropertyName;
+                parameter.DbType = x.ColumnType;
+                parameter.Value = data.Select(y => getter(y)).ToArray();
+                command.Parameters.Add(parameter);
+            }
+            return command;
         }
         #endregion
     }
