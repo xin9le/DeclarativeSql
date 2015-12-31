@@ -13,7 +13,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// 条件式を走査/解析する機能を提供します。
     /// </summary>
-    public sealed class PredicateParser : ExpressionVisitor
+    internal sealed class PredicateParser : ExpressionVisitor
     {
         #region プロパティ
         /// <summary>

@@ -3,7 +3,7 @@ using System.Data;
 
 
 
-namespace DeclarativeSql
+namespace DeclarativeSql.Transactions
 {
     /// <summary>
     /// スコープ管理可能なデータベーストランザクション機能を提供します。

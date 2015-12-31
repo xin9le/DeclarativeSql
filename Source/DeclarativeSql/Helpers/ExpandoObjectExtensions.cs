@@ -12,7 +12,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// System.Dynamic.ExpandoObject型に対する拡張機能を提供します。
     /// </summary>
-    public static class ExpandoObjectExtensions
+    internal static class ExpandoObjectExtensions
     {
         /// <summary>
         /// 指定されたExpandoObjectに指定のインスタンスプロパティを結合します。

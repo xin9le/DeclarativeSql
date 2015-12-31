@@ -2,7 +2,7 @@
 
 
 
-namespace DeclarativeSql
+namespace DeclarativeSql.Transactions
 {
     /// <summary>
     /// スコープ管理可能なトランザクションとしての機能を提供します。

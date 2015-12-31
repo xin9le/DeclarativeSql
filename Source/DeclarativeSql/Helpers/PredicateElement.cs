@@ -8,7 +8,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// 条件式を分解した要素を表します。
     /// </summary>
-    public sealed class PredicateElement
+    internal sealed class PredicateElement
     {
         #region プロパティ
         /// <summary>
@@ -79,7 +79,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// PredicateElementの拡張機能を提供します。
     /// </summary>
-    public static class PredicateElementExtensions
+    internal static class PredicateElementExtensions
     {
         /// <summary>
         /// 指定された条件式要素の子要素を取得します。

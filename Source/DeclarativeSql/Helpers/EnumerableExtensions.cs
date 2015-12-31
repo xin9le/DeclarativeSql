@@ -61,5 +61,23 @@ namespace DeclarativeSql.Helpers
         /// <returns>空の場合true</returns>
         public static bool IsEmpty<T>(this IEnumerable<T> collection) => !collection.Any();
         #endregion
+
+
+        #region Materialize
+        /// <summary>
+        /// 指定されたコレクションが遅延状態の場合は実体化して返し、既に実体化されている場合はそれ自身を返します。
+        /// </summary>
+        /// <param name="collection">対象となるコレクション</param>
+        /// <returns>実体化されたコレクション</returns>
+        public static IEnumerable<T> Materialize<T>(this IEnumerable<T> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            return  collection is ICollection<T>         ? collection
+                :   collection is IReadOnlyCollection<T> ? collection
+                :   collection.ToArray();
+        }
+        #endregion
     }
 }
