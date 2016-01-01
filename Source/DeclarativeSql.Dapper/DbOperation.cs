@@ -335,10 +335,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public virtual int BulkInsert<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }
@@ -349,10 +347,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }
@@ -549,10 +545,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public override int BulkInsert<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }
@@ -563,10 +557,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }
@@ -599,11 +591,9 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
-            => this.CreateBulkInsertCommand(data, useSequence, setIdentity).ExecuteNonQuery();
+        public override int BulkInsert<T>(IEnumerable<T> data)
+            => this.CreateBulkInsertCommand(data).ExecuteNonQuery();
 
 
         /// <summary>
@@ -611,11 +601,9 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
-            => this.CreateBulkInsertCommand(data, useSequence, setIdentity).ExecuteNonQueryAsync();
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
+            => this.CreateBulkInsertCommand(data).ExecuteNonQueryAsync();
 
 
         /// <summary>
@@ -623,10 +611,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>コマンド</returns>
-        private DbCommand CreateBulkInsertCommand<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        private DbCommand CreateBulkInsertCommand<T>(IEnumerable<T> data)
         {
             //--- 実体化
             data = data.Materialize();
@@ -635,16 +621,13 @@ namespace DeclarativeSql.Dapper
             var factory = DbProvider.GetFactory(this.DbKind);
             dynamic command = factory.CreateCommand();
             command.Connection = (DbConnection)this.Connection;
-            command.CommandText = PrimitiveSql.CreateInsert<T>(this.DbKind, useSequence, setIdentity);
+            command.CommandText = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
             command.ArrayBindCount = data.Count();
             if (this.Timeout.HasValue)
                 command.CommandTimeout = this.Timeout.Value;
 
             //--- bind params
-            var columns = TableMappingInfo.Create<T>().Columns
-                        .Where(x => setIdentity ? true : !x.IsIdentity)
-                        .Where(x => !useSequence || x.Sequence == null);
-            foreach (var x in columns)
+            foreach (var x in TableMappingInfo.Create<T>().Columns)
             {
                 var getter = AccessorCache<T>.LookupGet(x.PropertyName);
                 dynamic parameter = factory.CreateParameter();
@@ -684,10 +667,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override int BulkInsert<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public override int BulkInsert<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }
@@ -698,10 +679,8 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data, bool useSequence, bool setIdentity)
+        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
         }

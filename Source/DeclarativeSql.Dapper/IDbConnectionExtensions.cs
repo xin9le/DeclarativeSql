@@ -194,14 +194,12 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="data">挿入するデータ</param>
-        /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).BulkInsert(data, useSequence, setIdentity);
+            return DbOperation.Create(connection, timeout).BulkInsert(data);
         }
 
 
@@ -214,11 +212,11 @@ namespace DeclarativeSql.Dapper
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
         /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
-        public static Task<int> BulkInsertAsync<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
+        public static Task<int> BulkInsertAsync<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (data == null)       throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).BulkInsertAsync(data, useSequence, setIdentity);
+            return DbOperation.Create(connection, timeout).BulkInsertAsync(data);
         }
         #endregion
 
