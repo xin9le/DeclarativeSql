@@ -14,7 +14,7 @@ namespace DeclarativeSql.Transactions
         /// <summary>
         /// ラップしている生のトランザクションを取得します。
         /// </summary>
-        private IDbTransaction Raw { get; }
+        internal IDbTransaction Raw { get; }
 
 
         /// <summary>

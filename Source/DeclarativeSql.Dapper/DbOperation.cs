@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
 using DeclarativeSql.Mapping;
+using DeclarativeSql.Transactions;
 using This = DeclarativeSql.Dapper.DbOperation;
 
 
@@ -111,7 +112,7 @@ namespace DeclarativeSql.Dapper
         protected DbOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
         {
             this.Connection = connection;
-            this.Transaction = transaction;
+            this.Transaction = (transaction as ScopeTransaction)?.Raw ?? transaction;
             this.DbKind = connection.GetDbKind();
             this.Timeout = timeout;
         }
