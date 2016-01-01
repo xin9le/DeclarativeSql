@@ -1,4 +1,5 @@
-﻿using DeclarativeSql.Annotations;
+﻿using System;
+using DeclarativeSql.Annotations;
 
 
 
@@ -31,12 +32,21 @@ namespace DeclarativeSql
         SqlServerCe,
 
         /// <summary>
-        /// Oracle
+        /// Oracle (Managed Driver)
+        /// </summary>
+        [ProviderName("Oracle.ManagedDataAccess.Client")]
+        [DbConnection("OracleConnection")]
+        [BindParameterPrefix(':')]
+        Oracle,
+
+        /// <summary>
+        /// Oracle (Unmanaged Driver)
         /// </summary>
         [ProviderName("Oracle.DataAccess.Client")]
         [DbConnection("OracleConnection")]
         [BindParameterPrefix(':')]
-        Oracle,
+        [Obsolete("Please use 'DbKind.Oracle' which supports ODP.NET managed driver.")]
+        UnmanagedOracle,
 
         /// <summary>
         /// MySQL
