@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -548,7 +549,12 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public override int BulkInsert<T>(IEnumerable<T> data)
         {
-            throw new NotSupportedException();
+            using (var executor = this.CreateBulkExecutor())
+            {
+                var param = this.SetupBulkInsert(executor, data);
+                executor.WriteToServer(param);
+                return param.Rows.Count;
+            }
         }
 
 
@@ -558,9 +564,61 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
         /// <returns>影響した行数</returns>
-        public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
+        public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
-            throw new NotSupportedException();
+            using (var executor = this.CreateBulkExecutor())
+            {
+                var param = this.SetupBulkInsert(executor, data);
+                await executor.WriteToServerAsync(param).ConfigureAwait(false);
+                return param.Rows.Count;
+            }
+        }
+
+
+        /// <summary>
+        /// バルク処理の実行機能を生成します。
+        /// </summary>
+        /// <returns>インスタンス</returns>
+        private SqlBulkCopy CreateBulkExecutor() => new SqlBulkCopy(this.Connection as SqlConnection, SqlBulkCopyOptions.Default, this.Transaction as SqlTransaction);
+
+
+        /// <summary>
+        /// バルク方式での挿入処理の準備を行います。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="executor">バルク処理実行機能</param>
+        /// <param name="data">挿入する生データ</param>
+        /// <returns>挿入するデータ</returns>
+        private DataTable SetupBulkInsert<T>(SqlBulkCopy executor, IEnumerable<T> data)
+        {
+            //--- タイムアウト
+            if (this.Timeout.HasValue)
+                executor.BulkCopyTimeout = this.Timeout.Value;
+            executor.BulkCopyTimeout = 1;
+            
+            //--- 対象テーブル名
+            var info = TableMappingInfo.Create<T>();
+            executor.DestinationTableName = info.FullName;
+
+            //--- 列のマップ
+            var table = new DataTable();
+            var getters = new List<Func<T, object>>();
+            foreach (var x in info.Columns)
+            {
+                executor.ColumnMappings.Add(x.PropertyName, x.ColumnName);
+                table.Columns.Add(x.PropertyName, x.PropertyType);
+                getters.Add(AccessorCache<T>.LookupGet(x.PropertyName));
+            }
+
+            //--- データ生成
+            foreach (var x in data)
+            {
+                var row = table.NewRow();
+                for (int i = 0; i < getters.Count; i++)
+                    row[i] = getters[i](x);
+                table.Rows.Add(row);
+            }
+            return table;
         }
         #endregion
     }
