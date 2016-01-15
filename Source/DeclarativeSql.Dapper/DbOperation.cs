@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
@@ -810,6 +811,100 @@ namespace DeclarativeSql.Dapper
             if (value is TimeSpan)  return $"'{((TimeSpan)value).ToString("HH:mm:ss")}'";
             if (value is Guid)      return $"'{value.ToString()}'";
             return Escape(value.ToString());
+        }
+        #endregion
+    }
+
+
+
+    /// <summary>
+    /// SQLiteデータベースに対する操作を提供します。
+    /// </summary>
+    internal class SQLiteOperation : DbOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        protected SQLiteOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
+        #endregion
+
+
+        #region BulkInsert
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>影響した行数</returns>
+        public override int BulkInsert<T>(IEnumerable<T> data)
+        {
+            //--- 挿入処理本体
+            Func<IEnumerable<T>, IDbTransaction, int> insert = (collection, transaction) =>
+            {
+                var result = 0;
+                var sql = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
+                foreach (var x in collection)
+                {
+                    var value = this.Connection.Execute(sql, x, transaction, this.Timeout);
+                    Interlocked.Add(ref result, value);
+                }
+                return result;
+            };
+
+            //--- トランザクションが外部から指定されている場合はそれを利用
+            if (this.Transaction != null)
+                return insert(data, this.Transaction);
+
+            //--- トランザクションが外部から指定されていない場合は新規に作成
+            //--- SQLiteにおけるバルクインサートの魔法
+            using (var transaction = this.Connection.StartTransaction())
+            {
+                var result = insert(data, transaction.Raw);
+                transaction.Complete();
+                return result;
+            }
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>影響した行数</returns>
+        public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
+        {
+            //--- 挿入処理本体
+            Func<IEnumerable<T>, IDbTransaction, Task<int>> insert = async (collection, transaction) =>
+            {
+                var result = 0;
+                var sql = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
+                foreach (var x in collection)
+                {
+                    var value = await this.Connection.ExecuteAsync(sql, x, transaction, this.Timeout).ConfigureAwait(false);
+                    Interlocked.Add(ref result, value);
+                }
+                return result;
+            };
+
+            //--- トランザクションが外部から指定されている場合はそれを利用
+            if (this.Transaction != null)
+                return await insert(data, this.Transaction).ConfigureAwait(false);
+
+            //--- トランザクションが外部から指定されていない場合は新規に作成
+            //--- SQLiteにおけるバルクインサートの魔法
+            using (var transaction = this.Connection.StartTransaction())
+            {
+                var result = await insert(data, transaction.Raw).ConfigureAwait(false);
+                transaction.Complete();
+                return result;
+            }
         }
         #endregion
     }
