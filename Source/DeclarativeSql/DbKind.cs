@@ -49,7 +49,7 @@ namespace DeclarativeSql
         UnmanagedOracle,
 
         /// <summary>
-        /// MySQL
+        /// MySQL / Amazon Aurora / MariaDB
         /// </summary>
         [ProviderName("MySql.Data.MySqlClient")]
         [DbConnection("MySqlConnection")]
