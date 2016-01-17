@@ -221,17 +221,6 @@ Because these method names are directly described the CRUD operations, you can u
 
 
 
-## Installation
-
-Getting started from downloading NuGet packages.
-
-```
-PM> Install-Package DeclarativeSql.Core
-PM> Install-Package DeclarativeSql.Dapper
-```
-
-
-
 ## Obsolete
 
 Some methods (ex. Select / Update) which had `params` arguments are obsoleted. It has been impaired function scalability and comfortable writing.
@@ -252,6 +241,18 @@ Some methods (ex. Select / Update) which had `params` arguments are obsoleted. I
     * `PredicateOperator` class
     * `PredicateOperatorExtensions` class
     * `PredicateParser` class
+
+
+
+
+## Installation
+
+Getting started from downloading NuGet packages.
+
+```
+PM> Install-Package DeclarativeSql.Core
+PM> Install-Package DeclarativeSql.Dapper
+```
 
 
 
