@@ -39,5 +39,21 @@ namespace DeclarativeSql.Helpers
                     .Select(x => x.GetGenericArguments()[0])
                     .FirstOrDefault();
         }
+
+
+        /// <summary>
+        /// 指定された型がコレクション型かどうかを判定します。
+        /// </summary>
+        /// <typeparam name="T">型情報</typeparam>
+        /// <returns>コレクション型かどうか</returns>
+        public static bool IsCollection<T>() => typeof(T).IsCollection();
+
+
+        /// <summary>
+        /// 指定された型がコレクション型かどうかを判定します。
+        /// </summary>
+        /// <param name="type">型情報</param>
+        /// <returns>コレクション型かどうか</returns>
+        public static bool IsCollection(this Type type) => This.GetElementType(type) != null;
     }
 }

@@ -407,7 +407,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>実行可能かどうか</returns>
         private static void AssertInsertAndGet<T>()
         {
-            if (TypeHelper.GetElementType<T>() != null)
+            if (typeof(T).IsCollection())
                 throw new InvalidOperationException("Can insert single entity only.");
 
             var table = TableMappingInfo.Create<T>();
