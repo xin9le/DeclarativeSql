@@ -304,7 +304,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual int Insert<T>(T data, bool useSequence, bool setIdentity)
         {
@@ -320,7 +320,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <param name="data">挿入するデータ</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual Task<int> InsertAsync<T>(T data, bool useSequence, bool setIdentity)
         {
@@ -364,7 +364,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual int Update<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
@@ -380,7 +380,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {
@@ -401,7 +401,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
@@ -417,7 +417,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {

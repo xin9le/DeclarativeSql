@@ -92,7 +92,7 @@ namespace DeclarativeSql
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="targetDatabase">対象データベース</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateInsert<T>(DbKind targetDatabase, bool useSequence = true, bool setIdentity = false)
             => This.CreateInsert(targetDatabase, typeof(T), useSequence, setIdentity);
@@ -104,7 +104,7 @@ namespace DeclarativeSql
         /// <param name="targetDatabase">対象データベース</param>
         /// <param name="type">テーブルの型</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateInsert(DbKind targetDatabase, Type type, bool useSequence = true, bool setIdentity = false)
         {
@@ -113,7 +113,7 @@ namespace DeclarativeSql
 
             var prefix  = targetDatabase.GetBindParameterPrefix();
             var table   = TableMappingInfo.Create(type);
-            var columns = table.Columns.Where(x => setIdentity ? true : !x.IsIdentity);
+            var columns = table.Columns.Where(x => setIdentity ? true : !x.IsAutoIncrement);
             var values  = columns.Select(x =>
                         {
                             if (useSequence)
@@ -149,7 +149,7 @@ namespace DeclarativeSql
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="targetDatabase">対象データベース</param>
         /// <param name="properties">抽出する列にマッピングされるプロパティのコレクション。指定がない場合はすべての列を抽出対象とします。</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateUpdate<T>(DbKind targetDatabase, Expression<Func<T, object>> properties = null, bool setIdentity = false)
         {
@@ -166,7 +166,7 @@ namespace DeclarativeSql
         /// <param name="targetDatabase">対象データベース</param>
         /// <param name="type">テーブルの型</param>
         /// <param name="propertyNames">プロパティ名のコレクション。指定がない場合はすべての列を抽出対象とします。</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>生成されたSQL</returns>
         public static string CreateUpdate(DbKind targetDatabase, Type type, IEnumerable<string> propertyNames = null, bool setIdentity = false)
         {
@@ -175,7 +175,7 @@ namespace DeclarativeSql
 
             var prefix  = targetDatabase.GetBindParameterPrefix();
             var table   = TableMappingInfo.Create(type);
-            var columns = table.Columns.Where(x => setIdentity ? true : !x.IsIdentity);
+            var columns = table.Columns.Where(x => setIdentity ? true : !x.IsAutoIncrement);
             if (propertyNames.Any())
                 columns = columns.Join(propertyNames, x => x.PropertyName, y => y, (x, y) => x);
             var setters = columns.Select(x => $"    {x.ColumnName} = {prefix}{x.PropertyName}");
@@ -296,7 +296,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="targetDatabase">対象データベース</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="properties">プロパティ式のコレクション</param>
         /// <returns>生成されたSQL</returns>
         [Obsolete("CreateUpdate<T>(DbKind targetDatabase, Expression<Func<T, object>> properties = null, bool setIdentity = false) を利用してください。")]
@@ -314,7 +314,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="targetDatabase">対象データベース</param>
         /// <param name="type">テーブルの型</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="propertyNames">プロパティ名のコレクション</param>
         /// <returns>生成されたSQL</returns>
         [Obsolete("CreateUpdate(DbKind targetDatabase, Type type, IEnumerable<string> propertyNames = null, bool setIdentity = false) を利用してください。")]

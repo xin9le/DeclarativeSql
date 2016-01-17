@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotations\BindParameterPrefixAttribute.cs" />
+    <Compile Include="Annotations\AutoIncrementAttribute.cs" />
     <Compile Include="Annotations\SequenceAttribute.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Transactions\ScopeTransaction.cs" />

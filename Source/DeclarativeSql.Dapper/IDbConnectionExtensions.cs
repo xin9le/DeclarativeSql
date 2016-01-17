@@ -158,7 +158,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">挿入するデータ</param>
         /// <param name="timeout">タイムアウト時間</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static int Insert<T>(this IDbConnection connection, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
         {
@@ -176,7 +176,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">挿入するデータ</param>
         /// <param name="timeout">タイムアウト時間</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static Task<int> InsertAsync<T>(this IDbConnection connection, T data, int? timeout = null, bool useSequence = true, bool setIdentity = false)
         {
@@ -210,7 +210,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="data">挿入するデータ</param>
         /// <param name="useSequence">シーケンスを利用するかどうか</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static Task<int> BulkInsertAsync<T>(this IDbConnection connection, IEnumerable<T> data, int? timeout = null)
         {
@@ -230,7 +230,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
@@ -249,7 +249,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
@@ -268,7 +268,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="data">更新するデータ</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
@@ -287,7 +287,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="predicate">更新条件</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <param name="timeout">タイムアウト時間</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <returns>影響した行数</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null, bool setIdentity = false)
         {
@@ -509,7 +509,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         [Obsolete("Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false) を利用してください。")]
@@ -545,7 +545,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         [Obsolete("Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false) を利用してください。")]
@@ -589,7 +589,7 @@ namespace DeclarativeSql.Dapper
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         [Obsolete("UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, bool setIdentity = false) を利用してください。")]
@@ -625,7 +625,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="connection">データベース接続</param>
         /// <param name="data">更新するデータ</param>
         /// <param name="predicate">更新条件</param>
-        /// <param name="setIdentity">自動連番のID列に値を設定するかどうか</param>
+        /// <param name="setIdentity">自動採番のID列に値を設定するかどうか</param>
         /// <param name="properties">更新する列にマッピングされるプロパティ式のコレクション</param>
         /// <returns>影響した行数</returns>
         [Obsolete("UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, bool setIdentity = false) を利用してください。")]

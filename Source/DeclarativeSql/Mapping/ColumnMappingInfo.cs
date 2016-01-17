@@ -63,9 +63,9 @@ namespace DeclarativeSql.Mapping
 
 
         /// <summary>
-        /// 自動連番のIDかどうかを取得します。
+        /// 自動採番IDかどうかを取得します。
         /// </summary>
-        public bool IsIdentity { get; private set; }
+        public bool IsAutoIncrement { get; private set; }
 
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace DeclarativeSql.Mapping
                 ColumnType      = This.typeMap[propType],
                 IsPrimaryKey    = isPrimary,
                 IsNullable      = !(isPrimary || required),
-                IsIdentity      = This.GetDatabaseGeneratedOption(info) == DatabaseGeneratedOption.Identity,
+                IsAutoIncrement = (This.GetDatabaseGeneratedOption(info) == DatabaseGeneratedOption.Identity) || info.Has<AutoIncrementAttribute>(),
                 Sequence        = (sequence == null) ? null : SequenceMappingInfo.From(sequence),
             };
         }
