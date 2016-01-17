@@ -3,6 +3,7 @@
 This library provides attribute-based table mapping and simple database access. It mainly contains following features.
 
 * Unified connection to the some databases (SQL Server / Oracle / MySQL etc.)
+* Easy transaction w/o `TransactionScope` 
 * O/R mapping information as meta data
 * Very simple SQL generation
 * Super easy CRUD access based Dapper
@@ -12,7 +13,7 @@ This library provides attribute-based table mapping and simple database access. 
 
 ## Database connection
 
-IDbConnection is able to be created through DbProvider static class like following. Until now when you create IDbConnection using DProviderFactory, you must specify invariant name of target database provider as string. Now this feature allows you to specify **enum-based** kind of database instead of string-based one.
+`IDbConnection` is able to be created through `DbProvider` static class like following. Until now when you create `IDbConnection` using `DProviderFactory`, you must specify invariant name of target database provider as string. Now this feature allows you to specify **enum-based** kind of database instead of string-based one.
 
 ```cs
 using (var connection = DbProvider.CreateConnection(DbKind.SqlServer, "ConnectionString"))
@@ -22,7 +23,7 @@ using (var connection = DbProvider.CreateConnection(DbKind.SqlServer, "Connectio
 }
 ```
 
-If you want to use this feature, you must add DbProviderFactory into .config file (ex. machine.config / app.config / web.config) like following.
+If you want to use this feature, you must add `DbProviderFactory` into .config file (ex. `machine.config` / `app.config` / `web.config`) like following.
 
 ```xml
 <system.data>
@@ -35,6 +36,21 @@ If you want to use this feature, you must add DbProviderFactory into .config fil
 </system.data>
 ```
 
+
+
+## Transaction
+
+This library provides `IDbTransaction`-based disposable transaction is similar to `TransactionScope`.
+
+```cs
+using (var connection = DbProvider.CreateConnection(DbKind.SqlServer, "ConnectionString"))
+using (var transaction = connection.StartTransaction())  //--- begin transaction and open connection automatically if closed
+{
+    //--- do something here
+    transaction.Complete();  //--- mark transaction completed
+}
+//--- commit or rollback on transaction.Dispose()
+```
 
 
 
@@ -53,7 +69,7 @@ namespace SampleApp
     public class Person
     {
         [Key]  //--- primary key
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]  //--- automatic identity
+        [AutoIncrement]  //--- automatic identity
         public int Id { get; set; }
 
         [Required]            //--- not null
@@ -89,7 +105,7 @@ public sealed class ColumnMappingInfo
     public DbType ColumnType { get; }    //--- type of target column
     public bool IsPrimaryKey { get; }    //--- primary key (or not)
     public bool IsNullable { get; }      //--- nullable column (or not)
-    public bool IsIdentity { get; }      //--- automatic identity column (or not)
+    public bool IsAutoIncrement { get; } //--- automatic identity column (or not)
     public SequenceMappingInfo Sequence { get; }  //--- sequence information (if property has SequenceAttribute)
 }
 
@@ -104,7 +120,7 @@ public sealed class SequenceMappingInfo
 
 ## SQL generation
 
-This library also provides automatic sql generation feature using above meta data. You can get very simple and typical sql using PrimitiveSql static class. Of course it's completely type-safe.
+This library also provides automatic sql generation feature using above meta data. You can get very simple and typical sql using `PrimitiveSql` static class. Of course it's completely type-safe.
 
 ```cs
 //--- query all records (specified column only)
@@ -138,16 +154,17 @@ values
 
 ```cs
 //--- update all records (specifed column only)
-var sql = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => x.Name);
+var sql = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => new { x.Name, x.Age });
 
 /*
 update dbo.Person
 set
-    FullName = @Name
+    FullName = @Name,
+    Age = @Age
 */
 ```
 
-PrimitiveSql static class also provides some other overload functions and Count / Delete / Truncate methods and so on.
+`PrimitiveSql` static class also provides some other overload functions and `Count` / `Delete` / `Truncate` methods and so on.
 
 
 
@@ -161,36 +178,46 @@ using (var connection = DbProvider.CreateConnection(DbKind.SqlServer, "Connectio
 {
     connection.Open();
 
-    var p1 = connection.Select<Person>();                                        //--- query all records
-    var p2 = connection.Select<Person>(x => x.Id, x => x.Name);                  //--- query all records (specified column only)
-    var p3 = connection.Select<Person>(x => x.Id == 3);                          //--- query 'ID = 3' records only
-    var p4 = connection.Select<Person>(x => x.Id == 3, x => x.Id, x => x.Name);  //--- query 'ID = 3' records and specified column only
+    var p1 = connection.Select<Person>();                                            //--- query all records
+    var p2 = connection.Select<Person>(x => x.Id, x => x.Name);                      //--- query all records (specified column only)
+    var p3 = connection.Select<Person>(x => x.Id == 3);                              //--- query 'ID = 3' records only
+    var p4 = connection.Select<Person>(x => x.Id == 3, x => new { x.Id, x.Name } );  //--- query 'ID = 3' records and specified column only
 
     var p5 = connection.Insert(new Person { Name = "xin9le", Age = 30 });  //--- insert specified data
-    var p6 = connection.Insert(new[]  //--- can insert collection
+    var p6 = connection.Insert(new []  //--- can insert collection
     {
         new Person { Name = "yoshiki", Age= 49, },
         new Person { Name = "suzuki",  Age= 30, },
         new Person { Name = "anders",  Age= 54, },
     });
+    
+    var p7 = connection.BulkInsert(new []  //--- super easy bulk insert
+    {
+        new Person { Id = 1, Name = "yoshiki", Age= 49, },
+        new Person { Id = 2, Name = "suzuki",  Age= 30, },
+        new Person { Id = 3, Name = "anders",  Age= 54, },
+    });
+    
+    var p8 = connection.InsertAndGet(new Person { Name = "xin9le", Age = 30 });  //--- insert and get generated auto increment id
 
-    var p7 = connection.Update(new Person  //--- update records which is matched specified condition
+    var p9 = connection.Update(new Person  //--- update records which is matched specified condition
     {
         Name = "test",
         Age = 23
     }, x => x.Age == 30);
 
-    var p8  = connection.Delete<Person>();                  //--- delete all records
-    var p9  = connection.Delete<Person>(x => x.Age != 30);  //--- delete records which is matched specified condition
+    var p10 = connection.Delete<Person>();                  //--- delete all records
+    var p11 = connection.Delete<Person>(x => x.Age != 30);  //--- delete records which is matched specified condition
 
-    var p10 = connection.Truncate<Person>();  //--- truncate table
+    var p12 = connection.Truncate<Person>();  //--- truncate table
 
-    var p11 = connection.Count<Person>();                       //--- count all records
-    var p12 = connection.Count<Person>(x => x.Name == "test");  //--- count records which is matched specified condition
+    var p13 = connection.Count<Person>();                       //--- count all records
+    var p14 = connection.Count<Person>(x => x.Name == "test");  //--- count records which is matched specified condition
 }
 ```
 
-Because these method names are directly described the CRUD operations, you can understand and use them easily.
+Because these method names are directly described the CRUD operations, you can understand and use them easily. These functionally methods provides not only `IDbConnection` but also `IDbTransaction`.
+
 
 
 
@@ -205,6 +232,28 @@ PM> Install-Package DeclarativeSql.Dapper
 
 
 
+## Obsolete
+
+Some methods (ex. Select / Update) which had `params` arguments are obsoleted. It has been impaired function scalability and comfortable writing.
+
+
+
+
+## Breaking Changes (v0.1 -> v0.2)
+
+* Add `timeout` argument to `Insert` method.
+* `StartTransaction` method's return value has been changed. However no problem if you receive it using `var`.
+* `ColumnMappingInfo.IsIdentity` property has been renamed to `ColumnMappingInfo.IsAutoIncrement`.
+* Some utility class has been hidden.
+    * `ExpandoObjectExtensions` class
+    * `AccessorCache` class
+    * `PredicateElement` class
+    * `PredicateElementExtensions` class
+    * `PredicateOperator` class
+    * `PredicateOperatorExtensions` class
+    * `PredicateParser` class
+
+
 
 
 ## License
@@ -217,4 +266,4 @@ This library is provided under [MIT License](http://opensource.org/licenses/MIT)
 
 ## Author
 
-Takaaki Suzuki (a.k.a [@xin9le](https://twitter.com/xin9le)) is software developer in Japan who awarded Microsoft MVP for .NET since July 2012.
+Takaaki Suzuki (a.k.a [@xin9le](https://twitter.com/xin9le)) is software developer in Japan who awarded Microsoft MVP for Visual Studio and Development Technologies (Visual C#) since July 2012.
