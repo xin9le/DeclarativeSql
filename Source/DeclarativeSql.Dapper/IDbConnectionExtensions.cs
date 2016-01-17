@@ -221,6 +221,40 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
+        #region InsertAndGet
+        /// <summary>
+        /// 指定されたレコードをテーブルに挿入し、自動採番IDを返します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>自動採番ID</returns>
+        public static long InsertAndGet<T>(this IDbConnection connection, T data, int? timeout = null)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (data == null)       throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(connection, timeout).InsertAndGet(data);
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入し、自動採番IDを返します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="data">挿入するデータ</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        /// <returns>自動採番ID</returns>
+        public static Task<long> InsertAndGetAsync<T>(this IDbConnection connection, T data, int? timeout = null)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (data == null)       throw new ArgumentNullException(nameof(data));
+            return DbOperation.Create(connection, timeout).InsertAndGetAsync(data);
+        }
+        #endregion
+
+
         #region Update
         /// <summary>
         /// 指定された情報でレコードを更新します。

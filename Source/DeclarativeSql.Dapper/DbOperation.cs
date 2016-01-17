@@ -357,6 +357,76 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
+        #region InsertAndGet
+        /// <summary>
+        /// 指定されたレコードをテーブルに挿入し、自動採番IDを返します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>自動採番ID</returns>
+        public virtual long InsertAndGet<T>(T data)
+        {
+            This.AssertInsertAndGet<T>();
+            var sql = this.CreateInsertAndGetSql<T>();
+            var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
+            return (long)reader.Read().First().Id;
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入し、自動採番IDを返します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>自動採番ID</returns>
+        public virtual async Task<long> InsertAndGetAsync<T>(T data)
+        {
+            This.AssertInsertAndGet<T>();
+            var sql = this.CreateInsertAndGetSql<T>();
+            var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var results = await reader.ReadAsync().ConfigureAwait(false);
+            return (long)results.First().Id;
+        }
+
+
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected virtual string CreateInsertAndGetSql<T>()
+        {
+            throw new NotSupportedException();
+        }
+
+
+        /// <summary>
+        /// InsertAndGet メソッドを実行可能かどうかを診断します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>実行可能かどうか</returns>
+        private static void AssertInsertAndGet<T>()
+        {
+            if (TypeHelper.GetElementType<T>() != null)
+                throw new InvalidOperationException("Can insert single entity only.");
+
+            var table = TableMappingInfo.Create<T>();
+            var primary = table.Columns.Where(x => x.IsPrimaryKey).ToArray();
+            if (primary.Length != 1)
+                throw new InvalidOperationException("Primary key column should be only one.");
+
+            var autoIncrement = table.Columns.Where(x => x.IsAutoIncrement).ToArray();
+            var sequence      = table.Columns.Where(x => x.Sequence != null).ToArray();
+            var idColumnCount = autoIncrement.Length + sequence.Length;
+            if (idColumnCount != 1)
+                throw new InvalidOperationException("Id column (auto increment or sequence) should be only one.");
+
+            if (!primary[0].IsAutoIncrement && primary[0].Sequence == null)
+                throw new InvalidOperationException("Id column should be primary key.");
+        }
+        #endregion
+
+
         #region Update
         /// <summary>
         /// 指定された情報でレコードを更新します。
@@ -622,6 +692,19 @@ namespace DeclarativeSql.Dapper
             return table;
         }
         #endregion
+
+
+        #region InsertAndGet
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected override string CreateInsertAndGetSql<T>()
+            =>
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+select cast(scope_identity() as bigint) as Id;";
+        #endregion
     }
 
 
@@ -696,6 +779,22 @@ namespace DeclarativeSql.Dapper
                 command.Parameters.Add(parameter);
             }
             return command;
+        }
+        #endregion
+
+
+        #region InsertAndGet
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected override string CreateInsertAndGetSql<T>()
+        {
+            var sequence = TableMappingInfo.Create<T>().Columns.First(x => x.IsPrimaryKey).Sequence;
+            return
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+select {sequence.FullName}.currval as Id from dual;";
         }
         #endregion
     }
@@ -813,6 +912,55 @@ namespace DeclarativeSql.Dapper
             return Escape(value.ToString());
         }
         #endregion
+
+
+        #region InsertAndGet
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected override string CreateInsertAndGetSql<T>()
+            =>
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+select last_insert_id() as Id;";
+        #endregion
+    }
+
+
+
+    /// <summary>
+    /// PostgreSqlデータベースに対する操作を提供します。
+    /// </summary>
+    internal class PostgreSqlOperation : DbOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        protected PostgreSqlOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
+        #endregion
+
+
+        #region InsertAndGet
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected override string CreateInsertAndGetSql<T>()
+        {
+            var sequence = TableMappingInfo.Create<T>().Columns.First(x => x.IsPrimaryKey).Sequence;
+            return
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+select currval({sequence.FullName}) as Id;";
+        }
+        #endregion
     }
 
 
@@ -906,6 +1054,19 @@ namespace DeclarativeSql.Dapper
                 return result;
             }
         }
+        #endregion
+
+
+        #region InsertAndGet
+        /// <summary>
+        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>SQL文</returns>
+        protected override string CreateInsertAndGetSql<T>()
+            =>
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+select last_insert_rowid() as Id;";
         #endregion
     }
 }
