@@ -223,13 +223,15 @@ Because these method names are directly described the CRUD operations, you can u
 
 ## Obsolete
 
-Some methods (ex. Select / Update) which had `params` arguments are obsoleted. It has been impaired function scalability and comfortable writing.
+* Some methods (ex. Select / Update) which had `params` arguments are obsoleted. It has been impaired function scalability and comfortable writing.
+* Unmanaged ODP.NET is obsoleted, because now this library supports managed ODP.NET.
 
 
 
 
 ## Breaking Changes (v0.1 -> v0.2)
 
+* Past version `DbKind.Oracle` is renamed to `DbKind.UnmanagedOracle`. The brand new `DbKind.Oracle` has been defined for managed ODP.NET.
 * Add `timeout` argument to `Insert` method.
 * `StartTransaction` method's return value has been changed. However no problem if you receive it using `var`.
 * `ColumnMappingInfo.IsIdentity` property has been renamed to `ColumnMappingInfo.IsAutoIncrement`.
