@@ -833,6 +833,24 @@ select {sequence.FullName}.currval as Id from dual;";
     }
 
 
+    /// <summary>
+    /// UnmanagedなODP.NETによるOracleデータベースに対する操作を提供します。
+    /// </summary>
+    internal class UnmanagedOracleOperation : OracleOperation
+    {
+        #region コンストラクタ
+        /// <summary>
+        /// インスタンスを生成します。
+        /// </summary>
+        /// <param name="connection">データベース接続</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <param name="timeout">タイムアウト時間</param>
+        protected UnmanagedOracleOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
+            : base(connection, transaction, timeout)
+        {}
+        #endregion
+    }
+
 
     /// <summary>
     /// MySqlデータベースに対する操作を提供します。
