@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using DeclarativeSql.Transactions;
 
 
 
@@ -422,6 +423,18 @@ namespace DeclarativeSql.Dapper
                 throw new ArgumentNullException(nameof(transaction));
             return DbOperation.Create(transaction, timeout).TruncateAsync<T>();
         }
+        #endregion
+
+
+        #region Helpers
+        /// <summary>
+        /// 指定されたトランザクションに内包されたトランザクションを取得します。
+        /// 内包されていない場合は自身を返します。
+        /// </summary>
+        /// <param name="transaction">トランザクション</param>
+        /// <returns>内包されていたトランザクション</returns>
+        internal static IDbTransaction Unwrap(this IDbTransaction transaction)
+            => (transaction as ScopeTransaction)?.Raw ?? transaction;
         #endregion
     }
 }

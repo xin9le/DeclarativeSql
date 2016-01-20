@@ -114,7 +114,7 @@ namespace DeclarativeSql.Dapper
         protected DbOperation(IDbConnection connection, IDbTransaction transaction, int? timeout)
         {
             this.Connection = connection;
-            this.Transaction = (transaction as ScopeTransaction)?.Raw ?? transaction;
+            this.Transaction = transaction.Unwrap();
             this.DbKind = connection.GetDbKind();
             this.Timeout = timeout;
         }
