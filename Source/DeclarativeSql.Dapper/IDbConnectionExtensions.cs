@@ -124,8 +124,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public static Task<IReadOnlyList<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).SelectAsync(properties);
         }
 
@@ -143,7 +143,6 @@ namespace DeclarativeSql.Dapper
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (predicate == null)  throw new ArgumentNullException(nameof(predicate));
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
             return DbOperation.Create(connection, timeout).SelectAsync(predicate, properties);
         }
         #endregion
