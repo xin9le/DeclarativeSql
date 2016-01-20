@@ -32,6 +32,9 @@ namespace DeclarativeSql
         /// <returns>生成されたSQL</returns>
         public static string CreateCount(Type type)
         {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
             var table = TableMappingInfo.Create(type);
             return $"select count(*) as Count from {table.FullName}";
         }
