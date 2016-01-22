@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
 using DeclarativeSql.Mapping;
-using DeclarativeSql.Transactions;
 using This = DeclarativeSql.Dapper.DbOperation;
 
 
@@ -405,7 +404,7 @@ namespace DeclarativeSql.Dapper
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <returns>実行可能かどうか</returns>
-        private static void AssertInsertAndGet<T>()
+        protected static void AssertInsertAndGet<T>()
         {
             if (typeof(T).IsCollection())
                 throw new InvalidOperationException("Can insert single entity only.");
@@ -819,16 +818,79 @@ select @@IDENTITY as Id;";
 
         #region InsertAndGet
         /// <summary>
-        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// 指定されたレコードをテーブルに挿入し、自動採番IDを返します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>SQL文</returns>
-        protected override string CreateInsertAndGetSql<T>()
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>自動採番ID</returns>
+        public override long InsertAndGet<T>(T data)
         {
-            var sequence = TableMappingInfo.Create<T>().Columns.First(x => x.IsPrimaryKey).Sequence;
-            return
-$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
-select {sequence.FullName}.currval as Id from dual;";
+            This.AssertInsertAndGet<T>();
+            var param = this.CreateInsertAndGetParameter(data);
+            if (param.Item1.ExecuteNonQuery() != 1)
+                throw new SystemException("Affected row count is not 1.");
+            return Convert.ToInt64(param.Item2.Value);
+        }
+
+
+        /// <summary>
+        /// 指定されたレコードをテーブルに非同期的に挿入し、自動採番IDを返します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>自動採番ID</returns>
+        public override async Task<long> InsertAndGetAsync<T>(T data)
+        {
+            This.AssertInsertAndGet<T>();
+            var param = this.CreateInsertAndGetParameter(data);
+            var result = await param.Item1.ExecuteNonQueryAsync().ConfigureAwait(false);
+            if (result != 1)
+                throw new SystemException("Affected row count is not 1.");
+            return Convert.ToInt64(param.Item2.Value);
+        }
+
+
+        /// <summary>
+        /// InsertAndGetするためのパラメーターを生成します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <param name="data">挿入するデータ</param>
+        /// <returns>パラメーター</returns>
+        private Tuple<DbCommand, DbParameter> CreateInsertAndGetParameter<T>(T data)
+        {
+            //--- command
+            var factory = DbProvider.GetFactory(this.DbKind);
+            dynamic command = factory.CreateCommand();
+            command.BindByName = true;
+            command.Connection = (dynamic)this.Connection;
+            if (this.Timeout.HasValue)
+                command.CommandTimeout = this.Timeout.Value;
+
+            //--- parameters
+            DbParameter output = null;
+            foreach (var x in TableMappingInfo.Create<T>().Columns)
+            {
+                dynamic parameter = factory.CreateParameter();
+                parameter.ParameterName = x.PropertyName;
+                parameter.DbType = x.ColumnType;
+                if (x.IsPrimaryKey)
+                {
+                    parameter.Direction = ParameterDirection.Output;
+                    output = parameter;
+                    command.CommandText =
+$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)}
+returning {x.ColumnName} into :{x.PropertyName}";
+                }
+                else
+                {
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = AccessorCache<T>.LookupGet(x.PropertyName)(data);
+                }
+                command.Parameters.Add(parameter);
+            }
+
+            //--- ok
+            return Tuple.Create((DbCommand)command, output);
         }
         #endregion
     }

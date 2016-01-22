@@ -11,6 +11,24 @@ namespace DeclarativeSql.Helpers
     /// </summary>
     internal static class EnumerableExtensions
     {
+        #region ForEach
+        /// <summary>
+        /// コレクションの各要素に対して指定されたアクションを実行します。
+        /// </summary>
+        /// <typeparam name="T">コレクション要素の型</typeparam>
+        /// <param name="collection">コレクション</param>
+        /// <param name="action">実行する処理</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (action == null)     throw new ArgumentNullException(nameof(action));
+
+            foreach (var item in collection)
+                action(item);
+        }
+        #endregion
+
+
         #region Buffer
         /// <summary>
         /// 指定されたコレクションを指定の数ずつにまとめます。
