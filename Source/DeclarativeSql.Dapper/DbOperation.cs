@@ -795,8 +795,9 @@ select @@IDENTITY as Id;";
             //--- build DbCommand
             var factory = DbProvider.GetFactory(this.DbKind);
             dynamic command = factory.CreateCommand();
-            command.Connection = (DbConnection)this.Connection;
+            command.Connection = (dynamic)this.Connection;
             command.CommandText = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
+            command.BindByName = true;
             command.ArrayBindCount = data.Count();
             if (this.Timeout.HasValue)
                 command.CommandTimeout = this.Timeout.Value;
