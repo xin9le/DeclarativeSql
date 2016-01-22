@@ -13,7 +13,7 @@ namespace DeclarativeSql
     /// <summary>
     /// DbKindの拡張機能を提供します。
     /// </summary>
-    public static class DbKindExtensions
+    internal static class DbKindExtensions
     {
         #region 内部クラス
         /// <summary>
@@ -108,13 +108,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="kind">データベースの種類</param>
         /// <returns>DbConnectionの型名</returns>
-        public static string GetDbConnectionTypeName(this DbKind kind)
-        {
-            var setting = This.cache[kind];
-            if (setting.ProviderName == null)           return null;
-            if (setting.DbConnectionTypeName == null)   return null;
-            return $"{setting.ProviderName}.{setting.DbConnectionTypeName}";
-        }
+        public static string GetDbConnectionTypeName(this DbKind kind) => This.cache[kind].DbConnectionTypeName;
 
 
         /// <summary>
@@ -122,7 +116,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="kind">データベースの種類</param>
         /// <returns>バインド変数の接頭辞</returns>
-        internal static char GetBindParameterPrefix(this DbKind kind)
+        public static char GetBindParameterPrefix(this DbKind kind)
         {
             var prefix = This.cache[kind].BindParameterPrefix;
             if (!prefix.HasValue)

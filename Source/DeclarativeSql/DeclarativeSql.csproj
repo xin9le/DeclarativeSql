@@ -41,9 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotations\BindParameterPrefixAttribute.cs" />
+    <Compile Include="Annotations\AutoIncrementAttribute.cs" />
     <Compile Include="Annotations\SequenceAttribute.cs" />
-    <Compile Include="Helpers\CompareSelector.cs" />
-    <Compile Include="Helpers\IndexedItem.cs" />
+    <Compile Include="Helpers\TypeHelper.cs" />
+    <Compile Include="Transactions\ScopeTransaction.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Helpers\AccessorCache.cs" />
     <Compile Include="Helpers\AccessorFactory.cs" />
@@ -65,7 +66,7 @@
     <Compile Include="Annotations\DbConnectionAttribute.cs" />
     <Compile Include="Annotations\ProviderNameAttribute.cs" />
     <Compile Include="Mapping\TableMappingInfo.cs" />
-    <Compile Include="Helpers\TransactionScope.cs" />
+    <Compile Include="Transactions\IScopeTransaction.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

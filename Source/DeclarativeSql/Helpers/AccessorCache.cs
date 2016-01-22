@@ -8,7 +8,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// プロパティ/フィールドへのアクセスするためのデリゲートをキャッシュする機能を提供します。
     /// </summary>
-    public static class AccessorCache
+    internal static class AccessorCache
     {
         #region フィールド
         /// <summary>
@@ -43,7 +43,7 @@ namespace DeclarativeSql.Helpers
     /// プロパティ/フィールドへのアクセスするためのデリゲートをキャッシュする機能を提供します。
     /// </summary>
     /// <typeparam name="T">対象となる型</typeparam>
-    public static class AccessorCache<T>
+    internal static class AccessorCache<T>
     {
         #region フィールド
         /// <summary>

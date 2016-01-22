@@ -43,6 +43,27 @@ namespace DeclarativeSql.Helpers
 
 
         /// <summary>
+        /// 式木からメンバー名を取得します。
+        /// </summary>
+        /// <typeparam name="T">メンバーを持つ型</typeparam>
+        /// <param name="expression">式木</param>
+        /// <returns>メンバー名のコレクション</returns>
+        public static IEnumerable<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            //--- 本体がコンストラクタ呼び出しの場合
+            var body = expression.Body as NewExpression;
+            if (body != null)
+                return body.Members.Select(x => x.Name);
+
+            //--- それ以外は通常処理
+            return new [] { This.GetMemberName(expression) };
+        }
+
+
+        /// <summary>
         /// ラムダ式からMemberExpressionを取得します。
         /// </summary>
         /// <param name="expression">ラムダ式</param>

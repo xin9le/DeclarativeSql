@@ -12,7 +12,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// System.Dynamic.ExpandoObject型に対する拡張機能を提供します。
     /// </summary>
-    public static class ExpandoObjectExtensions
+    internal static class ExpandoObjectExtensions
     {
         /// <summary>
         /// 指定されたExpandoObjectに指定のインスタンスプロパティを結合します。
@@ -22,7 +22,7 @@ namespace DeclarativeSql.Helpers
         /// <param name="instance">結合するインスタンス</param>
         /// <param name="includeNonPublic">非パブリックなプロパティも結合するかどうか</param>
         /// <returns>結合されたインスタンス</returns>
-        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, bool includeNonPublic)
+        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, bool includeNonPublic = false)
         {
             if (self == null)       throw new ArgumentNullException(nameof(self));
             if (instance == null)   throw new ArgumentNullException(nameof(instance));
@@ -42,16 +42,36 @@ namespace DeclarativeSql.Helpers
         /// <typeparam name="T">インスタンスの型</typeparam>
         /// <param name="self">結合先のExpandoObjectインスタンス</param>
         /// <param name="instance">結合するインスタンス</param>
-        /// <param name="properties">結合対象のプロパティ。指定されない場合はすべてのPublicプロパティが対象になります。</param>
+        /// <param name="properties">結合対象のプロパティ。nullの場合はすべてのPublicプロパティが対象になります。</param>
         /// <returns>結合されたインスタンス</returns>
-        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, params Expression<Func<T, object>>[] properties)
+        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, Expression<Func<T, object>> properties)
         {
             if (self == null)       throw new ArgumentNullException(nameof(self));
             if (instance == null)   throw new ArgumentNullException(nameof(instance));
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
 
-            if (properties.Length == 0)
-                return self.Merge(instance, false);
+            if (properties == null)
+                return self.Merge(instance);
+
+            var propertyNames = ExpressionHelper.GetMemberNames(properties);
+            return self.Merge(instance, propertyNames);
+        }
+
+
+        /// <summary>
+        /// 指定されたExpandoObjectに指定されたインスタンスのプロパティを結合します。
+        /// </summary>
+        /// <typeparam name="T">インスタンスの型</typeparam>
+        /// <param name="self">結合先のExpandoObjectインスタンス</param>
+        /// <param name="instance">結合するインスタンス</param>
+        /// <param name="properties">結合対象のプロパティ。nullもしくは空の場合はすべてのPublicプロパティが対象になります。</param>
+        /// <returns>結合されたインスタンス</returns>
+        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, IEnumerable<Expression<Func<T, object>>> properties)
+        {
+            if (self == null)       throw new ArgumentNullException(nameof(self));
+            if (instance == null)   throw new ArgumentNullException(nameof(instance));
+
+            if (properties == null || properties.IsEmpty())
+                return self.Merge(instance);
 
             var propertyNames = ExpressionHelper.GetMemberNames(properties);
             return self.Merge(instance, propertyNames);

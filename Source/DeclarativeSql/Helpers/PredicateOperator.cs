@@ -8,7 +8,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// 条件式の演算子を表します。
     /// </summary>
-    public enum PredicateOperator
+    internal enum PredicateOperator
     {
         /// <summary>
         /// a && b
@@ -61,7 +61,7 @@ namespace DeclarativeSql.Helpers
     /// <summary>
     /// PredicateOperatorに関する拡張機能を提供します。
     /// </summary>
-    public static class PredicateOperatorExtensions
+    internal static class PredicateOperatorExtensions
     {
         /// <summary>
         /// ExpressionTypeからPredicateOperatorへの変換を提供します。
