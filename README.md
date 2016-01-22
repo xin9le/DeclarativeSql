@@ -52,6 +52,21 @@ using (var transaction = connection.StartTransaction())  //--- begin transaction
 //--- commit or rollback on transaction.Dispose()
 ```
 
+In addition, You can call `Query` / `Execute` (etc.) methods directly same as `IDbConnection`. Following code is same meaning.
+
+```cs
+using (var connection = DbProvider.CreateConnection(DbKind.SqlServer, "ConnectionString"))
+using (var transaction = connection.StartTransaction())
+{
+    //--- for IDbConnection
+    connection.Execute("insert into ...", model, transaction);
+    
+    //--- for IDbTransaction (a little short)
+    transaction.Execute("insert into ...", model);
+}
+```
+
+
 
 
 ## O/R mapping information
