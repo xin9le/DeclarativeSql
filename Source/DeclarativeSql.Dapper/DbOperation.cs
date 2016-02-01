@@ -664,7 +664,6 @@ namespace DeclarativeSql.Dapper
             //--- タイムアウト
             if (this.Timeout.HasValue)
                 executor.BulkCopyTimeout = this.Timeout.Value;
-            executor.BulkCopyTimeout = 1;
             
             //--- 対象テーブル名
             var info = TableMappingInfo.Create<T>();
