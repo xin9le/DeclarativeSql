@@ -41,6 +41,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SQLiteOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PostgreSqlOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MySqlOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UnmanagedOracleOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OracleOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SqlServerCeOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SqlServerOperation.cs">
+      <DependentUpon>DbOperation.cs</DependentUpon>
+    </Compile>
     <Compile Include="IDbConnectionExtensions.cs" />
     <Compile Include="IDbTransactionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
