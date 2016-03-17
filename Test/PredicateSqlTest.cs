@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
@@ -209,6 +210,39 @@ namespace DeclarativeSql.Tests
             expectParameter.Add("p2", 30);
 
             actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void Contains()
+        {
+            var value = Enumerable.Range(0, 3).Cast<object>().ToArray();
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => value.Contains(x.Id));
+
+            var expectStatement = "Id in @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", value);
+
+            actual.Parameter.IsStructuralEqual(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void Contains1000件超()
+        {
+            var value1 = Enumerable.Range(0, 1000).Cast<object>().ToArray();
+            var value2 = Enumerable.Range(1000, 234).Cast<object>().ToArray();
+            var value  = value1.Concat(value2);
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => value.Contains(x.Id));
+
+            var expectStatement = "Id in @p0 or Id in @p1";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", value2);
+            expectParameter.Add("p1", value1);
+
+            actual.Parameter.IsStructuralEqual(expectParameter);
             actual.Statement.Is(expectStatement);
         }
     }
