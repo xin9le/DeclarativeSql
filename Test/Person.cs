@@ -24,6 +24,9 @@ namespace DeclarativeSql.Tests
         public int Age { get; set; }
 
 
+        public bool HasChildren { get; set; }
+
+
         [NotMapped]
         public int Sex { get; set; }
     }

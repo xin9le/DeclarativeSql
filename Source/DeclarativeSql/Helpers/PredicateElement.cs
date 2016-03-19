@@ -20,19 +20,19 @@ namespace DeclarativeSql.Helpers
         /// <summary>
         /// 左辺のインスタンスの型を取得します。
         /// </summary>
-        public Type Type { get; }
+        public Type Type { get; internal set; }
 
 
         /// <summary>
         /// 左辺のプロパティ名を取得します。
         /// </summary>
-        public string PropertyName { get; }
+        public string PropertyName { get; internal set; }
 
 
         /// <summary>
         /// 右辺の値を取得します。
         /// </summary>
-        public object Value { get; }
+        public object Value { get; internal set; }
 
 
         /// <summary>

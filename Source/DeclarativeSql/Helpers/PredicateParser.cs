@@ -82,6 +82,51 @@ namespace DeclarativeSql.Helpers
 
 
         /// <summary>
+        /// MemberExpressionの子を走査します。
+        /// </summary>
+        /// <param name="node">走査する式</param>
+        /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            //--- 「x => x.CanPlay == true」ではなく「x => x.CanPlay」のような書き方への対応
+            if (this.IsBooleanProperty(node as MemberExpression))
+            {
+                //--- 親要素がない
+                var info = (PropertyInfo)node.Member;
+                var parent = this.Cache.Count == 0 ? null : this.Cache.Peek();
+                if (parent == null)
+                {
+                    var element = new PredicateElement(PredicateOperator.Equal, info.PropertyType, info.Name, true);
+                    return this.VisitCore(element, () => base.VisitMember(node));
+                }
+
+                switch (parent.Operator)
+                {
+                    //--- && か || の場合は左辺/右辺のどちらか
+                    case PredicateOperator.AndAlso:
+                    case PredicateOperator.OrElse:
+                        {
+                            var element = new PredicateElement(PredicateOperator.Equal, info.PropertyType, info.Name, true);
+                            return this.VisitCore(element, () => base.VisitMember(node));
+                        }
+
+                    //--- == / != / !x.CanPlay の場合
+                    case PredicateOperator.Equal:
+                    case PredicateOperator.NotEqual:
+                        if (parent.PropertyName == null)
+                        {
+                            parent.Type = info.PropertyType;
+                            parent.PropertyName = info.Name;
+                            parent.Value = true;
+                        }
+                        break;
+                }
+            }
+            return base.VisitMember(node);
+        }
+
+
+        /// <summary>
         /// MethodCallExpressionの子を走査します。
         /// </summary>
         /// <param name="node">走査する式</param>
@@ -122,6 +167,24 @@ namespace DeclarativeSql.Helpers
 
             //--- default
             return base.VisitMethodCall(node);
+        }
+
+
+        /// <summary>
+        /// UnaryExpressionの子を走査します。
+        /// </summary>
+        /// <param name="node">走査する式。</param>
+        /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            //--- !x.CanPlay の形式は xCanPlay != true として扱う
+            if (node.NodeType == ExpressionType.Not)
+            if (this.IsBooleanProperty(node.Operand as MemberExpression))
+            {
+                var element = new PredicateElement(PredicateOperator.NotEqual);
+                return this.VisitCore(element, () => base.VisitUnary(node));
+            }   
+           return base.VisitUnary(node);
         }
         #endregion
 
@@ -207,6 +270,7 @@ namespace DeclarativeSql.Helpers
         /// </summary>
         /// <param name="expression">対象となる式</param>
         /// <returns>値</returns>
+        /// <remarks>右辺専用</remarks>
         private object ExtractValue(Expression expression)
         {
             //--- 定数
@@ -309,6 +373,19 @@ namespace DeclarativeSql.Helpers
             }
             return value;
         }
+
+
+        /// <summary>
+        /// 指定された式がbool型のプロパティかどうかを判定します。
+        /// </summary>
+        /// <param name="expression">対象となる式</param>
+        /// <returns>bool型のプロパティの場合true</returns>
+        /// <remarks>左辺専用</remarks>
+        private bool IsBooleanProperty(MemberExpression expression)
+            =>  expression != null
+            &&  expression.Member.MemberType == MemberTypes.Property
+            &&  expression.Expression == this.Parameter
+            &&  ((PropertyInfo)expression.Member).PropertyType == typeof(bool);
         #endregion
 
 

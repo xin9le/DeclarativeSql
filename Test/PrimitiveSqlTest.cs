@@ -31,7 +31,8 @@ namespace DeclarativeSql.Tests
 @"select
     Id as Id,
     名前 as Name,
-    Age as Age
+    Age as Age,
+    HasChildren as HasChildren
 from dbo.Person";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -82,12 +83,14 @@ from dbo.Person";
 @"insert into dbo.Person
 (
     名前,
-    Age
+    Age,
+    HasChildren
 )
 values
 (
     @Name,
-    next value for dbo.AgeSeq
+    next value for dbo.AgeSeq,
+    @HasChildren
 )";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -103,12 +106,14 @@ values
 @"insert into dbo.Person
 (
     名前,
-    Age
+    Age,
+    HasChildren
 )
 values
 (
     @Name,
-    @Age
+    @Age,
+    @HasChildren
 )";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -125,13 +130,15 @@ values
 (
     Id,
     名前,
-    Age
+    Age,
+    HasChildren
 )
 values
 (
     @Id,
     @Name,
-    next value for dbo.AgeSeq
+    next value for dbo.AgeSeq,
+    @HasChildren
 )";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -149,7 +156,8 @@ values
 @"update dbo.Person
 set
     名前 = @Name,
-    Age = @Age";
+    Age = @Age,
+    HasChildren = @HasChildren";
             actual1.Is(expect);
             actual2.Is(expect);
         }
@@ -198,7 +206,8 @@ set
 set
     Id = @Id,
     名前 = @Name,
-    Age = @Age";
+    Age = @Age,
+    HasChildren = @HasChildren";
             actual1.Is(expect);
             actual2.Is(expect);
         }

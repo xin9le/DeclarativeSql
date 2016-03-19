@@ -368,6 +368,51 @@ namespace DeclarativeSql.Tests
             actual.Parameter.Is(expectParameter);
             actual.Statement.Is(expectStatement);
         }
+
+
+        [TestMethod]
+        public void Boolean()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.HasChildren);
+
+            var expectStatement = "HasChildren = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", true);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void InverseBoolean()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => !x.HasChildren);
+
+            var expectStatement = "HasChildren <> @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", true);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void BooleanAndOr()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.HasChildren == true || x.Id != 0 || x.Name == "xin9le" && !x.HasChildren);
+
+            var expectStatement = "HasChildren = @p0 or Id <> @p1 or (名前 = @p2 and HasChildren <> @p3)";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", true);
+            expectParameter.Add("p1", 0);
+            expectParameter.Add("p2", "xin9le");
+            expectParameter.Add("p3", true);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
     }
 
 
