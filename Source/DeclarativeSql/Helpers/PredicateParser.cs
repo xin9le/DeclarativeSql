@@ -57,13 +57,14 @@ namespace DeclarativeSql.Helpers
         {
             //--- AND/OR : 左右を保持する要素として生成
             //--- 比較演算子 (<, <=, >=, >, ==, !=) : 左辺のプロパティ名と右辺の値を抽出
-            PredicateElement element;
             switch (node.NodeType)
             {
                 case ExpressionType.AndAlso:
                 case ExpressionType.OrElse:
-                    element = new PredicateElement(node.NodeType.ToPredicateOperator());
-                    break;
+                    {
+                        var element = new PredicateElement(node.NodeType.ToPredicateOperator());
+                        return this.VisitCore(element, () => base.VisitBinary(node));
+                    }
 
                 case ExpressionType.LessThan:
                 case ExpressionType.LessThanOrEqual:
@@ -71,13 +72,12 @@ namespace DeclarativeSql.Helpers
                 case ExpressionType.GreaterThanOrEqual:
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
-                    element = this.ParseBinary(node);
-                    break;
-
-                default:
-                    throw new InvalidOperationException();
+                    {
+                        var element = this.ParseBinary(node);
+                        return this.VisitCore(element, () => base.VisitBinary(node));
+                    }
             }
-            return this.VisitCore(element, () => base.VisitBinary(node));
+            return base.VisitBinary(node);
         }
 
 
@@ -237,6 +237,29 @@ namespace DeclarativeSql.Helpers
                         ? null                              //--- static
                         : this.ExtractValue(expr.Object);   //--- instance
                 return expr.Method.Invoke(obj, parameters);
+            }
+
+            //--- デリゲート/ラムダ式の呼び出し
+            if (expression is InvocationExpression)
+            {
+                var invocation = (InvocationExpression)expression;
+                var parameters = invocation.Arguments.Select(x => Expression.Parameter(x.Type)).ToArray();
+                var arguments = invocation.Arguments.Select(this.ExtractValue).ToArray();
+                var lambda = Expression.Lambda(invocation, parameters);
+                var result = lambda.Compile().DynamicInvoke(arguments);
+                return result;
+            }
+
+            //--- インデクサ
+            if (expression is BinaryExpression)
+            if (expression.NodeType == ExpressionType.ArrayIndex)
+            {
+                var expr = (BinaryExpression)expression;
+                var array = (Array)this.ExtractValue(expr.Left);
+                var index = expr.Right.Type == typeof(int)
+                          ? (int) this.ExtractValue(expr.Right)
+                          : (long)this.ExtractValue(expr.Right);
+                return array.GetValue(index);
             }
 
             //--- フィールド / プロパティ

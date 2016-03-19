@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -245,5 +246,137 @@ namespace DeclarativeSql.Tests
             actual.Parameter.IsStructuralEqual(expectParameter);
             actual.Statement.Is(expectStatement);
         }
+
+
+        [TestMethod]
+        public void 右辺が変数()
+        {
+            var id = 1;
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Id == id);
+
+            var expectStatement = "Id = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", id);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺がコンストラクタ()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Name == new string('a', 3));
+
+            var expectStatement = "名前 = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", "aaa");
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+/*
+        [TestMethod]
+        public void 右辺が配列()
+        {}
+*/
+
+        [TestMethod]
+        public void 右辺がメソッド()
+        {
+            var some = new SomeClass();
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Name == some.InstanceMethod());
+
+            var expectStatement = "名前 = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", some.InstanceMethod());
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺がラムダ式()
+        {
+            Func<int, string> getName = x => x.ToString();
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Name == getName(123));
+
+            var expectStatement = "名前 = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", "123");
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺がプロパティ()
+        {
+            var some = new SomeClass();
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Age == some.InstanceProperty);
+
+            var expectStatement = "Age = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", some.InstanceProperty);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺がインデクサ()
+        {
+            var ids = new [] { 1, 2, 3 };
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Id == ids[0]);
+
+            var expectStatement = "Id = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", ids[0]);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺が静的メソッド()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Name == SomeClass.StaticMethod());
+
+            var expectStatement = "名前 = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", SomeClass.StaticMethod());
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+
+
+        [TestMethod]
+        public void 右辺が静的プロパティ()
+        {
+            var actual = PredicateSql.From<Person>(DbKind.SqlServer, x => x.Age == SomeClass.StaticProperty);
+
+            var expectStatement = "Age = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", SomeClass.StaticProperty);
+
+            actual.Parameter.Is(expectParameter);
+            actual.Statement.Is(expectStatement);
+        }
+    }
+
+
+
+    class SomeClass
+    {
+        public string InstanceMethod() => "aaa";
+        public int InstanceProperty => 31;
+        public static string StaticMethod() => "aaa";
+        public static int StaticProperty => 31;
     }
 }
