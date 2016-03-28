@@ -50,9 +50,19 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// スキーマ名とテーブル名を結合したフルネームを取得します。
         /// </summary>
-        public string FullName => string.IsNullOrWhiteSpace(this.Schema)
-                                ? this.Name
-                                : $"{this.Schema}.{this.Name}";
+        public string FullName(DbKind targetDatabase)
+        {
+            var name = this.Name;
+            switch (targetDatabase)
+            {
+                case DbKind.SqlServer:
+                    name = $"[{this.Name}]";
+                    break;
+                default:
+                    break;
+            }
+            return string.IsNullOrWhiteSpace(this.Schema) ? name : $"{this.Schema}.{name}";
+        }
         #endregion
 
 

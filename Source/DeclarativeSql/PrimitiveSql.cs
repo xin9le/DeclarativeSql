@@ -20,23 +20,25 @@ namespace DeclarativeSql
         /// <summary>
         /// 指定された型情報から対象となるテーブルのレコード数をカウントするクエリを生成します。
         /// </summary>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <typeparam name="T">テーブルの型</typeparam>
         /// <returns>生成されたSQL</returns>
-        public static string CreateCount<T>() => This.CreateCount(typeof(T));
+        public static string CreateCount<T>(DbKind targetDatabase) => This.CreateCount(targetDatabase, typeof(T));
 
 
         /// <summary>
         /// 指定された型情報から対象となるテーブルのレコード数をカウントするクエリを生成します。
         /// </summary>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <param name="type">テーブルの型</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateCount(Type type)
+        public static string CreateCount(DbKind targetDatabase, Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
             var table = TableMappingInfo.Create(type);
-            return $"select count(*) as Count from {table.FullName}";
+            return $"select count(*) as Count from {table.FullName(targetDatabase)}";
         }
         #endregion
 
@@ -46,29 +48,30 @@ namespace DeclarativeSql
         /// 指定された型情報から対象となるテーブルのレコードを取得するクエリを生成します。
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <param name="properties">抽出する列にマッピングされるプロパティのコレクション。指定がない場合はすべての列を抽出対象とします。</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateSelect<T>(Expression<Func<T, object>> properties = null)
+        public static string CreateSelect<T>(DbKind targetDatabase, Expression<Func<T, object>> properties = null)
         {
             var propertyNames   = properties == null
                                 ? null
                                 : ExpressionHelper.GetMemberNames(properties);
-            return This.CreateSelect(typeof(T), propertyNames);
+            return This.CreateSelect(targetDatabase, typeof(T), propertyNames);
         }
-
 
         /// <summary>
         /// 指定された型情報から対象となるテーブルのレコードを取得するクエリを生成します。
         /// </summary>
-        /// <typeparam name="T">テーブルの型</typeparam>
+        /// <param name="type">テーブルの型</param>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <param name="propertyNames">抽出する列にマッピングされるプロパティのコレクション。指定がない場合はすべての列を抽出対象とします。</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateSelect(Type type, IEnumerable<string> propertyNames = null)
+        public static string CreateSelect(DbKind targetDatabase, Type type, IEnumerable<string> propertyNames = null)
         {
-            if (type == null)           throw new ArgumentNullException(nameof(type));
-            if (propertyNames == null)  propertyNames = Enumerable.Empty<string>();
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (propertyNames == null) propertyNames = Enumerable.Empty<string>();
 
-            var table   = TableMappingInfo.Create(type);
+            var table = TableMappingInfo.Create(type);
             var columns = propertyNames.IsEmpty()
                         ? table.Columns
                         : table.Columns.Join
@@ -82,7 +85,7 @@ namespace DeclarativeSql
             var builder = new StringBuilder();
             builder.AppendLine("select");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
-            builder.Append($"from {table.FullName}");
+            builder.Append($"from {table.FullName(targetDatabase)}");
             return builder.ToString();
         }
         #endregion
@@ -132,7 +135,7 @@ namespace DeclarativeSql
                         .Select(x => "    " + x);
             var columnNames = columns.Select(x => "    " + x.ColumnName);
             var builder = new StringBuilder();
-            builder.AppendLine($"insert into {table.FullName}");
+            builder.AppendLine($"insert into {table.FullName(targetDatabase)}");
             builder.AppendLine("(");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
             builder.AppendLine(")");
@@ -183,7 +186,7 @@ namespace DeclarativeSql
                 columns = columns.Join(propertyNames, x => x.PropertyName, y => y, (x, y) => x);
             var setters = columns.Select(x => $"    {x.ColumnName} = {prefix}{x.PropertyName}");
             var builder = new StringBuilder();
-            builder.AppendLine($"update {table.FullName}");
+            builder.AppendLine($"update {table.FullName(targetDatabase)}");
             builder.AppendLine("set");
             builder.Append(string.Join($",{Environment.NewLine}", setters));
             return builder.ToString();
@@ -196,22 +199,24 @@ namespace DeclarativeSql
         /// 指定された型情報から対象となるテーブルのすべてのレコードを削除するクエリを生成します。
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateDelete<T>() => This.CreateDelete(typeof(T));
+        public static string CreateDelete<T>(DbKind targetDatabase) => This.CreateDelete(targetDatabase, typeof(T));
 
 
         /// <summary>
         /// 指定された型情報から対象となるテーブルのすべてのレコードを削除するクエリを生成します。
         /// </summary>
         /// <param name="type">テーブルの型</param>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateDelete(Type type)
+        public static string CreateDelete(DbKind targetDatabase, Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
             var table = TableMappingInfo.Create(type);
-            return $"delete from {table.FullName}";
+            return $"delete from {table.FullName(targetDatabase)}";
         }
         #endregion
 
@@ -221,22 +226,24 @@ namespace DeclarativeSql
         /// 指定された型情報から対象となるテーブルのすべてのレコードを切り捨てるクエリを生成します。
         /// </summary>
         /// <typeparam name="T">テーブルの型</typeparam>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateTruncate<T>() => This.CreateTruncate(typeof(T));
+        public static string CreateTruncate<T>(DbKind targetDatabase) => This.CreateTruncate(targetDatabase, typeof(T));
 
 
         /// <summary>
         /// 指定された型情報から対象となるテーブルのすべてのレコードを切り捨てるクエリを生成します。
         /// </summary>
+        /// <param name="targetDatabase">対象データベース</param>
         /// <param name="type">テーブルの型</param>
         /// <returns>生成されたSQL</returns>
-        public static string CreateTruncate(Type type)
+        public static string CreateTruncate(DbKind targetDatabase, Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
             var table = TableMappingInfo.Create(type);
-            return $"truncate table {table.FullName}";
+            return $"truncate table {table.FullName(targetDatabase)}";
         }
         #endregion
 
@@ -255,7 +262,7 @@ namespace DeclarativeSql
             var propertyNames   = properties == null || properties.Length == 0
                                 ? null
                                 : ExpressionHelper.GetMemberNames(properties);
-            return This.CreateSelect(typeof(T), propertyNames);
+            return This.CreateSelect(DbKind.Unknown, typeof(T), propertyNames);
         }
 
 
@@ -267,7 +274,7 @@ namespace DeclarativeSql
         /// <returns>生成されたSQL</returns>
         [Obsolete("CreateSelect(Type type, IEnumerable<string> propertyNames = null) を利用してください。")]
         public static string CreateSelect(Type type, params string[] propertyNames)
-            => This.CreateSelect(type, (IEnumerable<string>)propertyNames);
+            => This.CreateSelect(DbKind.Unknown, type, (IEnumerable<string>)propertyNames);
 
 
         /// <summary>

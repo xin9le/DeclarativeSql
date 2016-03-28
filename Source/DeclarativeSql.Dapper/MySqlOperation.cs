@@ -86,7 +86,7 @@ namespace DeclarativeSql.Dapper
             var table   = TableMappingInfo.Create<T>();
             var columnNames = table.Columns.Select(x => "    " + x.ColumnName);
             var builder = new StringBuilder();
-            builder.AppendLine($"insert into {table.FullName}");
+            builder.AppendLine($"insert into {table.FullName(this.DbKind)}");
             builder.AppendLine("(");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
             builder.AppendLine(")");

@@ -171,7 +171,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual ulong Count<T>()
         {
-            var sql = PrimitiveSql.CreateCount<T>();
+            var sql = PrimitiveSql.CreateCount<T>(this.DbKind);
             return this.Connection.ExecuteScalar<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -184,7 +184,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual ulong Count<T>(Expression<Func<T, bool>> predicate)
         {
-            var count = PrimitiveSql.CreateCount<T>();
+            var count = PrimitiveSql.CreateCount<T>(this.DbKind);
             var where = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(count);
@@ -201,7 +201,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual Task<ulong> CountAsync<T>()
         {
-            var sql = PrimitiveSql.CreateCount<T>();
+            var sql = PrimitiveSql.CreateCount<T>(this.DbKind);
             return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -214,7 +214,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var count = PrimitiveSql.CreateCount<T>();
+            var count = PrimitiveSql.CreateCount<T>(this.DbKind);
             var where = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(count);
@@ -234,7 +234,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>> properties)
         {
-            var sql = PrimitiveSql.CreateSelect(properties);
+            var sql = PrimitiveSql.CreateSelect(this.DbKind, properties);
             return this.Connection.Query<T>(sql, null, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
 
@@ -248,7 +248,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var select  = PrimitiveSql.CreateSelect(properties);
+            var select  = PrimitiveSql.CreateSelect(this.DbKind, properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(select);
@@ -266,7 +266,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
         {
-            var sql = PrimitiveSql.CreateSelect(properties);
+            var sql = PrimitiveSql.CreateSelect(this.DbKind, properties);
             var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
@@ -281,7 +281,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var select  = PrimitiveSql.CreateSelect(properties);
+            var select  = PrimitiveSql.CreateSelect(this.DbKind, properties);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(select);
@@ -507,7 +507,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Delete<T>()
         {
-            var sql = PrimitiveSql.CreateDelete<T>();
+            var sql = PrimitiveSql.CreateDelete<T>(this.DbKind);
             return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -520,7 +520,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Delete<T>(Expression<Func<T, bool>> predicate)
         {
-            var delete  = PrimitiveSql.CreateDelete<T>();
+            var delete  = PrimitiveSql.CreateDelete<T>(this.DbKind);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(delete);
@@ -537,7 +537,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> DeleteAsync<T>()
         {
-            var sql = PrimitiveSql.CreateDelete<T>();
+            var sql = PrimitiveSql.CreateDelete<T>(this.DbKind);
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -550,7 +550,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var delete  = PrimitiveSql.CreateDelete<T>();
+            var delete  = PrimitiveSql.CreateDelete<T>(this.DbKind);
             var where   = PredicateSql.From(this.DbKind, predicate);
             var builder = new StringBuilder();
             builder.AppendLine(delete);
@@ -569,7 +569,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>-1</returns>
         public virtual int Truncate<T>()
         {
-            var sql = PrimitiveSql.CreateTruncate<T>();
+            var sql = PrimitiveSql.CreateTruncate<T>(this.DbKind);
             return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -581,7 +581,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>-1</returns>
         public virtual Task<int> TruncateAsync<T>()
         {
-            var sql = PrimitiveSql.CreateTruncate<T>();
+            var sql = PrimitiveSql.CreateTruncate<T>(this.DbKind);
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
         #endregion

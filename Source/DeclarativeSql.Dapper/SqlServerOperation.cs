@@ -85,7 +85,7 @@ namespace DeclarativeSql.Dapper
             
             //--- 対象テーブル名
             var info = TableMappingInfo.Create<T>();
-            executor.DestinationTableName = info.FullName;
+            executor.DestinationTableName = info.FullName(this.DbKind);
 
             //--- 列のマップ
             var table = new DataTable();
