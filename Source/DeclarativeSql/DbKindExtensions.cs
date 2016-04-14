@@ -13,7 +13,7 @@ namespace DeclarativeSql
     /// <summary>
     /// DbKindの拡張機能を提供します。
     /// </summary>
-    internal static class DbKindExtensions
+    public static class DbKindExtensions
     {
         #region 内部クラス
         /// <summary>
