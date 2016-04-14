@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,8 +22,9 @@ namespace DeclarativeSql.Helpers
         /// <param name="self">結合先のExpandoObjectインスタンス</param>
         /// <param name="instance">結合するインスタンス</param>
         /// <param name="includeNonPublic">非パブリックなプロパティも結合するかどうか</param>
+        /// <param name="includeNotMapped">NotMapped属性が付いたプロパティも結合するかどうか</param>
         /// <returns>結合されたインスタンス</returns>
-        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, bool includeNonPublic = false)
+        public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, bool includeNonPublic = false, bool includeNotMapped = false)
         {
             if (self == null)       throw new ArgumentNullException(nameof(self));
             if (instance == null)   throw new ArgumentNullException(nameof(instance));
@@ -31,7 +33,9 @@ namespace DeclarativeSql.Helpers
             if (includeNonPublic)
                 flags |= BindingFlags.NonPublic;
 
-            var propertyNames = typeof(T).GetProperties(flags).Select(x => x.Name);
+            var propertyNames   = typeof(T).GetProperties(flags)
+                                .Where(x => includeNotMapped || !x.Has<NotMappedAttribute>())
+                                .Select(x => x.Name);
             return self.Merge(instance, propertyNames);
         }
 
@@ -42,7 +46,7 @@ namespace DeclarativeSql.Helpers
         /// <typeparam name="T">インスタンスの型</typeparam>
         /// <param name="self">結合先のExpandoObjectインスタンス</param>
         /// <param name="instance">結合するインスタンス</param>
-        /// <param name="properties">結合対象のプロパティ。nullの場合はすべてのPublicプロパティが対象になります。</param>
+        /// <param name="properties">結合対象のプロパティ。nullの場合はNotMapped属性を持たないすべてのPublicプロパティが対象になります。</param>
         /// <returns>結合されたインスタンス</returns>
         public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, Expression<Func<T, object>> properties)
         {
@@ -63,7 +67,7 @@ namespace DeclarativeSql.Helpers
         /// <typeparam name="T">インスタンスの型</typeparam>
         /// <param name="self">結合先のExpandoObjectインスタンス</param>
         /// <param name="instance">結合するインスタンス</param>
-        /// <param name="properties">結合対象のプロパティ。nullもしくは空の場合はすべてのPublicプロパティが対象になります。</param>
+        /// <param name="properties">結合対象のプロパティ。nullもしくは空の場合はNotMapped属性を持たないすべてのPublicプロパティが対象になります。</param>
         /// <returns>結合されたインスタンス</returns>
         public static ExpandoObject Merge<T>(this ExpandoObject self, T instance, IEnumerable<Expression<Func<T, object>>> properties)
         {
