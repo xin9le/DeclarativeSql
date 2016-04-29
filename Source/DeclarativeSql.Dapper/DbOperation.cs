@@ -362,7 +362,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>自動採番ID</returns>
         public virtual long InsertAndGet<T>(T data)
         {
-            This.AssertInsertAndGet<T>();
+            this.AssertInsertAndGet<T>();
             var sql = this.CreateInsertAndGetSql<T>();
             var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
             return (long)reader.Read().First().Id;
@@ -377,7 +377,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>自動採番ID</returns>
         public virtual async Task<long> InsertAndGetAsync<T>(T data)
         {
-            This.AssertInsertAndGet<T>();
+            this.AssertInsertAndGet<T>();
             var sql = this.CreateInsertAndGetSql<T>();
             var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
@@ -395,13 +395,12 @@ namespace DeclarativeSql.Dapper
             throw new NotSupportedException();
         }
 
-
         /// <summary>
         /// InsertAndGet メソッドを実行可能かどうかを診断します。
         /// </summary>
         /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
         /// <returns>実行可能かどうか</returns>
-        protected static void AssertInsertAndGet<T>()
+        public virtual void AssertInsertAndGet<T>()
         {
             if (typeof(T).IsCollection())
                 throw new InvalidOperationException("Can insert single entity only.");
