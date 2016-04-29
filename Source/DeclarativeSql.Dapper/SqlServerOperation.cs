@@ -5,8 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using DeclarativeSql.Helpers;
 using DeclarativeSql.Mapping;
-
-
+using System.Linq;
 
 namespace DeclarativeSql.Dapper
 {
@@ -85,7 +84,7 @@ namespace DeclarativeSql.Dapper
             
             //--- 対象テーブル名
             var info = TableMappingInfo.Create<T>();
-            executor.DestinationTableName = info.FullName;
+            executor.DestinationTableName = info.FullName(this.DbKind);
 
             //--- 列のマップ
             var table = new DataTable();
@@ -111,6 +110,22 @@ namespace DeclarativeSql.Dapper
 
 
         #region InsertAndGet
+        /// <summary>
+        /// InsertAndGet メソッドを実行可能かどうかを診断します。
+        /// </summary>
+        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
+        /// <returns>実行可能かどうか</returns>
+        public override void AssertInsertAndGet<T>()
+        {
+            if (typeof(T).IsCollection())
+                throw new InvalidOperationException("Can insert single entity only.");
+
+            var table = TableMappingInfo.Create<T>();
+            var autoIncrement = table.Columns.Where(x => x.IsAutoIncrement).ToArray();
+            if (autoIncrement.Length != 1)
+                throw new InvalidOperationException("Id column (auto increment) should be only one.");
+        }
+
         /// <summary>
         /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
         /// </summary>

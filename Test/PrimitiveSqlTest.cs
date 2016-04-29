@@ -12,8 +12,8 @@ namespace DeclarativeSql.Tests
         [TestMethod]
         public void Count文生成()
         {
-            var actual1 = PrimitiveSql.CreateCount(typeof(Person));
-            var actual2 = PrimitiveSql.CreateCount<Person>();
+            var actual1 = PrimitiveSql.CreateCount(DbKind.Unknown, typeof(Person));
+            var actual2 = PrimitiveSql.CreateCount<Person>(DbKind.Unknown);
             var expect = "select count(*) as Count from dbo.Person";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -80,7 +80,7 @@ from dbo.Person";
             var actual1 = PrimitiveSql.CreateInsert(DbKind.SqlServer, typeof(Person));
             var actual2 = PrimitiveSql.CreateInsert<Person>(DbKind.SqlServer);
             var expect =
-@"insert into dbo.Person
+@"insert into dbo.[Person]
 (
     名前,
     Age,
@@ -103,7 +103,7 @@ values
             var actual1 = PrimitiveSql.CreateInsert(DbKind.SqlServer, typeof(Person), false);
             var actual2 = PrimitiveSql.CreateInsert<Person>(DbKind.SqlServer, false);
             var expect =
-@"insert into dbo.Person
+@"insert into dbo.[Person]
 (
     名前,
     Age,
@@ -126,7 +126,7 @@ values
             var actual1 = PrimitiveSql.CreateInsert(DbKind.SqlServer, typeof(Person), setIdentity: true);
             var actual2 = PrimitiveSql.CreateInsert<Person>(DbKind.SqlServer, setIdentity: true);
             var expect =
-@"insert into dbo.Person
+@"insert into dbo.[Person]
 (
     Id,
     名前,
@@ -153,7 +153,7 @@ values
             var actual1 = PrimitiveSql.CreateUpdate(DbKind.SqlServer, typeof(Person));
             var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer);
             var expect =
-@"update dbo.Person
+@"update dbo.[Person]
 set
     名前 = @Name,
     Age = @Age,
@@ -170,7 +170,7 @@ set
             var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => x.Name);
             var actual3 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => new { x.Name });
             var expect =
-@"update dbo.Person
+@"update dbo.[Person]
 set
     名前 = @Name";
             actual1.Is(expect);
@@ -186,7 +186,7 @@ set
             var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => x.Name, x => x.Age);
             var actual3 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, x => new { x.Name, x.Age });
             var expect =
-@"update dbo.Person
+@"update dbo.[Person]
 set
     名前 = @Name,
     Age = @Age";
@@ -202,7 +202,7 @@ set
             var actual1 = PrimitiveSql.CreateUpdate(DbKind.SqlServer, typeof(Person), setIdentity: true);
             var actual2 = PrimitiveSql.CreateUpdate<Person>(DbKind.SqlServer, setIdentity: true);
             var expect =
-@"update dbo.Person
+@"update dbo.[Person]
 set
     Id = @Id,
     名前 = @Name,
@@ -218,8 +218,8 @@ set
         [TestMethod]
         public void Delete文生成()
         {
-            var actual1 = PrimitiveSql.CreateDelete(typeof(Person));
-            var actual2 = PrimitiveSql.CreateDelete<Person>();
+            var actual1 = PrimitiveSql.CreateDelete(DbKind.Unknown, typeof(Person));
+            var actual2 = PrimitiveSql.CreateDelete<Person>(DbKind.Unknown);
             var expect = "delete from dbo.Person";
             actual1.Is(expect);
             actual2.Is(expect);
@@ -231,8 +231,8 @@ set
         [TestMethod]
         public void Truncate文生成()
         {
-            var actual1 = PrimitiveSql.CreateTruncate(typeof(Person));
-            var actual2 = PrimitiveSql.CreateTruncate<Person>();
+            var actual1 = PrimitiveSql.CreateTruncate(DbKind.Unknown, typeof(Person));
+            var actual2 = PrimitiveSql.CreateTruncate<Person>(DbKind.Unknown);
             var expect = "truncate table dbo.Person";
             actual1.Is(expect);
             actual2.Is(expect);

@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 
 // フレンドリーアセンブリ
 [assembly: InternalsVisibleTo("DeclarativeSql.Dapper")]
+[assembly: InternalsVisibleTo("SSA.BI.Data")]

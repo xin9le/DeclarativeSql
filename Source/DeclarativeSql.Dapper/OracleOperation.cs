@@ -96,7 +96,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>自動採番ID</returns>
         public override long InsertAndGet<T>(T data)
         {
-            This.AssertInsertAndGet<T>();
+            this.AssertInsertAndGet<T>();
             var param = this.CreateInsertAndGetParameter(data);
             if (param.Item1.ExecuteNonQuery() != 1)
                 throw new SystemException("Affected row count is not 1.");
@@ -112,7 +112,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>自動採番ID</returns>
         public override async Task<long> InsertAndGetAsync<T>(T data)
         {
-            This.AssertInsertAndGet<T>();
+            this.AssertInsertAndGet<T>();
             var param = this.CreateInsertAndGetParameter(data);
             var result = await param.Item1.ExecuteNonQueryAsync().ConfigureAwait(false);
             if (result != 1)
