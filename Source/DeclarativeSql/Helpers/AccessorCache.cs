@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 
 
@@ -14,7 +14,7 @@ namespace DeclarativeSql.Helpers
         /// <summary>
         /// Get用デリゲートをキャッシュします。
         /// </summary>
-        private static Dictionary<Tuple<Type, string>, Func<object, object>> getters = new Dictionary<Tuple<Type, string>, Func<object, object>>();
+        private static ConcurrentDictionary<Tuple<Type, string>, Func<object, object>> getters = new ConcurrentDictionary<Tuple<Type, string>, Func<object, object>>();
         #endregion
 
 
@@ -28,12 +28,7 @@ namespace DeclarativeSql.Helpers
         public static Func<object, object> LookupGet(Type type, string memberName)
         {
             var key = Tuple.Create(type, memberName);
-            if (getters.ContainsKey(key))
-                return getters[key];
-
-            var getter = AccessorFactory.CreateGetDelegate(key.Item1, key.Item2);
-            getters.Add(key, getter);
-            return getter;
+            return getters.GetOrAdd(key, x => AccessorFactory.CreateGetDelegate(x.Item1, x.Item2));
         }
         #endregion
     }
@@ -49,7 +44,7 @@ namespace DeclarativeSql.Helpers
         /// <summary>
         /// Get用デリゲートをキャッシュします。
         /// </summary>
-        private static Dictionary<string, Func<T, object>> getters = new Dictionary<string, Func<T, object>>();
+        private static ConcurrentDictionary<string, Func<T, object>> getters = new ConcurrentDictionary<string, Func<T, object>>();
         #endregion
 
 
@@ -60,14 +55,7 @@ namespace DeclarativeSql.Helpers
         /// <param name="memberName">対象となるメンバー名</param>
         /// <returns>Get用デリゲート</returns>
         public static Func<T, object> LookupGet(string memberName)
-        {
-            if (getters.ContainsKey(memberName))
-                return getters[memberName];
-
-            var getter = AccessorFactory.CreateGetDelegate<T>(memberName);
-            getters.Add(memberName, getter);
-            return getter;
-        }
+            => getters.GetOrAdd(memberName, AccessorFactory.CreateGetDelegate<T>);
         #endregion
     }
 }
