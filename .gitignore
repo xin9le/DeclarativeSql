@@ -4,7 +4,9 @@
 # User-specific files
 *.suo
 *.user
+*.userprefs
 *.sln.docstates
+.vs/
 
 # Build results
 [Dd]ebug/
@@ -24,6 +26,14 @@ bld/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+UnitTestResults.html
+
+# NuGet V3 artifacts
+*-packages.config
+*.nuget.props
+*.nuget.targets
+project.lock.json
+*.project.lock.json
 
 #NUNIT
 *.VisualState.xml
@@ -129,15 +139,6 @@ publish/
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
-
-# NuGet Packages
-*.nupkg
-# The packages folder can be ignored because of Package Restore
-**/packages/*
-# except build/, which is used as an MSBuild target.
-!**/packages/build/
-# If using the old MSBuild-Integrated Package Restore, uncomment this:
-#!**/packages/repositories.config
 
 # Windows Azure Build Output
 csx/
