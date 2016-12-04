@@ -104,12 +104,12 @@ namespace DeclarativeSql
             This.All = new []
             {
                 This.SqlServer,
+                This.MySql,
+                This.Sqlite,
                 //This.SqlServerCe,
                 //This.Oracle,
                 //This.UnmanagedOracle,
-                This.MySql,
                 //This.PostgreSql,
-                //This.SQLite,
             };
             This.ByKind = This.All.ToDictionary(x => x.Kind);
             This.ByConnectionTypeName = This.All.ToDictionary(x => x.ConnectionTypeName);
@@ -149,6 +149,32 @@ namespace DeclarativeSql
         );
 
 
+        /// <summary>
+        /// Gets database provider for MySQL / Amazon Aurora / MariaDB.
+        /// </summary>
+        public static This MySql { get; } = new This
+        (
+            DbKind.MySql,
+            "MySql.Data",
+            "MySql.Data.MySqlClient.MySqlClientFactory",
+            "MySql.Data.MySqlClient.MySqlConnection",
+            '@'
+        );
+
+
+        /// <summary>
+        /// Gets database provider for SQLite.
+        /// </summary>
+        public static This Sqlite { get; } = new This
+        (
+            DbKind.Sqlite,
+            "Microsoft.Data.Sqlite",
+            "Microsoft.Data.Sqlite.SqliteFactory",
+            "Microsoft.Data.Sqlite.SqliteConnection",
+            '@'
+        );
+
+
         /*
         /// <summary>
         /// Gets database provider for SQL Server Compact.
@@ -174,23 +200,8 @@ namespace DeclarativeSql
             "Oracle.ManagedDataAccess.Client.OracleConnection",
             ':'
         );
-        */
 
 
-        /// <summary>
-        /// Gets database provider for MySQL / Amazon Aurora / MariaDB.
-        /// </summary>
-        public static This MySql { get; } = new This
-        (
-            DbKind.MySql,
-            "MySql.Data",
-            "MySql.Data.MySqlClient.MySqlClientFactory",
-            "MySql.Data.MySqlClient.MySqlConnection",
-            '@'
-        );
-
-
-        /*
         /// <summary>
         /// Gets database provider for PostgreSQL.
         /// </summary>
@@ -201,19 +212,6 @@ namespace DeclarativeSql
             "Npgsql",
             "Npgsql.NpgsqlConnection",
             ':'
-        );
-
-
-        /// <summary>
-        /// Gets database provider for SQLite.
-        /// </summary>
-        public static This SQLite { get; } = new This
-        (
-            DbKind.SQLite,
-            "",
-            "System.Data.SQLite",
-            "System.Data.SQLite.SQLiteConnection",
-            '@'
         );
         */
         #endregion

@@ -22,6 +22,11 @@ namespace DeclarativeSql.Tests
         [TestMethod]
         public void MySqlFactory生成()
             => DbProvider.MySql.Factory.IsNotNull();
+
+
+        [TestMethod]
+        public void SqliteFactory生成()
+            => DbProvider.Sqlite.Factory.IsNotNull();
         #endregion
     }
 }

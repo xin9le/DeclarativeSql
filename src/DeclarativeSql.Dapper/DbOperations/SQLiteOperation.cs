@@ -9,11 +9,10 @@ using Dapper;
 
 namespace DeclarativeSql.Dapper
 {
-    /*
     /// <summary>
-    /// SQLiteデータベースに対する操作を提供します。
+    /// Provides the database operations for SQLite.
     /// </summary>
-    internal class SQLiteOperation : DbOperation
+    internal class SqliteOperation : DbOperation
     {
         #region Constructors
         /// <summary>
@@ -23,7 +22,7 @@ namespace DeclarativeSql.Dapper
         /// <param name="transaction">Database transaction</param>
         /// <param name="provider">Database provider</param>
         /// <param name="timeout">Timeout</param>
-        protected SQLiteOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        protected SqliteOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         {}
         #endregion
@@ -31,18 +30,18 @@ namespace DeclarativeSql.Dapper
 
         #region BulkInsert
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// Inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override int BulkInsert<T>(IEnumerable<T> data)
         {
             //--- 挿入処理本体
             Func<IEnumerable<T>, IDbTransaction, int> insert = (collection, transaction) =>
             {
                 var result = 0;
-                var sql = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
+                var sql = this.DbProvider.Sql.CreateInsert<T>(false, true);
                 foreach (var x in collection)
                 {
                     var value = this.Connection.Execute(sql, x, transaction, this.Timeout);
@@ -67,18 +66,18 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// Asynchronously inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             //--- 挿入処理本体
             Func<IEnumerable<T>, IDbTransaction, Task<int>> insert = async (collection, transaction) =>
             {
                 var result = 0;
-                var sql = PrimitiveSql.CreateInsert<T>(this.DbKind, false, true);
+                var sql = this.DbProvider.Sql.CreateInsert<T>(false, true);
                 foreach (var x in collection)
                 {
                     var value = await this.Connection.ExecuteAsync(sql, x, transaction, this.Timeout).ConfigureAwait(false);
@@ -105,15 +104,14 @@ namespace DeclarativeSql.Dapper
 
         #region InsertAndGet
         /// <summary>
-        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// Generates SQL to insert record and get the automatically assigned ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>SQL文</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <returns>SQL</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+$@"{this.DbProvider.Sql.CreateInsert<T>()};
 select last_insert_rowid() as Id;";
         #endregion
     }
-    */
 }

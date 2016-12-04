@@ -15,6 +15,11 @@
         /// </summary>
         MySql,
 
+        /// <summary>
+        /// SQLite
+        /// </summary>
+        Sqlite,
+
         /*
         /// <summary>
         /// SQL Server Compact
@@ -30,11 +35,6 @@
         /// PostgreSQL
         /// </summary>
         PostgreSql,
-
-        /// <summary>
-        /// SQLite
-        /// </summary>
-        SQLite,
         */
     }
 }
