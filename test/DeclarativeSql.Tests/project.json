@@ -10,6 +10,7 @@
         "Microsoft.Data.Sqlite": "1.1.0",
         "MSTest.TestFramework": "1.0.6-preview",
         "MySql.Data": "7.0.6-IR31",
+        "Npgsql": "3.1.9",
         "System.Data.SqlClient": "4.3.0"
     },
 

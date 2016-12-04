@@ -27,6 +27,11 @@ namespace DeclarativeSql.Tests
         [TestMethod]
         public void SqliteFactory生成()
             => DbProvider.Sqlite.Factory.IsNotNull();
+
+
+        [TestMethod]
+        public void PostgreSqlFactory生成()
+            => DbProvider.PostgreSql.Factory.IsNotNull();
         #endregion
     }
 }

@@ -20,6 +20,11 @@
         /// </summary>
         Sqlite,
 
+        /// <summary>
+        /// PostgreSQL
+        /// </summary>
+        PostgreSql,
+
         /*
         /// <summary>
         /// SQL Server Compact
@@ -30,11 +35,6 @@
         /// Oracle
         /// </summary>
         Oracle,
-
-        /// <summary>
-        /// PostgreSQL
-        /// </summary>
-        PostgreSql,
         */
     }
 }

@@ -106,10 +106,10 @@ namespace DeclarativeSql
                 This.SqlServer,
                 This.MySql,
                 This.Sqlite,
+                This.PostgreSql,
                 //This.SqlServerCe,
                 //This.Oracle,
                 //This.UnmanagedOracle,
-                //This.PostgreSql,
             };
             This.ByKind = This.All.ToDictionary(x => x.Kind);
             This.ByConnectionTypeName = This.All.ToDictionary(x => x.ConnectionTypeName);
@@ -175,6 +175,19 @@ namespace DeclarativeSql
         );
 
 
+        /// <summary>
+        /// Gets database provider for PostgreSQL.
+        /// </summary>
+        public static This PostgreSql { get; } = new This
+        (
+            DbKind.PostgreSql,
+            "Npgsql",
+            "Npgsql.NpgsqlFactory",
+            "Npgsql.NpgsqlConnection",
+            ':'
+        );
+
+
         /*
         /// <summary>
         /// Gets database provider for SQL Server Compact.
@@ -198,19 +211,6 @@ namespace DeclarativeSql
             "",
             "Oracle.ManagedDataAccess.Client",
             "Oracle.ManagedDataAccess.Client.OracleConnection",
-            ':'
-        );
-
-
-        /// <summary>
-        /// Gets database provider for PostgreSQL.
-        /// </summary>
-        public static This PostgreSql { get; } = new This
-        (
-            DbKind.PostgreSql,
-            "",
-            "Npgsql",
-            "Npgsql.NpgsqlConnection",
             ':'
         );
         */

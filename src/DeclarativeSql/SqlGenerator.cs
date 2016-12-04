@@ -143,7 +143,7 @@ namespace DeclarativeSql
                             {
                                 case DbKind.SqlServer:  return $"next value for {x.Sequence.FullName}";
                               //case DbKind.Oracle:     return $"{x.Sequence.FullName}.nextval";
-                              //case DbKind.PostgreSql: return $"nextval('{x.Sequence.FullName}')";
+                                case DbKind.PostgreSql: return $"nextval('{x.Sequence.FullName}')";
                             }
                             return $"{prefix}{x.PropertyName}";
                         })

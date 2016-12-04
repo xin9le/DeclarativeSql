@@ -6,9 +6,8 @@ using DeclarativeSql.Mapping;
 
 namespace DeclarativeSql.Dapper
 {
-    /*
     /// <summary>
-    /// PostgreSqlデータベースに対する操作を提供します。
+    /// Provides the database operations for PostgreSQL.
     /// </summary>
     internal class PostgreSqlOperation : DbOperation
     {
@@ -28,18 +27,17 @@ namespace DeclarativeSql.Dapper
 
         #region InsertAndGet
         /// <summary>
-        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// Generates SQL to insert record and get the automatically assigned ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>SQL文</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <returns>SQL</returns>
         protected override string CreateInsertAndGetSql<T>()
         {
             var sequence = TableMappingInfo.Create<T>().Columns.First(x => x.IsPrimaryKey).Sequence;
             return
-$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+$@"{this.DbProvider.Sql.CreateInsert<T>()};
 select currval({sequence.FullName}) as Id;";
         }
         #endregion
     }
-    */
 }
