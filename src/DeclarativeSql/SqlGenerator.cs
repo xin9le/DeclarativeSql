@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -252,6 +253,90 @@ namespace DeclarativeSql
 
             var table = TableMappingInfo.Create(type);
             return $"truncate table {table.FullName}";
+        }
+        #endregion
+
+
+        #region Where
+        /// <summary>
+        /// Creates where clause from specified predicative expression.
+        /// </summary>
+        /// <typeparam name="T">Target type</typeparam>
+        /// <param name="predicate">Predicative expression</param>
+        /// <returns>Where clause</returns>
+        public WhereClause CreateWhere<T>(Expression<Func<T, bool>> predicate)
+        {
+            //--- 解析実行
+            var root = PredicateParser.Parse(predicate);
+
+            //--- SQL文 / パラメーター生成の定義
+            uint index = 0;
+            var columnMap = TableMappingInfo.Create<T>().Columns.ToDictionary(x => x.PropertyName);
+            var prefix = this.DbProvider.BindParameterPrefix;
+            var parameterCount  = root.DescendantsAndSelf().Count(x =>
+                                {
+                                    return  x.Operator != PredicateOperator.AndAlso
+                                        &&  x.Operator != PredicateOperator.OrElse
+                                        &&  x.Value != null;
+                                });
+            var digit = (parameterCount - 1).ToString().Length;
+            var digitFormat = $"D{digit}";
+            IDictionary<string, object> parameter = new ExpandoObject();
+            Func<PredicateElement, string> sqlBuilder = null;
+            sqlBuilder = element =>
+            {
+                if (element.HasChildren)
+                {
+                    var left  = sqlBuilder(element.Left);
+                    var right = sqlBuilder(element.Right);
+                    if (element.Operator != element.Left .Operator && element.Left .HasChildren)  left  = $"({left})";
+                    if (element.Operator != element.Right.Operator && element.Right.HasChildren)  right = $"({right})";
+                    if (element.Operator == PredicateOperator.AndAlso)  return $"{left} and {right}";
+                    if (element.Operator == PredicateOperator.OrElse)   return $"{left} or {right}";
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    var builder = new StringBuilder();
+                    builder.Append(columnMap[element.PropertyName].ColumnName);
+                    switch (element.Operator)
+                    {
+                        case PredicateOperator.Equal:
+                            if (element.Value == null)
+                            {
+                                builder.Append(" is null");
+                                return builder.ToString();
+                            }
+                            builder.Append(" = ");
+                            break;
+
+                        case PredicateOperator.NotEqual:
+                            if (element.Value == null)
+                            {
+                                builder.Append(" is not null");
+                                return builder.ToString();
+                            }
+                            builder.Append(" <> ");
+                            break;
+
+                        case PredicateOperator.LessThan:            builder.Append(" < ");  break;
+                        case PredicateOperator.LessThanOrEqual:     builder.Append(" <= "); break;
+                        case PredicateOperator.GreaterThan:         builder.Append(" > ");  break;
+                        case PredicateOperator.GreaterThanOrEqual:  builder.Append(" >= "); break;
+                        case PredicateOperator.Contains:            builder.Append(" in "); break;
+                        default:                                    throw new InvalidOperationException();
+                    }
+
+                    var parameterName = $"p{index.ToString(digitFormat)}";
+                    ++index;
+                    parameter.Add(parameterName, element.Value);  //--- cache parameter
+                    builder.Append($"{prefix}{parameterName}");                    
+                    return builder.ToString();
+                }
+            };
+
+            //--- 組み立て            
+            return new WhereClause(sqlBuilder(root), parameter as ExpandoObject);
         }
         #endregion
     }

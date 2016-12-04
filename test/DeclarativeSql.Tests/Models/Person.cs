@@ -4,7 +4,7 @@ using DeclarativeSql.Annotations;
 
 
 
-namespace DeclarativeSql.Tests
+namespace DeclarativeSql.Tests.Models
 {
     [Table("Person", Schema = "dbo")]  //--- テーブル名の指定
     public class Person
