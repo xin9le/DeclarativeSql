@@ -10,6 +10,11 @@
         /// </summary>
         SqlServer = 0,
 
+        /// <summary>
+        /// MySQL / Amazon Aurora / MariaDB
+        /// </summary>
+        MySql,
+
         /*
         /// <summary>
         /// SQL Server Compact
@@ -20,14 +25,7 @@
         /// Oracle
         /// </summary>
         Oracle,
-        */
 
-        /// <summary>
-        /// MySQL / Amazon Aurora / MariaDB
-        /// </summary>
-        MySql,
-
-        /*
         /// <summary>
         /// PostgreSQL
         /// </summary>

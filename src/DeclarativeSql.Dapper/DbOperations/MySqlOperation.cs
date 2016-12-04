@@ -8,30 +8,22 @@ using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
 using DeclarativeSql.Mapping;
+using This = DeclarativeSql.Dapper.MySqlOperation;
 
 
 
 namespace DeclarativeSql.Dapper
 {
-    /*
     /// <summary>
-    /// MySqlデータベースに対する操作を提供します。
+    /// Provides the database operations for MySQL.
     /// </summary>
     internal class MySqlOperation : DbOperation
     {
-        #region プロパティ
+        #region Properties
         /// <summary>
-        /// 指定された文字列をエスケープするデリゲートを取得します。
+        /// Gets the delegate that escapes the specified string.
         /// </summary>
-        private static Func<string, string> Escape { get; } = (Func<string, string>)Delegate.CreateDelegate
-        (
-            typeof(Func<string, string>),
-            AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Select(x => x.GetType("MySql.Data.MySqlClient.MySqlHelper"))
-                .First(x => x != null)
-                .GetRuntimeMethod("EscapeString", new []{ typeof(string) })
-        );
+        private static Func<string, string> Escape { get; }
         #endregion
 
 
@@ -46,16 +38,29 @@ namespace DeclarativeSql.Dapper
         protected MySqlOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         {}
+
+
+        /// <summary>
+        /// Calls when first access.
+        /// </summary>
+        static MySqlOperation()
+        {
+            var name = new AssemblyName(DbProvider.MySql.AssemblyName);
+            var assembly = Assembly.Load(name);
+            var type = assembly.GetType("MySql.Data.MySqlClient.MySqlHelper").GetType();
+            var method = type.GetRuntimeMethod("EscapeString", new []{ typeof(string) });
+            This.Escape = (Func<string, string>)method.CreateDelegate(typeof(Func<string, string>));
+        }
         #endregion
 
 
         #region BulkInsert
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// Inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override int BulkInsert<T>(IEnumerable<T> data)
         {
             var sql = this.CreateBulkInsertSql(data);
@@ -64,11 +69,11 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// Asynchronously inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             var sql = this.CreateBulkInsertSql(data);
@@ -77,15 +82,15 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定したデータからバルクインサート用のSQL文を生成します。
+        /// Generates SQL statement for bulk inserts from the specified data.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>SQL文</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>SQL</returns>
         private string CreateBulkInsertSql<T>(IEnumerable<T> data)
         {
-            var prefix  = this.DbKind.GetBindParameterPrefix();
-            var table   = TableMappingInfo.Create<T>();
+            var prefix = this.DbProvider.BindParameterPrefix;
+            var table  = TableMappingInfo.Create<T>();
             var columnNames = table.Columns.Select(x => "    " + x.ColumnName);
             var builder = new StringBuilder();
             builder.AppendLine($"insert into {table.FullName}");
@@ -99,7 +104,7 @@ namespace DeclarativeSql.Dapper
             {
                 builder.AppendLine();
                 builder.Append("(");
-                var values = getters.Select(f => ToSqlLiteral(f(x)));
+                var values = getters.Select(f => This.ToSqlLiteral(f(x)));
                 builder.Append(string.Join(", ", values));
                 builder.Append("),");
             }
@@ -110,10 +115,10 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定された値をSQL用の文字に変換します。
+        /// Converts the specified value to literal for SQL.
         /// </summary>
-        /// <param name="value">値</param>
-        /// <returns>SQL用の文字列</returns>
+        /// <param name="value">Value</param>
+        /// <returns>Literal for SQL</returns>
         private static string ToSqlLiteral(object value)
         {
             if (value == null)      return "NULL";
@@ -130,15 +135,14 @@ namespace DeclarativeSql.Dapper
 
         #region InsertAndGet
         /// <summary>
-        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// Generates SQL to insert record and get the automatically assigned ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>SQL文</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <returns>SQL</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+$@"{this.DbProvider.Sql.CreateInsert<T>()};
 select last_insert_id() as Id;";
         #endregion
     }
-    */
 }

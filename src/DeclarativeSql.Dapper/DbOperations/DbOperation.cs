@@ -20,7 +20,7 @@ namespace DeclarativeSql.Dapper
 
 
     /// <summary>
-    /// Provides database operations.
+    /// Provides the database operations for common part.
     /// </summary>
     internal class DbOperation
     {
@@ -331,11 +331,11 @@ namespace DeclarativeSql.Dapper
 
         #region BulkInsert
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// Inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public virtual int BulkInsert<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
@@ -343,11 +343,11 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// Asynchronously inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             throw new NotSupportedException();
@@ -357,11 +357,11 @@ namespace DeclarativeSql.Dapper
 
         #region InsertAndGet
         /// <summary>
-        /// 指定されたレコードをテーブルに挿入し、自動採番IDを返します。
+        /// Inserts the specified record into the table and returns the automatic assignment ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>自動採番ID</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Automatic assignment ID.</returns>
         public virtual long InsertAndGet<T>(T data)
         {
             This.AssertInsertAndGet<T>();
@@ -372,11 +372,11 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをテーブルに非同期的に挿入し、自動採番IDを返します。
+        /// Asynchronously inserts the specified record into the table and returns the automatic assignment ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>自動採番ID</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Automatic assignment ID.</returns>
         public virtual async Task<long> InsertAndGetAsync<T>(T data)
         {
             This.AssertInsertAndGet<T>();
@@ -388,10 +388,10 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// レコードを挿入し、そのレコードに自動採番されたIDを取得するSQLを生成します。
+        /// Generates SQL to insert record and get the automatically assigned ID.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>SQL文</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <returns>SQL</returns>
         protected virtual string CreateInsertAndGetSql<T>()
         {
             throw new NotSupportedException();
@@ -399,10 +399,10 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// InsertAndGet メソッドを実行可能かどうかを診断します。
+        /// Diagnoses whether the InsertAndGet method can be executed.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <returns>実行可能かどうか</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <returns>Retruns true if executable.</returns>
         protected static void AssertInsertAndGet<T>()
         {
             if (typeof(T).IsCollection())
