@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DeclarativeSql")]
+[assembly: AssemblyProduct("DeclarativeSql.Dapper")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -16,7 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8fdbc06b-4a68-45fe-9bda-4e728e3fad8b")]
-
-// Friendly assembly
-[assembly: InternalsVisibleTo("DeclarativeSql.Dapper")]
+[assembly: Guid("91a5bbcf-4004-4a12-9b4b-e686a35f0c63")]

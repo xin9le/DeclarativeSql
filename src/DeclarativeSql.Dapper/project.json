@@ -1,0 +1,21 @@
+{
+    "title": "DeclarativeSql.Dapper",
+    "copyright": "Copyright © 2014 - 2016 xin9le, All rights reserved.",
+    "version": "1.0.0-*",
+
+    "dependencies": {
+        "Dapper": "1.50.2",
+        "DeclarativeSql": { "target": "project" },
+        "Microsoft.CSharp": "4.3.0",
+        "NETStandard.Library": "1.6.1",
+        "System.Data.Common": "4.3.0",
+        "System.Dynamic.Runtime": "4.3.0",
+        "System.Reflection.Extensions": "4.3.0"
+    },
+
+    "frameworks": {
+        "netstandard1.6": {
+            "imports": "dnxcore50"
+        }
+    }
+}
