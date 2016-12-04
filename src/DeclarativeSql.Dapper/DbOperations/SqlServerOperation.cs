@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using DeclarativeSql.Helpers;
 using DeclarativeSql.Mapping;
+using FastMember;
 
 
 
 namespace DeclarativeSql.Dapper
 {
-    /*
     /// <summary>
-    /// Sql Serverデータベースに対する操作を提供します。
+    /// Provides the database operations for SQL Server.
     /// </summary>
     internal class SqlServerOperation : DbOperation
     {
@@ -30,13 +31,83 @@ namespace DeclarativeSql.Dapper
         #endregion
 
 
-        #region BulkInsert
+        #region BulkInsert (using DbDataReader)
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに挿入します。
+        /// Inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
+        public override int BulkInsert<T>(IEnumerable<T> data)
+        {
+            using (var executor = this.CreateBulkExecutor())
+            {
+                data = data.Materialize();
+                var param = this.SetupBulkInsert(executor, data);
+                executor.WriteToServer(param);
+                return data.Count();
+            }
+        }
+
+
+        /// <summary>
+        /// Asynchronously inserts the specified record into the table by bulk method.
+        /// </summary>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
+        public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
+        {
+            using (var executor = this.CreateBulkExecutor())
+            {
+                data = data.Materialize();
+                var param = this.SetupBulkInsert(executor, data);
+                await executor.WriteToServerAsync(param).ConfigureAwait(false);
+                return data.Count();
+            }
+        }
+
+
+        /// <summary>
+        /// Generates bulk process executor.
+        /// </summary>
+        /// <returns>Instance</returns>
+        private SqlBulkCopy CreateBulkExecutor()
+            => new SqlBulkCopy(this.Connection as SqlConnection, SqlBulkCopyOptions.Default, this.Transaction as SqlTransaction);
+
+
+        /// <summary>
+        /// Prepares for bulk insertion processing.
+        /// </summary>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="executor">Bulk executor.</param>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Data reader</returns>
+        private DbDataReader SetupBulkInsert<T>(SqlBulkCopy executor, IEnumerable<T> data)
+        {
+            //--- タイムアウト
+            if (this.Timeout.HasValue)
+                executor.BulkCopyTimeout = this.Timeout.Value;
+            
+            //--- 対象テーブル名
+            var info = TableMappingInfo.Create<T>();
+            executor.DestinationTableName = info.FullName;
+
+            //--- データ読み込みをラップ
+            var propertyNames = info.Columns.Select(x => x.PropertyName).ToArray();
+            return ObjectReader.Create(data, propertyNames);
+        }
+        #endregion
+
+
+        #region BulkInsert (using DataTable)
+        /*
+        /// <summary>
+        /// Inserts the specified record into the table by bulk method.
+        /// </summary>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override int BulkInsert<T>(IEnumerable<T> data)
         {
             using (var executor = this.CreateBulkExecutor())
@@ -49,11 +120,11 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// 指定されたレコードをバルク方式でテーブルに非同期的に挿入します。
+        /// Asynchronously inserts the specified record into the table by bulk method.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="data">挿入するデータ</param>
-        /// <returns>影響した行数</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Affected row count.</returns>
         public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             using (var executor = this.CreateBulkExecutor())
@@ -66,19 +137,20 @@ namespace DeclarativeSql.Dapper
 
 
         /// <summary>
-        /// バルク処理の実行機能を生成します。
+        /// Generates bulk process executor.
         /// </summary>
-        /// <returns>インスタンス</returns>
-        private SqlBulkCopy CreateBulkExecutor() => new SqlBulkCopy(this.Connection as SqlConnection, SqlBulkCopyOptions.Default, this.Transaction as SqlTransaction);
+        /// <returns>Instance</returns>
+        private SqlBulkCopy CreateBulkExecutor()
+            => new SqlBulkCopy(this.Connection as SqlConnection, SqlBulkCopyOptions.Default, this.Transaction as SqlTransaction);
 
 
         /// <summary>
-        /// バルク方式での挿入処理の準備を行います。
+        /// Prepares for bulk insertion processing.
         /// </summary>
-        /// <typeparam name="T">テーブルにマッピングされた型</typeparam>
-        /// <param name="executor">バルク処理実行機能</param>
-        /// <param name="data">挿入する生データ</param>
-        /// <returns>挿入するデータ</returns>
+        /// <typeparam name="T">Mapped type to table.</typeparam>
+        /// <param name="executor">Bulk executor.</param>
+        /// <param name="data">Inserting target data.</param>
+        /// <returns>Data table</returns>
         private DataTable SetupBulkInsert<T>(SqlBulkCopy executor, IEnumerable<T> data)
         {
             //--- タイムアウト
@@ -95,7 +167,12 @@ namespace DeclarativeSql.Dapper
             foreach (var x in info.Columns)
             {
                 executor.ColumnMappings.Add(x.PropertyName, x.ColumnName);
-                table.Columns.Add(x.PropertyName, x.PropertyType);
+                table.Columns.Add(new DataColumn
+                {
+                    ColumnName = x.PropertyName,
+                    DataType = x.IsNullable ? Nullable.GetUnderlyingType(x.PropertyType) : x.PropertyType,
+                    AllowDBNull = x.IsNullable,
+                });
                 getters.Add(AccessorCache<T>.LookupGet(x.PropertyName));
             }
 
@@ -109,6 +186,7 @@ namespace DeclarativeSql.Dapper
             }
             return table;
         }
+        */
         #endregion
 
 
@@ -120,9 +198,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>SQL文</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{PrimitiveSql.CreateInsert<T>(this.DbKind)};
+$@"{this.DbProvider.Sql.CreateInsert<T>()};
 select cast(scope_identity() as bigint) as Id;";
         #endregion
     }
-    */
 }
