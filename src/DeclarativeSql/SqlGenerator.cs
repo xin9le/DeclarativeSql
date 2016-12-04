@@ -55,8 +55,8 @@ namespace DeclarativeSql
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var table = TableMappingInfo.Create(type);
-            return $"select count(*) as Count from {table.FullName}";
+            var tableName = TableMappingInfo.Create(type).FullName(this.DbProvider.KeywordBrackets);
+            return $"select count(*) as Count from {tableName}";
         }
         #endregion
 
@@ -98,11 +98,11 @@ namespace DeclarativeSql
                             y => y,
                             (x, y) => x
                         );
-            var columnNames = columns.Select(x => $"    {x.ColumnName} as {x.PropertyName}");
+            var columnNames = columns.Select(x => $"    {x.ColumnName(this.DbProvider.KeywordBrackets)} as {x.PropertyName}");
             var builder = new StringBuilder();
             builder.AppendLine("select");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
-            builder.Append($"from {table.FullName}");
+            builder.Append($"from {table.FullName(this.DbProvider.KeywordBrackets)}");
             return builder.ToString();
         }
         #endregion
@@ -132,7 +132,6 @@ namespace DeclarativeSql
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var prefix  = this.DbProvider.BindParameterPrefix;
             var table   = TableMappingInfo.Create(type);
             var columns = table.Columns.Where(x => setIdentity ? true : !x.IsAutoIncrement);
             var values  = columns.Select(x =>
@@ -141,16 +140,16 @@ namespace DeclarativeSql
                             if (x.Sequence != null)
                             switch (this.DbProvider.Kind)
                             {
-                                case DbKind.SqlServer:  return $"next value for {x.Sequence.FullName}";
-                              //case DbKind.Oracle:     return $"{x.Sequence.FullName}.nextval";
-                                case DbKind.PostgreSql: return $"nextval('{x.Sequence.FullName}')";
+                                case DbKind.SqlServer:  return $"next value for {x.Sequence.FullName(this.DbProvider.KeywordBrackets)}";
+                              //case DbKind.Oracle:     return $"{x.Sequence.FullName(this.DbProvider.KeywordBrackets)}.nextval";
+                                case DbKind.PostgreSql: return $"nextval('{x.Sequence.FullName(this.DbProvider.KeywordBrackets)}')";
                             }
-                            return $"{prefix}{x.PropertyName}";
+                            return $"{this.DbProvider.BindParameterPrefix}{x.PropertyName}";
                         })
                         .Select(x => "    " + x);
-            var columnNames = columns.Select(x => "    " + x.ColumnName);
+            var columnNames = columns.Select(x => "    " + x.ColumnName(this.DbProvider.KeywordBrackets));
             var builder = new StringBuilder();
-            builder.AppendLine($"insert into {table.FullName}");
+            builder.AppendLine($"insert into {table.FullName(this.DbProvider.KeywordBrackets)}");
             builder.AppendLine("(");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
             builder.AppendLine(")");
@@ -192,14 +191,13 @@ namespace DeclarativeSql
             if (type == null)           throw new ArgumentNullException(nameof(type));
             if (propertyNames == null)  propertyNames = Enumerable.Empty<string>();
 
-            var prefix  = this.DbProvider.BindParameterPrefix;
             var table   = TableMappingInfo.Create(type);
             var columns = table.Columns.Where(x => setIdentity ? true : !x.IsAutoIncrement);
             if (propertyNames.Any())
                 columns = columns.Join(propertyNames, x => x.PropertyName, y => y, (x, y) => x);
-            var setters = columns.Select(x => $"    {x.ColumnName} = {prefix}{x.PropertyName}");
+            var setters = columns.Select(x => $"    {x.ColumnName(this.DbProvider.KeywordBrackets)} = {this.DbProvider.BindParameterPrefix}{x.PropertyName}");
             var builder = new StringBuilder();
-            builder.AppendLine($"update {table.FullName}");
+            builder.AppendLine($"update {table.FullName(this.DbProvider.KeywordBrackets)}");
             builder.AppendLine("set");
             builder.Append(string.Join($",{Environment.NewLine}", setters));
             return builder.ToString();
@@ -226,8 +224,8 @@ namespace DeclarativeSql
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var table = TableMappingInfo.Create(type);
-            return $"delete from {table.FullName}";
+            var tableName = TableMappingInfo.Create(type).FullName(this.DbProvider.KeywordBrackets);
+            return $"delete from {tableName}";
         }
         #endregion
 
@@ -251,8 +249,8 @@ namespace DeclarativeSql
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            var table = TableMappingInfo.Create(type);
-            return $"truncate table {table.FullName}";
+            var tableName = TableMappingInfo.Create(type).FullName(this.DbProvider.KeywordBrackets);
+            return $"truncate table {tableName}";
         }
         #endregion
 
@@ -298,7 +296,7 @@ namespace DeclarativeSql
                 else
                 {
                     var builder = new StringBuilder();
-                    builder.Append(columnMap[element.PropertyName].ColumnName);
+                    builder.Append(columnMap[element.PropertyName].ColumnName(this.DbProvider.KeywordBrackets));
                     switch (element.Operator)
                     {
                         case PredicateOperator.Equal:

@@ -91,9 +91,9 @@ namespace DeclarativeSql.Dapper
         {
             var prefix = this.DbProvider.BindParameterPrefix;
             var table  = TableMappingInfo.Create<T>();
-            var columnNames = table.Columns.Select(x => "    " + x.ColumnName);
+            var columnNames = table.Columns.Select(x => "    " + x.ColumnName(this.DbProvider.KeywordBrackets));
             var builder = new StringBuilder();
-            builder.AppendLine($"insert into {table.FullName}");
+            builder.AppendLine($"insert into {table.FullName(this.DbProvider.KeywordBrackets)}");
             builder.AppendLine("(");
             builder.AppendLine(string.Join($",{Environment.NewLine}", columnNames));
             builder.AppendLine(")");

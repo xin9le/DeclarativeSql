@@ -22,14 +22,6 @@ namespace DeclarativeSql.Mapping
         /// Gets the sequence name.
         /// </summary>
         public string Name { get; }
-
-
-        /// <summary>
-        /// Gets the full name that combines the schema name and sequence name.
-        /// </summary>
-        public string FullName => string.IsNullOrWhiteSpace(this.Schema)
-                                ? this.Name
-                                : $"{this.Schema}.{this.Name}";
         #endregion
 
 

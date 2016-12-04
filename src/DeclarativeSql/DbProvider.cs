@@ -46,6 +46,12 @@ namespace DeclarativeSql
 
 
         /// <summary>
+        /// Gets sql keyword bracket pair.
+        /// </summary>
+        public BracketPair KeywordBrackets { get; }
+
+
+        /// <summary>
         /// Gets database provider factory.
         /// </summary>
         public DbProviderFactory Factory
@@ -85,13 +91,15 @@ namespace DeclarativeSql
         /// <param name="factoryTypeName">Database provider factory type name</param>
         /// <param name="connectionTypeName">DbConnection type name</param>
         /// <param name="bindParameterPrefix">Bind parameter prefix</param>
-        private DbProvider(DbKind kind, string assemblyName, string factoryTypeName, string connectionTypeName, char? bindParameterPrefix)
+        /// <param name="keywordBrackets">SQL keyword bracket pair</param>
+        private DbProvider(DbKind kind, string assemblyName, string factoryTypeName, string connectionTypeName, char? bindParameterPrefix, BracketPair keywordBrackets)
         {
             this.Kind = kind;
             this.AssemblyName = assemblyName;
             this.FactoryTypeName = factoryTypeName;
             this.ConnectionTypeName = connectionTypeName;
             this.BindParameterPrefix = bindParameterPrefix;
+            this.KeywordBrackets = keywordBrackets;
             this.Sql = new SqlGenerator(this);
         }
 
@@ -145,7 +153,8 @@ namespace DeclarativeSql
             "System.Data.SqlClient",
             "System.Data.SqlClient.SqlClientFactory",
             "System.Data.SqlClient.SqlConnection",
-            '@'
+            '@',
+            new BracketPair('[', ']')
         );
 
 
@@ -158,7 +167,8 @@ namespace DeclarativeSql
             "MySql.Data",
             "MySql.Data.MySqlClient.MySqlClientFactory",
             "MySql.Data.MySqlClient.MySqlConnection",
-            '@'
+            '@',
+            new BracketPair('`', '`')
         );
 
 
@@ -171,7 +181,8 @@ namespace DeclarativeSql
             "Microsoft.Data.Sqlite",
             "Microsoft.Data.Sqlite.SqliteFactory",
             "Microsoft.Data.Sqlite.SqliteConnection",
-            '@'
+            '@',
+            new BracketPair('"', '"')
         );
 
 
@@ -184,7 +195,8 @@ namespace DeclarativeSql
             "Npgsql",
             "Npgsql.NpgsqlFactory",
             "Npgsql.NpgsqlConnection",
-            ':'
+            ':',
+            new BracketPair('"', '"')
         );
 
 
@@ -198,7 +210,8 @@ namespace DeclarativeSql
             "",
             "System.Data.SqlServerCe.4.0",
             "System.Data.SqlServerCe.SqlCeConnection",
-            '@'
+            '@',
+            new BracketPair('[', ']')
         );
 
 
@@ -211,7 +224,8 @@ namespace DeclarativeSql
             "",
             "Oracle.ManagedDataAccess.Client",
             "Oracle.ManagedDataAccess.Client.OracleConnection",
-            ':'
+            ':',
+            new BracketPair('"', '"')
         );
         */
         #endregion

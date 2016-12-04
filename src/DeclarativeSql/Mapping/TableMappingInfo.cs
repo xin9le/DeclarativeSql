@@ -45,14 +45,6 @@ namespace DeclarativeSql.Mapping
         /// Gets a collection of column mapping information.
         /// </summary>
         public IReadOnlyList<ColumnMappingInfo> Columns { get; private set; }
-
-
-        /// <summary>
-        /// Gets the full name that combines the schema name and table name.
-        /// </summary>
-        public string FullName => string.IsNullOrWhiteSpace(this.Schema)
-                                ? this.Name
-                                : $"{this.Schema}.{this.Name}";
         #endregion
 
 

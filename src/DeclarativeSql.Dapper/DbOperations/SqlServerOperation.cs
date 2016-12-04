@@ -90,11 +90,11 @@ namespace DeclarativeSql.Dapper
                 executor.BulkCopyTimeout = this.Timeout.Value;
             
             //--- 対象テーブル名
-            var info = TableMappingInfo.Create<T>();
-            executor.DestinationTableName = info.FullName;
+            var table = TableMappingInfo.Create<T>();
+            executor.DestinationTableName = table.FullName(this.DbProvider.KeywordBrackets);
 
             //--- データ読み込みをラップ
-            var propertyNames = info.Columns.Select(x => x.PropertyName).ToArray();
+            var propertyNames = table.Columns.Select(x => x.PropertyName).ToArray();
             return ObjectReader.Create(data, propertyNames);
         }
         #endregion
