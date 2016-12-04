@@ -93,7 +93,11 @@ namespace DeclarativeSql.Dapper
             foreach (var x in info.Columns)
             {
                 executor.ColumnMappings.Add(x.PropertyName, x.ColumnName);
-                table.Columns.Add(x.PropertyName, x.PropertyType);
+                table.Columns.Add(new DataColumn {
+                    ColumnName = x.PropertyName,
+                    DataType = x.IsNullable ? Nullable.GetUnderlyingType(x.PropertyType) : x.PropertyType,
+                    AllowDBNull = x.IsNullable
+                });
                 getters.Add(AccessorCache<T>.LookupGet(x.PropertyName));
             }
 
