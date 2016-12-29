@@ -60,7 +60,7 @@ namespace DeclarativeSql.Dapper
         {
             This.Constructors
                 = Assembly.GetExecutingAssembly()
-                .GetTypes()
+                .GetLoadableTypes()
                 .Where(x => x.IsSubclassOf(typeof(This)))
                 .Where(x => !x.IsAbstract)
                 .Where(x => x.IsClass)

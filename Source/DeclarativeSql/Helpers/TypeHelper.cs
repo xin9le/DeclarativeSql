@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using This = DeclarativeSql.Helpers.TypeHelper;
 
 
@@ -55,5 +56,26 @@ namespace DeclarativeSql.Helpers
         /// <param name="type">型情報</param>
         /// <returns>コレクション型かどうか</returns>
         public static bool IsCollection(this Type type) => This.GetElementType(type) != null;
+
+
+        /// <summary>
+        /// 指定されたアセンブリから読み込み可能な型情報を取得します。
+        /// </summary>
+        /// <param name="assembly">アセンブリ</param>
+        /// <returns>型情報のコレクション</returns>
+        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(x => x != null);
+            }
+        }
     }
 }
