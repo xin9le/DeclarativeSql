@@ -264,13 +264,10 @@ namespace DeclarativeSql
         /// <returns>Where clause</returns>
         public WhereClause CreateWhere<T>(Expression<Func<T, bool>> predicate)
         {
-            //--- 解析実行
+            //--- 要素分解
             var root = PredicateParser.Parse(predicate);
 
-            //--- SQL文 / パラメーター生成の定義
-            uint index = 0;
-            var columnMap = TableMappingInfo.Create<T>().Columns.ToDictionary(x => x.PropertyName);
-            var prefix = this.DbProvider.BindParameterPrefix;
+            //--- バインド変数の個数の桁を算出
             var parameterCount  = root.DescendantsAndSelf().Count(x =>
                                 {
                                     return  x.Operator != PredicateOperator.AndAlso
@@ -278,63 +275,88 @@ namespace DeclarativeSql
                                         &&  x.Value != null;
                                 });
             var digit = (parameterCount - 1).ToString().Length;
-            var digitFormat = $"D{digit}";
-            IDictionary<string, object> parameter = new ExpandoObject();
-            Func<PredicateElement, string> sqlBuilder = null;
-            sqlBuilder = element =>
+
+            //--- 組み立て
+            var builder = new StringBuilder();
+            var parameter = new ExpandoObject();
+            var columnMap = TableMappingInfo.Create<T>().Columns.ToDictionary(x => x.PropertyName);
+            uint index = 0;
+            this.BuildSql(builder, parameter, columnMap, ref index, ref digit, root);
+            return new WhereClause(builder.ToString(), parameter);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="parameter"></param>
+        /// <param name="columnMap"></param>
+        /// <param name="index"></param>
+        /// <param name="digit"></param>
+        /// <param name="element"></param>
+        private void BuildSql(StringBuilder builder, IDictionary<string, object> parameter, IDictionary<string, ColumnMappingInfo> columnMap, ref uint index, ref int digit, PredicateElement element)
+        {
+            if (element.HasChildren)
             {
-                if (element.HasChildren)
+                //--- left
                 {
-                    var left  = sqlBuilder(element.Left);
-                    var right = sqlBuilder(element.Right);
-                    if (element.Operator != element.Left .Operator && element.Left .HasChildren)  left  = $"({left})";
-                    if (element.Operator != element.Right.Operator && element.Right.HasChildren)  right = $"({right})";
-                    if (element.Operator == PredicateOperator.AndAlso)  return $"{left} and {right}";
-                    if (element.Operator == PredicateOperator.OrElse)   return $"{left} or {right}";
-                    throw new InvalidOperationException();
+                    var needsBrackets = element.Operator != element.Left.Operator && element.Left.HasChildren;
+                    if (needsBrackets) builder.Append('(');
+                    BuildSql(builder, parameter, columnMap, ref index, ref digit, element.Left);
+                    if (needsBrackets) builder.Append(')');
                 }
-                else
+
+                //--- and / or
+                if (element.Operator == PredicateOperator.AndAlso) builder.Append(" and ");
+                if (element.Operator == PredicateOperator.OrElse)  builder.Append(" or ");
+
+                //--- right
                 {
-                    var builder = new StringBuilder();
-                    builder.Append(columnMap[element.PropertyName].ColumnName(this.DbProvider.KeywordBrackets));
-                    switch (element.Operator)
-                    {
-                        case PredicateOperator.Equal:
-                            if (element.Value == null)
-                            {
-                                builder.Append(" is null");
-                                return builder.ToString();
-                            }
-                            builder.Append(" = ");
-                            break;
-
-                        case PredicateOperator.NotEqual:
-                            if (element.Value == null)
-                            {
-                                builder.Append(" is not null");
-                                return builder.ToString();
-                            }
-                            builder.Append(" <> ");
-                            break;
-
-                        case PredicateOperator.LessThan:            builder.Append(" < ");  break;
-                        case PredicateOperator.LessThanOrEqual:     builder.Append(" <= "); break;
-                        case PredicateOperator.GreaterThan:         builder.Append(" > ");  break;
-                        case PredicateOperator.GreaterThanOrEqual:  builder.Append(" >= "); break;
-                        case PredicateOperator.Contains:            builder.Append(" in "); break;
-                        default:                                    throw new InvalidOperationException();
-                    }
-
-                    var parameterName = $"p{index.ToString(digitFormat)}";
-                    ++index;
-                    parameter.Add(parameterName, element.Value);  //--- cache parameter
-                    builder.Append($"{prefix}{parameterName}");                    
-                    return builder.ToString();
+                    var needsBrackets = element.Operator != element.Right.Operator && element.Right.HasChildren;
+                    if (needsBrackets) builder.Append('(');
+                    BuildSql(builder, parameter, columnMap, ref index, ref digit, element.Right);
+                    if (needsBrackets) builder.Append(')');
                 }
-            };
+            }
+            else
+            {
+                builder.Append(columnMap[element.PropertyName].ColumnName(this.DbProvider.KeywordBrackets));
+                switch (element.Operator)
+                {
+                    case PredicateOperator.Equal:
+                        if (element.Value == null)
+                        {
+                            builder.Append(" is null");
+                            return;
+                        }
+                        builder.Append(" = ");
+                        break;
 
-            //--- 組み立て            
-            return new WhereClause(sqlBuilder(root), parameter as ExpandoObject);
+                    case PredicateOperator.NotEqual:
+                        if (element.Value == null)
+                        {
+                            builder.Append(" is not null");
+                            return;
+                        }
+                        builder.Append(" <> ");
+                        break;
+
+                    case PredicateOperator.LessThan:            builder.Append(" < ");  break;
+                    case PredicateOperator.LessThanOrEqual:     builder.Append(" <= "); break;
+                    case PredicateOperator.GreaterThan:         builder.Append(" > ");  break;
+                    case PredicateOperator.GreaterThanOrEqual:  builder.Append(" >= "); break;
+                    case PredicateOperator.Contains:            builder.Append(" in "); break;
+                    default:                                    throw new InvalidOperationException();
+                }
+
+                var digitFormat = $"D{digit}";
+                var parameterName = $"p{index.ToString(digitFormat)}";
+                ++index;
+                parameter.Add(parameterName, element.Value);  //--- cache parameter
+                builder.Append(this.DbProvider.BindParameterPrefix);
+                builder.Append(parameterName);
+            }
         }
         #endregion
     }
