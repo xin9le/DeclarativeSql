@@ -268,13 +268,15 @@ namespace DeclarativeSql
             var root = PredicateParser.Parse(predicate);
 
             //--- バインド変数の個数の桁を算出
+            //--- 10 で割った回数で算出するのが最も早いはず
+            //--- http://smdn.jp/programming/netfx/tips/get_number_of_digits/
             var parameterCount  = root.DescendantsAndSelf().Count(x =>
                                 {
                                     return  x.Operator != PredicateOperator.AndAlso
                                         &&  x.Operator != PredicateOperator.OrElse
                                         &&  x.Value != null;
                                 });
-            var digit = (parameterCount - 1).ToString().Length;
+            var digit = NumericsHelpers.GetDigit(parameterCount - 1);
 
             //--- 組み立て
             var builder = new StringBuilder();
