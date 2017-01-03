@@ -115,9 +115,7 @@ namespace DeclarativeSql
                 This.MySql,
                 This.Sqlite,
                 This.PostgreSql,
-                //This.SqlServerCe,
                 //This.Oracle,
-                //This.UnmanagedOracle,
             };
             This.ByKind = This.All.ToDictionary(x => x.Kind);
             This.ByConnectionTypeName = This.All.ToDictionary(x => x.ConnectionTypeName);
@@ -201,20 +199,6 @@ namespace DeclarativeSql
 
 
         /*
-        /// <summary>
-        /// Gets database provider for SQL Server Compact.
-        /// </summary>
-        public static This SqlServerCe { get; } = new This
-        (
-            DbKind.SqlServerCe,
-            "",
-            "System.Data.SqlServerCe.4.0",
-            "System.Data.SqlServerCe.SqlCeConnection",
-            '@',
-            new BracketPair('[', ']')
-        );
-
-
         /// <summary>
         /// Gets database provider for Oracle.
         /// </summary>
