@@ -27,11 +27,6 @@
 
         /*
         /// <summary>
-        /// SQL Server Compact
-        /// </summary>
-        SqlServerCe,
-
-        /// <summary>
         /// Oracle
         /// </summary>
         Oracle,
