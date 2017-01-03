@@ -66,7 +66,7 @@ namespace DeclarativeSql.Dapper
                 = typeof(This)
                 .GetTypeInfo()
                 .Assembly
-                .GetTypes()
+                .GetLoadableTypes()
                 .Select(x => x.GetTypeInfo())
                 .Where(x => x.IsSubclassOf(typeof(This)))
                 .Where(x => !x.IsAbstract)

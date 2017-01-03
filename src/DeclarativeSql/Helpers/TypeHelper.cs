@@ -57,5 +57,26 @@ namespace DeclarativeSql.Helpers
         /// <param name="type">Type information</param>
         /// <returns>Returns true if specified type is collection.</returns>
         public static bool IsCollection(this Type type) => This.GetElementType(type) != null;
+
+
+        /// <summary>
+        /// Gets type information that can be load from the specified assembly.
+        /// </summary>
+        /// <param name="assembly">Assembly</param>
+        /// <returns>Type information</returns>
+        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(x => x != null);
+            }
+        }
     }
 }
