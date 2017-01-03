@@ -6,17 +6,17 @@ using DeclarativeSql.Mapping;
 namespace DeclarativeSql
 {
     /// <summary>
-    /// 
+    /// Extension functions for kyeword bracket.
     /// </summary>
     public static class KeywordBracketsExtensions
     {
         #region TableMappingInfo
         /// <summary>
-        /// 
+        /// Creates schema name.
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Table mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Schema name</returns>
         public static string Schema(this TableMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -29,11 +29,11 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// 
+        /// Creates table name.
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Table mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Table name</returns>
         public static string Name(this TableMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -46,11 +46,11 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// 
+        /// Creates full table name (Schema + Name).
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Table mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Full table name</returns>
         public static string FullName(this TableMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -76,11 +76,11 @@ namespace DeclarativeSql
 
         #region ColumnMappingInfo
         /// <summary>
-        /// 
+        /// Creates column name.
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Column mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Column name</returns>
         public static string ColumnName(this ColumnMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -95,11 +95,11 @@ namespace DeclarativeSql
 
         #region SequenceMappingInfo
         /// <summary>
-        /// 
+        /// Creates schema name.
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Sequence mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Schema name</returns>
         public static string Schema(this SequenceMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -112,11 +112,11 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// 
+        /// Creates sequence name.
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Sequence mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Sequence name</returns>
         public static string Name(this SequenceMappingInfo self, BracketPair bracket)
         {
             if (self == null)
@@ -129,11 +129,11 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// 
+        /// Creates full sequence name (Schema + Name).
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="bracket"></param>
-        /// <returns></returns>
+        /// <param name="self">Sequence mapping information</param>
+        /// <param name="bracket">Keyword brackets</param>
+        /// <returns>Full sequence name</returns>
         public static string FullName(this SequenceMappingInfo self, BracketPair bracket)
         {
             if (self == null)
