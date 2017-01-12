@@ -620,5 +620,84 @@ set
             actual.Statement.Is(expectStatement);
         }
         #endregion
+
+
+        #region Clause Chain
+        [TestMethod]
+        public void Count_Where()
+        {
+            var actual = this.DbProvider.Count<Person>().Where(x => x.Id == 1).Build();
+
+            var expectStatement =
+@"select count(*) as Count from [dbo].[Person]
+where
+    [Id] = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", 1);
+
+            actual.Statement.Is(expectStatement);
+            actual.WhereParameters.Is(expectParameter);
+        }
+
+
+        [TestMethod]
+        public void Select_Where()
+        {
+            var actual = this.DbProvider.Select<Person>().Where(x => x.Id == 1).Build();
+
+            var expectStatement =
+@"select
+    [Id] as Id,
+    [名前] as Name,
+    [Age] as Age,
+    [HasChildren] as HasChildren
+from [dbo].[Person]
+where
+    [Id] = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", 1);
+
+            actual.Statement.Is(expectStatement);
+            actual.WhereParameters.Is(expectParameter);
+        }
+
+
+        [TestMethod]
+        public void Update_Where()
+        {
+            var actual = this.DbProvider.Update<Person>().Where(x => x.Id == 1).Build();
+
+            var expectStatement =
+@"update [dbo].[Person]
+set
+    [名前] = @Name,
+    [Age] = @Age,
+    [HasChildren] = @HasChildren
+where
+    [Id] = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", 1);
+
+            actual.Statement.Is(expectStatement);
+            actual.WhereParameters.Is(expectParameter);
+        }
+
+
+        [TestMethod]
+        public void Delete_Where()
+        {
+            var actual = this.DbProvider.Delete<Person>().Where(x => x.Id == 1).Build();
+
+            var expectStatement =
+@"delete from [dbo].[Person]
+where
+    [Id] = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", 1);
+
+            actual.Statement.Is(expectStatement);
+            actual.WhereParameters.Is(expectParameter);
+        }
+        #endregion
     }
 }

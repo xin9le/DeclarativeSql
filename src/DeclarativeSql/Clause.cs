@@ -11,22 +11,91 @@ using DeclarativeSql.Mapping;
 
 namespace DeclarativeSql
 {
+    #region Clause Interfaces
+
     /// <summary>
-    /// Represents a SQL clause.
+    /// Represents a clause.
     /// </summary>
-    public abstract class Clause
+    public interface IClause
     {
-        #region Properties
         /// <summary>
         /// Gets database provider.
         /// </summary>
-        protected DbProvider DbProvider { get; }
+        DbProvider DbProvider { get; }
 
 
         /// <summary>
+        /// Builds query.
+        /// </summary>
+        /// <returns>Built query</returns>
+        Query Build();
+    }
+
+
+
+    /// <summary>
+    /// Represents count clause.
+    /// </summary>
+    public interface ICountClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents select clause.
+    /// </summary>
+    public interface ISelectClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents insert clause.
+    /// </summary>
+    public interface IInsertClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents update clause.
+    /// </summary>
+    public interface IUpdateClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents delete clause.
+    /// </summary>
+    public interface IDeleteClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents truncate clause.
+    /// </summary>
+    public interface ITruncateClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents where clause.
+    /// </summary>
+    public interface IWhereClause<T> : IClause {}
+
+    #endregion
+
+
+
+    #region Internal Classes
+
+    /// <summary>
+    /// Represents a SQL clause.
+    /// </summary>
+    internal abstract class Clause : IClause
+    {
+        #region Properties
+        /// <summary>
         /// Gets previous clause.
         /// </summary>
-        private Clause Previous { get; }
+        protected Clause Previous { get; }
         #endregion
 
 
@@ -36,17 +105,23 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
-        protected Clause(DbProvider provider, Clause previous)
+        protected Clause(DbProvider provider, IClause previous)
         {
             if (provider == null)
                 throw new ArgumentNullException(nameof(provider));
             this.DbProvider = provider;
-            this.Previous = previous;
+            this.Previous = (Clause)previous;
         }
         #endregion
 
 
-        #region Build
+        #region IClause implementations
+        /// <summary>
+        /// Gets database provider.
+        /// </summary>
+        public DbProvider DbProvider { get; }
+
+
         /// <summary>
         /// Builds query.
         /// </summary>
@@ -58,14 +133,16 @@ namespace DeclarativeSql
             this.Build(statement, whereParameters);
             return new Query(statement.ToString(), whereParameters);
         }
+        #endregion
 
 
+        #region Build
         /// <summary>
         /// Builds query core.
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected abstract void Build(StringBuilder statement, IDictionary<string, object> whereParameters);
+        internal abstract void Build(StringBuilder statement, IDictionary<string, object> whereParameters);
         #endregion
 
 
@@ -84,7 +161,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents a count clause.
     /// </summary>
-    public sealed class CountClause<T> : Clause
+    internal sealed class CountClause<T> : Clause, ICountClause<T>
     {
         #region Constructors
         /// <summary>
@@ -92,7 +169,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
-        internal CountClause(DbProvider provider, Clause previous)
+        internal CountClause(DbProvider provider, IClause previous)
             : base(provider, previous)
         {}
         #endregion
@@ -104,7 +181,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             var tableName = TableMappingInfo.Create(typeof(T)).FullName(this.DbProvider.KeywordBrackets);
             statement.AppendFormat("select count(*) as Count from {0}", tableName);
@@ -117,7 +194,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents a select clause.
     /// </summary>
-    public sealed class SelectClause<T> : Clause
+    internal sealed class SelectClause<T> : Clause, ISelectClause<T>
     {
         #region Properties
         /// <summary>
@@ -134,7 +211,7 @@ namespace DeclarativeSql
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
         /// <param name="properties">Property expressions mapped columns. If null, targets all columns.</param>
-        internal SelectClause(DbProvider provider, Clause previous, Expression<Func<T, object>> properties)
+        internal SelectClause(DbProvider provider, IClause previous, Expression<Func<T, object>> properties)
             : base(provider, previous)
         {
             this.Properties = properties;
@@ -148,7 +225,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             //--- creates column - property name mapping
             var propertyNames = this.Properties == null
@@ -185,7 +262,7 @@ namespace DeclarativeSql
     /// Represents a insert clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    public sealed class InsertClause<T> : Clause
+    internal sealed class InsertClause<T> : Clause, IInsertClause<T>
     {
         #region Properties
         /// <summary>
@@ -209,7 +286,7 @@ namespace DeclarativeSql
         /// <param name="previous">Previous clause</param>
         /// <param name="useSequence">Whether use sequence</param>
         /// <param name="setIdentity">Whether set identity</param>
-        internal InsertClause(DbProvider provider, Clause previous, bool useSequence, bool setIdentity)
+        internal InsertClause(DbProvider provider, IClause previous, bool useSequence, bool setIdentity)
             : base(provider, previous)
         {
             this.UseSequence = useSequence;
@@ -224,7 +301,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             var table = TableMappingInfo.Create(typeof(T));
             var columns = table.Columns.Where(x => this.SetIdentity ? true : !x.IsAutoIncrement);
@@ -283,7 +360,7 @@ namespace DeclarativeSql
     /// Represents a update clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    public sealed class UpdateClause<T> : Clause
+    internal sealed class UpdateClause<T> : Clause, IUpdateClause<T>
     {
         #region Properties
         /// <summary>
@@ -307,7 +384,7 @@ namespace DeclarativeSql
         /// <param name="previous">Previous clause</param>
         /// <param name="properties">Property expressions mapped columns. If null, targets all columns.</param>
         /// <param name="setIdentity">Whether set identity</param>
-        internal UpdateClause(DbProvider provider, Clause previous, Expression<Func<T, object>> properties, bool setIdentity)
+        internal UpdateClause(DbProvider provider, IClause previous, Expression<Func<T, object>> properties, bool setIdentity)
             : base(provider, previous)
         {
             this.Properties = properties;
@@ -322,7 +399,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             var propertyNames = this.Properties == null
                               ? Enumerable.Empty<string>()
@@ -351,7 +428,7 @@ namespace DeclarativeSql
     /// Represents a delete clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    public sealed class DeleteClause<T> : Clause
+    internal sealed class DeleteClause<T> : Clause, IDeleteClause<T>
     {
         #region Constructors
         /// <summary>
@@ -359,7 +436,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
-        internal DeleteClause(DbProvider provider, Clause previous)
+        internal DeleteClause(DbProvider provider, IClause previous)
             : base(provider, previous)
         {}
         #endregion
@@ -371,7 +448,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             var tableName = TableMappingInfo.Create(typeof(T)).FullName(this.DbProvider.KeywordBrackets);
             statement.AppendFormat("delete from {0}", tableName);
@@ -385,7 +462,7 @@ namespace DeclarativeSql
     /// Represents a truncate clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    public sealed class TruncateClause<T> : Clause
+    internal sealed class TruncateClause<T> : Clause, ITruncateClause<T>
     {
         #region Constructors
         /// <summary>
@@ -393,7 +470,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
-        internal TruncateClause(DbProvider provider, Clause previous)
+        internal TruncateClause(DbProvider provider, IClause previous)
             : base(provider, previous)
         {}
         #endregion
@@ -405,7 +482,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
             var tableName = TableMappingInfo.Create(typeof(T)).FullName(this.DbProvider.KeywordBrackets);
             statement.AppendFormat("truncate table {0}", tableName);
@@ -419,7 +496,7 @@ namespace DeclarativeSql
     /// Represents a where clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    public sealed class WhereClause<T> : Clause
+    internal sealed class WhereClause<T> : Clause, IWhereClause<T>
     {
         #region Properties
         /// <summary>
@@ -436,7 +513,7 @@ namespace DeclarativeSql
         /// <param name="provider">Database provider</param>
         /// <param name="previous">Previous clause</param>
         /// <param name="predicate">Predicative expression</param>
-        internal WhereClause(DbProvider provider, Clause previous, Expression<Func<T, bool>> predicate)
+        internal WhereClause(DbProvider provider, IClause previous, Expression<Func<T, bool>> predicate)
             : base(provider, previous)
         {
             this.Predicate = predicate;
@@ -450,8 +527,17 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="statement">Statement builder</param>
         /// <param name="whereParameters">Where clause bind parameters</param>
-        protected override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
+            //--- 親を実行する
+            if (this.Previous != null)
+            {
+                this.Previous.Build(statement, whereParameters);
+                statement.AppendLine();
+                statement.AppendLine("where");
+                statement.Append("    ");
+            }   
+
             //--- 要素分解
             var root = PredicateParser.Parse(this.Predicate);
 
@@ -551,4 +637,6 @@ namespace DeclarativeSql
 
     //--- todo : top
     //--- todo : order by
+
+    #endregion
 }
