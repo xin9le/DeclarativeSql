@@ -5,9 +5,9 @@
 namespace DeclarativeSql
 {
     /// <summary>
-    /// Represents a where clause.
+    /// Represents a query statement / parameter pair.
     /// </summary>
-    public class WhereClause
+    public sealed class Query
     {
         #region Properties
         /// <summary>
@@ -17,9 +17,9 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// Gets parameters.
+        /// Gets where clause bind parameters.
         /// </summary>
-        public ExpandoObject Parameter { get; }
+        public ExpandoObject WhereParameters { get; }
         #endregion
 
 
@@ -28,11 +28,11 @@ namespace DeclarativeSql
         /// Creates instance.
         /// </summary>
         /// <param name="statement">SQL statement</param>
-        /// <param name="parameter">Query parameters</param>
-        internal WhereClause(string statement, ExpandoObject parameter)
+        /// <param name="whereParameters">Where clause bind parameters</param>
+        internal Query(string statement, ExpandoObject whereParameters)
         {
             this.Statement = statement;
-            this.Parameter = parameter;
+            this.WhereParameters = whereParameters;
         }
         #endregion
     }

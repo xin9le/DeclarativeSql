@@ -73,12 +73,6 @@ namespace DeclarativeSql
             }
         }
         private DbProviderFactory factory = null;
-
-        
-        /// <summary>
-        /// Gets sql generator.
-        /// </summary>
-        public SqlGenerator Sql { get; }        
         #endregion
 
 
@@ -100,7 +94,6 @@ namespace DeclarativeSql
             this.ConnectionTypeName = connectionTypeName;
             this.BindParameterPrefix = bindParameterPrefix;
             this.KeywordBrackets = keywordBrackets;
-            this.Sql = new SqlGenerator(this);
         }
 
 
