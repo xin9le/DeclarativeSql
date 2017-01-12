@@ -285,10 +285,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Insert<T>(T data, bool useSequence, bool setIdentity)
         {
-            throw new NotImplementedException();
-            //var type = TypeHelper.GetElementType<T>() ?? typeof(T);
-            //var sql = this.DbProvider.Insert(type, useSequence, setIdentity).ToString();
-            //return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
+            var sql = this.DbProvider.Insert<T>(useSequence, setIdentity).ToString();
+            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
 
@@ -302,10 +300,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> InsertAsync<T>(T data, bool useSequence, bool setIdentity)
         {
-            throw new NotImplementedException();
-            //var type = TypeHelper.GetElementType<T>() ?? typeof(T);
-            //var sql = this.DbProvider.Insert(type, useSequence, setIdentity);
-            //return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
+            var sql = this.DbProvider.Insert<T>(useSequence, setIdentity).ToString();
+            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
         #endregion
 

@@ -303,7 +303,8 @@ namespace DeclarativeSql
         /// <param name="whereParameters">Where clause bind parameters</param>
         internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
         {
-            var table = TableMappingInfo.Create(typeof(T));
+            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
+            var table = TableMappingInfo.Create(type);
             var columns = table.Columns.Where(x => this.SetIdentity ? true : !x.IsAutoIncrement);
 
             //--- build sql
