@@ -35,7 +35,7 @@ namespace DeclarativeSql.Dapper
         {
             var sequence = TableMappingInfo.Create<T>().Columns.First(x => x.IsPrimaryKey).Sequence;
             return
-$@"{this.DbProvider.Sql.CreateInsert<T>()};
+$@"{this.DbProvider.Insert<T>().ToString()};
 select currval({sequence.FullName(this.DbProvider.KeywordBrackets)}) as Id;";
         }
         #endregion

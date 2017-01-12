@@ -198,7 +198,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>SQL文</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{this.DbProvider.Sql.CreateInsert<T>()};
+$@"{this.DbProvider.Insert<T>().ToString()};
 select cast(scope_identity() as bigint) as Id;";
         #endregion
     }

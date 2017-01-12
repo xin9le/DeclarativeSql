@@ -41,7 +41,7 @@ namespace DeclarativeSql.Dapper
             Func<IEnumerable<T>, IDbTransaction, int> insert = (collection, transaction) =>
             {
                 var result = 0;
-                var sql = this.DbProvider.Sql.CreateInsert<T>(false, true);
+                var sql = this.DbProvider.Insert<T>(false, true).ToString();
                 foreach (var x in collection)
                 {
                     var value = this.Connection.Execute(sql, x, transaction, this.Timeout);
@@ -77,7 +77,7 @@ namespace DeclarativeSql.Dapper
             Func<IEnumerable<T>, IDbTransaction, Task<int>> insert = async (collection, transaction) =>
             {
                 var result = 0;
-                var sql = this.DbProvider.Sql.CreateInsert<T>(false, true);
+                var sql = this.DbProvider.Insert<T>(false, true).ToString();
                 foreach (var x in collection)
                 {
                     var value = await this.Connection.ExecuteAsync(sql, x, transaction, this.Timeout).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>SQL</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{this.DbProvider.Sql.CreateInsert<T>()};
+$@"{this.DbProvider.Insert<T>().ToString()};
 select last_insert_rowid() as Id;";
         #endregion
     }

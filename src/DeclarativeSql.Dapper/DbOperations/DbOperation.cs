@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Helpers;
@@ -173,7 +172,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual ulong Count<T>()
         {
-            var sql = this.DbProvider.Sql.CreateCount<T>();
+            var sql = this.DbProvider.Count<T>().ToString();
             return this.Connection.ExecuteScalar<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -186,13 +185,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual ulong Count<T>(Expression<Func<T, bool>> predicate)
         {
-            var count = this.DbProvider.Sql.CreateCount<T>();
-            var where = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(count);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteScalar<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+            var count = this.DbProvider.Count<T>().Where(predicate).Build();
+            return this.Connection.ExecuteScalar<ulong>(count.Statement, count.WhereParameters, this.Transaction, this.Timeout);
         }
 
 
@@ -203,7 +197,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual Task<ulong> CountAsync<T>()
         {
-            var sql = this.DbProvider.Sql.CreateCount<T>();
+            var sql = this.DbProvider.Count<T>().ToString();
             return this.Connection.ExecuteScalarAsync<ulong>(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -216,13 +210,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>レコード数</returns>
         public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var count = this.DbProvider.Sql.CreateCount<T>();
-            var where = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(count);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteScalarAsync<ulong>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+            var count = this.DbProvider.Count<T>().Where(predicate).Build();
+            return this.Connection.ExecuteScalarAsync<ulong>(count.Statement, count.WhereParameters, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -236,7 +225,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, object>> properties)
         {
-            var sql = this.DbProvider.Sql.CreateSelect(properties);
+            var sql = this.DbProvider.Select(properties).ToString();
             return this.Connection.Query<T>(sql, null, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
 
@@ -250,13 +239,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual IReadOnlyList<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var select  = this.DbProvider.Sql.CreateSelect(properties);
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(select);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.Query<T>(builder.ToString(), where.Parameter, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
+            var select = this.DbProvider.Select(properties).Where(predicate).Build();
+            return this.Connection.Query<T>(select.Statement, select.WhereParameters, this.Transaction, true, this.Timeout) as IReadOnlyList<T>;
         }
 
 
@@ -268,7 +252,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
         {
-            var sql = this.DbProvider.Sql.CreateSelect(properties);
+            var sql = this.DbProvider.Select(properties).ToString();
             var result = await this.Connection.QueryAsync<T>(sql, null, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
@@ -283,13 +267,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>取得したレコード</returns>
         public virtual async Task<IReadOnlyList<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var select  = this.DbProvider.Sql.CreateSelect(properties);
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(select);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            var result = await this.Connection.QueryAsync<T>(builder.ToString(), where.Parameter, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var select = this.DbProvider.Select(properties).Where(predicate).Build();
+            var result = await this.Connection.QueryAsync<T>(select.Statement, select.WhereParameters, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as IReadOnlyList<T>;
         }
         #endregion
@@ -306,9 +285,10 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Insert<T>(T data, bool useSequence, bool setIdentity)
         {
-            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
-            var sql = this.DbProvider.Sql.CreateInsert(type, useSequence, setIdentity);
-            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
+            throw new NotImplementedException();
+            //var type = TypeHelper.GetElementType<T>() ?? typeof(T);
+            //var sql = this.DbProvider.Insert(type, useSequence, setIdentity).ToString();
+            //return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
 
@@ -322,9 +302,10 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> InsertAsync<T>(T data, bool useSequence, bool setIdentity)
         {
-            var type = TypeHelper.GetElementType<T>() ?? typeof(T);
-            var sql = this.DbProvider.Sql.CreateInsert(type, useSequence, setIdentity);
-            return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
+            throw new NotImplementedException();
+            //var type = TypeHelper.GetElementType<T>() ?? typeof(T);
+            //var sql = this.DbProvider.Insert(type, useSequence, setIdentity);
+            //return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -436,7 +417,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Update<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var sql = this.DbProvider.Sql.CreateUpdate(properties, setIdentity);
+            var sql = this.DbProvider.Update(properties, setIdentity).ToString();
             return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
@@ -452,14 +433,9 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var update  = this.DbProvider.Sql.CreateUpdate(properties, setIdentity);
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var param   = where.Parameter.Merge(data, properties);
-            var builder = new StringBuilder();
-            builder.AppendLine(update);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.Execute(builder.ToString(), param, this.Transaction, this.Timeout);
+            var update = this.DbProvider.Update(properties, setIdentity).Where(predicate).Build();
+            var param  = update.WhereParameters.Merge(data, properties);
+            return this.Connection.Execute(update.Statement, param, this.Transaction, this.Timeout);
         }
 
 
@@ -473,7 +449,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var sql = this.DbProvider.Sql.CreateUpdate(properties, setIdentity);
+            var sql = this.DbProvider.Update(properties, setIdentity).ToString();
             return this.Connection.ExecuteAsync(sql, data, this.Transaction, this.Timeout);
         }
 
@@ -489,14 +465,9 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, bool setIdentity)
         {
-            var update  = this.DbProvider.Sql.CreateUpdate(properties, setIdentity);
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var param   = where.Parameter.Merge(data, properties);
-            var builder = new StringBuilder();
-            builder.AppendLine(update);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteAsync(builder.ToString(), param, this.Transaction, this.Timeout);
+            var update = this.DbProvider.Update(properties, setIdentity).Where(predicate).Build();
+            var param  = update.WhereParameters.Merge(data, properties);
+            return this.Connection.ExecuteAsync(update.Statement, param, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -509,7 +480,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Delete<T>()
         {
-            var sql = this.DbProvider.Sql.CreateDelete<T>();
+            var sql = this.DbProvider.Delete<T>().ToString();
             return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -522,13 +493,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual int Delete<T>(Expression<Func<T, bool>> predicate)
         {
-            var delete  = this.DbProvider.Sql.CreateDelete<T>();
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(delete);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.Execute(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+            var delete = this.DbProvider.Delete<T>().Where(predicate).Build();
+            return this.Connection.Execute(delete.Statement, delete.WhereParameters, this.Transaction, this.Timeout);
         }
 
 
@@ -539,7 +505,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> DeleteAsync<T>()
         {
-            var sql = this.DbProvider.Sql.CreateDelete<T>();
+            var sql = this.DbProvider.Delete<T>().ToString();
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -552,13 +518,8 @@ namespace DeclarativeSql.Dapper
         /// <returns>影響した行数</returns>
         public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var delete  = this.DbProvider.Sql.CreateDelete<T>();
-            var where   = this.DbProvider.Sql.CreateWhere(predicate);
-            var builder = new StringBuilder();
-            builder.AppendLine(delete);
-            builder.AppendLine(nameof(where));
-            builder.Append($"    {where.Statement}");
-            return this.Connection.ExecuteAsync(builder.ToString(), where.Parameter, this.Transaction, this.Timeout);
+            var delete = this.DbProvider.Delete<T>().Where(predicate).Build();
+            return this.Connection.ExecuteAsync(delete.Statement, delete.WhereParameters, this.Transaction, this.Timeout);
         }
         #endregion
 
@@ -571,7 +532,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>-1</returns>
         public virtual int Truncate<T>()
         {
-            var sql = this.DbProvider.Sql.CreateTruncate<T>();
+            var sql = this.DbProvider.Truncate<T>().ToString();
             return this.Connection.Execute(sql, null, this.Transaction, this.Timeout);
         }
 
@@ -583,7 +544,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>-1</returns>
         public virtual Task<int> TruncateAsync<T>()
         {
-            var sql = this.DbProvider.Sql.CreateTruncate<T>();
+            var sql = this.DbProvider.Truncate<T>().ToString();
             return this.Connection.ExecuteAsync(sql, null, this.Transaction, this.Timeout);
         }
         #endregion

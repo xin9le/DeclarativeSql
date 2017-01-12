@@ -141,7 +141,7 @@ namespace DeclarativeSql.Dapper
         /// <returns>SQL</returns>
         protected override string CreateInsertAndGetSql<T>()
             =>
-$@"{this.DbProvider.Sql.CreateInsert<T>()};
+$@"{this.DbProvider.Insert<T>().ToString()};
 select last_insert_id() as Id;";
         #endregion
     }
