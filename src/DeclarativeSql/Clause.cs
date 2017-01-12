@@ -534,8 +534,6 @@ namespace DeclarativeSql
             {
                 this.Previous.Build(statement, whereParameters);
                 statement.AppendLine();
-                statement.AppendLine("where");
-                statement.Append("    ");
             }   
 
             //--- 要素分解
@@ -553,6 +551,8 @@ namespace DeclarativeSql
             //--- 組み立て
             var columnMap = TableMappingInfo.Create<T>().Columns.ToDictionary(x => x.PropertyName);
             uint index = 0;
+            statement.AppendLine("where");
+            statement.Append("    ");
             this.BuildSql(statement, whereParameters, columnMap, ref index, ref digit, root);
         }
         #endregion

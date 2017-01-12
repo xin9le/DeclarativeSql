@@ -222,7 +222,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id == 1).Build();
 
-            var expectStatement = "[Id] = @p0";
+            var expectStatement =
+@"where
+    [Id] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -236,7 +238,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id != 1).Build();
 
-            var expectStatement = "[Id] <> @p0";
+            var expectStatement =
+@"where
+    [Id] <> @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -250,7 +254,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1).Build();
 
-            var expectStatement = "[Id] > @p0";
+            var expectStatement =
+@"where
+    [Id] > @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -264,7 +270,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id < 1).Build();
 
-            var expectStatement = "[Id] < @p0";
+            var expectStatement =
+@"where
+    [Id] < @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -278,7 +286,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id >= 1).Build();
 
-            var expectStatement = "[Id] >= @p0";
+            var expectStatement =
+@"where
+    [Id] >= @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -292,7 +302,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id <= 1).Build();
 
-            var expectStatement = "[Id] <= @p0";
+            var expectStatement =
+@"where
+    [Id] <= @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 
@@ -306,7 +318,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Name == null).Build();
 
-            var expectStatement = "[名前] is null";
+            var expectStatement =
+@"where
+    [名前] is null";
             IDictionary<string, object> expectParameter = new ExpandoObject();
 
             actual.WhereParameters.Is(expectParameter);
@@ -319,7 +333,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Name != null).Build();
 
-            var expectStatement = "[名前] is not null";
+            var expectStatement =
+@"where
+    [名前] is not null";
             IDictionary<string, object> expectParameter = new ExpandoObject();
 
             actual.WhereParameters.Is(expectParameter);
@@ -332,7 +348,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1 && x.Name == "xin9le").Build();
 
-            var expectStatement = "[Id] > @p0 and [名前] = @p1";
+            var expectStatement =
+@"where
+    [Id] > @p0 and [名前] = @p1";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -347,7 +365,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1 || x.Name == "xin9le").Build();
 
-            var expectStatement = "[Id] > @p0 or [名前] = @p1";
+            var expectStatement =
+@"where
+    [Id] > @p0 or [名前] = @p1";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -362,7 +382,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1 && x.Name == "xin9le" || x.Age <= 30).Build();
 
-            var expectStatement = "([Id] > @p0 and [名前] = @p1) or [Age] <= @p2";
+            var expectStatement =
+@"where
+    ([Id] > @p0 and [名前] = @p1) or [Age] <= @p2";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -378,7 +400,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1 && (x.Name == "xin9le" || x.Age <= 30)).Build();
 
-            var expectStatement = "[Id] > @p0 and ([名前] = @p1 or [Age] <= @p2)";
+            var expectStatement =
+@"where
+    [Id] > @p0 and ([名前] = @p1 or [Age] <= @p2)";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -394,7 +418,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Id > 1 || x.Name == "xin9le" && x.Age <= 30).Build();
 
-            var expectStatement = "[Id] > @p0 or ([名前] = @p1 and [Age] <= @p2)";
+            var expectStatement =
+@"where
+    [Id] > @p0 or ([名前] = @p1 and [Age] <= @p2)";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -410,7 +436,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => (x.Id > 1 || x.Name == "xin9le") && x.Age <= 30).Build();
 
-            var expectStatement = "([Id] > @p0 or [名前] = @p1) and [Age] <= @p2";
+            var expectStatement =
+@"where
+    ([Id] > @p0 or [名前] = @p1) and [Age] <= @p2";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
             expectParameter.Add("p1", "xin9le");
@@ -427,7 +455,9 @@ set
             var value = Enumerable.Range(0, 3).Cast<object>().ToArray();
             var actual = this.DbProvider.Where<Person>(x => value.Contains(x.Id)).Build();
 
-            var expectStatement = "[Id] in @p0";
+            var expectStatement =
+@"where
+    [Id] in @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", value);
 
@@ -444,7 +474,9 @@ set
             var value  = value1.Concat(value2);
             var actual = this.DbProvider.Where<Person>(x => value.Contains(x.Id)).Build();
 
-            var expectStatement = "[Id] in @p0 or [Id] in @p1";
+            var expectStatement =
+@"where
+    [Id] in @p0 or [Id] in @p1";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", value2);
             expectParameter.Add("p1", value1);
@@ -460,7 +492,9 @@ set
             var id = 1;
             var actual = this.DbProvider.Where<Person>(x => x.Id == id).Build();
 
-            var expectStatement = "[Id] = @p0";
+            var expectStatement =
+@"where
+    [Id] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", id);
 
@@ -474,7 +508,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Name == new string('a', 3)).Build();
 
-            var expectStatement = "[名前] = @p0";
+            var expectStatement =
+@"where
+    [名前] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", "aaa");
 
@@ -494,7 +530,9 @@ set
             var some = new AccessorProvider();
             var actual = this.DbProvider.Where<Person>(x => x.Name == some.InstanceMethod()).Build();
 
-            var expectStatement = "[名前] = @p0";
+            var expectStatement =
+@"where
+    [名前] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", some.InstanceMethod());
 
@@ -509,7 +547,9 @@ set
             Func<int, string> getName = x => x.ToString();
             var actual = this.DbProvider.Where<Person>(x => x.Name == getName(123)).Build();
 
-            var expectStatement = "[名前] = @p0";
+            var expectStatement =
+@"where
+    [名前] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", "123");
 
@@ -524,7 +564,9 @@ set
             var some = new AccessorProvider();
             var actual = this.DbProvider.Where<Person>(x => x.Age == some.InstanceProperty).Build();
 
-            var expectStatement = "[Age] = @p0";
+            var expectStatement =
+@"where
+    [Age] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", some.InstanceProperty);
 
@@ -539,7 +581,9 @@ set
             var ids = new [] { 1, 2, 3 };
             var actual = this.DbProvider.Where<Person>(x => x.Id == ids[0]).Build();
 
-            var expectStatement = "[Id] = @p0";
+            var expectStatement =
+@"where
+    [Id] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", ids[0]);
 
@@ -553,7 +597,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Name == AccessorProvider.StaticMethod()).Build();
 
-            var expectStatement = "[名前] = @p0";
+            var expectStatement =
+@"where
+    [名前] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", AccessorProvider.StaticMethod());
 
@@ -567,7 +613,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.Age == AccessorProvider.StaticProperty).Build();
 
-            var expectStatement = "[Age] = @p0";
+            var expectStatement =
+@"where
+    [Age] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", AccessorProvider.StaticProperty);
 
@@ -581,7 +629,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.HasChildren).Build();
 
-            var expectStatement = "[HasChildren] = @p0";
+            var expectStatement =
+@"where
+    [HasChildren] = @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", true);
 
@@ -595,7 +645,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => !x.HasChildren).Build();
 
-            var expectStatement = "[HasChildren] <> @p0";
+            var expectStatement =
+@"where
+    [HasChildren] <> @p0";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", true);
 
@@ -609,7 +661,9 @@ set
         {
             var actual = this.DbProvider.Where<Person>(x => x.HasChildren == true || x.Id != 0 || x.Name == "xin9le" && !x.HasChildren).Build();
 
-            var expectStatement = "[HasChildren] = @p0 or [Id] <> @p1 or ([名前] = @p2 and [HasChildren] <> @p3)";
+            var expectStatement =
+@"where
+    [HasChildren] = @p0 or [Id] <> @p1 or ([名前] = @p2 and [HasChildren] <> @p3)";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", true);
             expectParameter.Add("p1", 0);
