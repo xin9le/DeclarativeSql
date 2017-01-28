@@ -676,6 +676,30 @@ set
         #endregion
 
 
+        #region OrderBy
+        [TestMethod]
+        public void OrderBy文生成()
+        {
+            var actual = this.DbProvider.OrderBy<Person>(x => x.Name).ToString();
+            var expect =
+@"order by
+    [名前]";
+            actual.Is(expect);
+        }
+
+
+        [TestMethod]
+        public void OrderByDescending文生成()
+        {
+            var actual = this.DbProvider.OrderByDescending<Person>(x => x.Age).ToString();
+            var expect =
+@"order by
+    [Age] desc";
+            actual.Is(expect);
+        }
+        #endregion
+
+
         #region Clause Chain
         [TestMethod]
         public void Count_Where()
@@ -746,6 +770,72 @@ where
 @"delete from [dbo].[Person]
 where
     [Id] = @p0";
+            IDictionary<string, object> expectParameter = new ExpandoObject();
+            expectParameter.Add("p0", 1);
+
+            actual.Statement.Is(expectStatement);
+            actual.WhereParameters.Is(expectParameter);
+        }
+
+
+        [TestMethod]
+        public void Select_OrderBy()
+        {
+            var actual = this.DbProvider.Select<Person>().OrderBy(x => x.Id).ToString();
+            var expect =
+@"select
+    [Id] as Id,
+    [名前] as Name,
+    [Age] as Age,
+    [HasChildren] as HasChildren
+from [dbo].[Person]
+order by
+    [Id]";
+            actual.Is(expect);
+        }
+
+        
+        [TestMethod]
+        public void Select_OrderByDescending()
+        {
+            var actual = this.DbProvider.Select<Person>().OrderByDescending(x => x.Id).ToString();
+            var expect =
+@"select
+    [Id] as Id,
+    [名前] as Name,
+    [Age] as Age,
+    [HasChildren] as HasChildren
+from [dbo].[Person]
+order by
+    [Id] desc";
+            actual.Is(expect);
+        }
+
+        
+        [TestMethod]
+        public void Select_Where_OrderBy_ThenBy_ThenByDescending()
+        {
+            var actual = this.DbProvider
+                        .Select<Person>()
+                        .Where(x => x.Id == 1)
+                        .OrderBy(x => x.Id)
+                        .ThenBy(x => x.Name)
+                        .ThenByDescending(x => x.Age)
+                        .Build();
+
+            var expectStatement =
+@"select
+    [Id] as Id,
+    [名前] as Name,
+    [Age] as Age,
+    [HasChildren] as HasChildren
+from [dbo].[Person]
+where
+    [Id] = @p0
+order by
+    [Id],
+    [名前],
+    [Age] desc";
             IDictionary<string, object> expectParameter = new ExpandoObject();
             expectParameter.Add("p0", 1);
 

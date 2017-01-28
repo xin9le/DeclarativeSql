@@ -36,6 +36,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents count clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface ICountClause<T> : IClause {}
 
 
@@ -43,6 +44,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents select clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface ISelectClause<T> : IClause {}
 
 
@@ -50,6 +52,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents insert clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface IInsertClause<T> : IClause {}
 
 
@@ -57,6 +60,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents update clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface IUpdateClause<T> : IClause {}
 
 
@@ -64,6 +68,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents delete clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface IDeleteClause<T> : IClause {}
 
 
@@ -71,6 +76,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents truncate clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface ITruncateClause<T> : IClause {}
 
 
@@ -78,7 +84,32 @@ namespace DeclarativeSql
     /// <summary>
     /// Represents where clause.
     /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
     public interface IWhereClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents where clause after select clause.
+    /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
+    public interface IWhereClauseForSelect<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents order by clause.
+    /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
+    public interface IOrderByClause<T> : IClause {}
+
+
+
+    /// <summary>
+    /// Represents then by clause.
+    /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
+    public interface IThenByClause<T> : IClause {}
 
     #endregion
 
@@ -497,7 +528,7 @@ namespace DeclarativeSql
     /// Represents a where clause.
     /// </summary>
     /// <typeparam name="T">Type information of table model.</typeparam>
-    internal sealed class WhereClause<T> : Clause, IWhereClause<T>
+    internal sealed class WhereClause<T> : Clause, IWhereClause<T>, IWhereClauseForSelect<T>
     {
         #region Properties
         /// <summary>
@@ -535,7 +566,7 @@ namespace DeclarativeSql
             {
                 this.Previous.Build(statement, whereParameters);
                 statement.AppendLine();
-            }   
+            }
 
             //--- 要素分解
             var root = PredicateParser.Parse(this.Predicate);
@@ -636,8 +667,145 @@ namespace DeclarativeSql
     }
 
 
-    //--- todo : top
-    //--- todo : order by
+
+    /// <summary>
+    /// Represents a order by clause.
+    /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
+    internal sealed class OrderByClause<T> : Clause, IOrderByClause<T>
+    {
+        #region Properties
+        /// <summary>
+        /// Gets property expression mapped column.
+        /// </summary>
+        private Expression<Func<T, object>> Property { get; }
+
+
+        /// <summary>
+        /// Gets element order.
+        /// </summary>
+        private bool IsAscending { get; }
+        #endregion
+
+
+        #region Constructors
+        /// <summary>
+        /// Creates instance.
+        /// </summary>
+        /// <param name="provider">Database provider</param>
+        /// <param name="previous">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <param name="isAscending">Element order. If true, ascending. If false, descending.</param>
+        internal OrderByClause(DbProvider provider, IClause previous, Expression<Func<T, object>> property, bool isAscending)
+            : base(provider, previous)
+        {
+            this.Property = property;
+            this.IsAscending = isAscending;
+        }
+        #endregion
+
+
+        #region Override methods
+        /// <summary>
+        /// Builds query core.
+        /// </summary>
+        /// <param name="statement">Statement builder</param>
+        /// <param name="whereParameters">Where clause bind parameters</param>
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        {
+            //--- 親を実行する
+            if (this.Previous != null)
+            {
+                this.Previous.Build(statement, whereParameters);
+                statement.AppendLine();
+            }
+
+            //--- creates column - property name mapping
+            var propertyName = ExpressionHelper.GetMemberName(this.Property);
+            var column  = TableMappingInfo.Create(typeof(T))
+                        .Columns
+                        .First(x => x.PropertyName == propertyName)
+                        .ColumnName(this.DbProvider.KeywordBrackets);
+
+            //--- build sql
+            const string ascFormat = "    {0}";
+            const string descFormat = "    {0} desc";
+            statement.AppendLine("order by");
+            if (this.IsAscending) statement.AppendFormat(ascFormat, column);
+            else                  statement.AppendFormat(descFormat, column);
+        }
+        #endregion
+    }
+
+
+
+    /// <summary>
+    /// Represents a then by clause.
+    /// </summary>
+    /// <typeparam name="T">Type information of table model.</typeparam>
+    internal sealed class ThenByClause<T> : Clause, IThenByClause<T>
+    {
+        #region Properties
+        /// <summary>
+        /// Gets property expression mapped column.
+        /// </summary>
+        private Expression<Func<T, object>> Property { get; }
+
+
+        /// <summary>
+        /// Gets element order.
+        /// </summary>
+        private bool IsAscending { get; }
+        #endregion
+
+
+        #region Constructors
+        /// <summary>
+        /// Creates instance.
+        /// </summary>
+        /// <param name="provider">Database provider</param>
+        /// <param name="previous">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <param name="isAscending">Element order. If true, ascending. If false, descending.</param>
+        internal ThenByClause(DbProvider provider, IClause previous, Expression<Func<T, object>> property, bool isAscending)
+            : base(provider, previous)
+        {
+            this.Property = property;
+            this.IsAscending = isAscending;
+        }
+        #endregion
+
+
+        #region Override methods
+        /// <summary>
+        /// Builds query core.
+        /// </summary>
+        /// <param name="statement">Statement builder</param>
+        /// <param name="whereParameters">Where clause bind parameters</param>
+        internal override void Build(StringBuilder statement, IDictionary<string, object> whereParameters)
+        {
+            //--- 親を実行する
+            if (this.Previous != null)
+            {
+                this.Previous.Build(statement, whereParameters);
+                statement.AppendLine(",");
+            }
+
+            //--- creates column - property name mapping
+            var propertyName = ExpressionHelper.GetMemberName(this.Property);
+            var column  = TableMappingInfo.Create(typeof(T))
+                        .Columns
+                        .First(x => x.PropertyName == propertyName)
+                        .ColumnName(this.DbProvider.KeywordBrackets);
+
+            //--- build sql
+            const string ascFormat = "    {0}";
+            const string descFormat = "    {0} desc";
+            if (this.IsAscending) statement.AppendFormat(ascFormat, column);
+            else                  statement.AppendFormat(descFormat, column);
+        }
+        #endregion
+    }
 
     #endregion
 }

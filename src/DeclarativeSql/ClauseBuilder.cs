@@ -113,6 +113,36 @@ namespace DeclarativeSql
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             return new WhereClause<T>(provider, null, predicate);
         }
+
+        
+        /// <summary>
+        /// Builds order by clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="provider">Database provider</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderBy<T>(this DbProvider provider, Expression<Func<T, object>> property)
+        {
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(provider, null, property, true);
+        }
+
+        
+        /// <summary>
+        /// Builds order by descending clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="provider">Database provider</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderByDescending<T>(this DbProvider provider, Expression<Func<T, object>> property)
+        {
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(provider, null, property, false);
+        }
         #endregion
 
 
@@ -139,7 +169,7 @@ namespace DeclarativeSql
         /// <param name="clause">Previous clause</param>
         /// <param name="predicate">Predicative expression</param>
         /// <returns>Where clause</returns>
-        public static IWhereClause<T> Where<T>(this ISelectClause<T> clause, Expression<Func<T, bool>> predicate)
+        public static IWhereClauseForSelect<T> Where<T>(this ISelectClause<T> clause, Expression<Func<T, bool>> predicate)
         {
             if (clause == null)    throw new ArgumentNullException(nameof(clause));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
@@ -174,6 +204,127 @@ namespace DeclarativeSql
             if (clause == null)    throw new ArgumentNullException(nameof(clause));
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             return new WhereClause<T>(clause.DbProvider, clause, predicate);
+        }
+
+
+        /// <summary>
+        /// Builds order by clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderBy<T>(this ISelectClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(clause.DbProvider, clause, property, true);
+        }
+
+
+        /// <summary>
+        /// Builds order by descending clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderByDescending<T>(this ISelectClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(clause.DbProvider, clause, property, false);
+        }
+
+        
+        /// <summary>
+        /// Builds order by clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <param name="isAscending">Element order. If true, ascending. If false descending.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderBy<T>(this IWhereClauseForSelect<T> clause, Expression<Func<T, object>> property, bool isAscending = true)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(clause.DbProvider, clause, property, isAscending);
+        }
+
+
+        /// <summary>
+        /// Builds order by descending clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IOrderByClause<T> OrderByDescending<T>(this IWhereClauseForSelect<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new OrderByClause<T>(clause.DbProvider, clause, property, false);
+        }
+
+        
+        /// <summary>
+        /// Builds then by clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IThenByClause<T> ThenBy<T>(this IOrderByClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenByClause<T>(clause.DbProvider, clause, property, true);
+        }
+
+        
+        /// <summary>
+        /// Builds then by descending clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IThenByClause<T> ThenByDescending<T>(this IOrderByClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenByClause<T>(clause.DbProvider, clause, property, false);
+        }
+
+        
+        /// <summary>
+        /// Builds then by clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IThenByClause<T> ThenBy<T>(this IThenByClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenByClause<T>(clause.DbProvider, clause, property, true);
+        }
+
+        
+        /// <summary>
+        /// Builds then by descending clause.
+        /// </summary>
+        /// <typeparam name="T">Type information of table model.</typeparam>
+        /// <param name="clause">Previous clause</param>
+        /// <param name="property">Property expression mapped column.</param>
+        /// <returns>Where clause</returns>
+        public static IThenByClause<T> ThenByDescending<T>(this IThenByClause<T> clause, Expression<Func<T, object>> property)
+        {
+            if (clause == null)   throw new ArgumentNullException(nameof(clause));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenByClause<T>(clause.DbProvider, clause, property, false);
         }
         #endregion
     }
