@@ -261,7 +261,7 @@ namespace DeclarativeSql
             //--- creates column - property name mapping
             var propertyNames = this.Properties == null
                               ? Enumerable.Empty<string>()
-                              : ExpressionHelper.GetMemberNames(this.Properties);
+                              : ExpressionHelper.GetMemberNames(this.Properties).Materialize();
             var table   = TableMappingInfo.Create(typeof(T));
             var columns = propertyNames.IsEmpty()
                         ? table.Columns
@@ -435,7 +435,7 @@ namespace DeclarativeSql
         {
             var propertyNames = this.Properties == null
                               ? Enumerable.Empty<string>()
-                              : ExpressionHelper.GetMemberNames(this.Properties);
+                              : ExpressionHelper.GetMemberNames(this.Properties).Materialize();
             var table   = TableMappingInfo.Create(typeof(T));
             var columns = table.Columns.Where(x => this.SetIdentity ? true : !x.IsAutoIncrement);
             if (propertyNames.Any())
