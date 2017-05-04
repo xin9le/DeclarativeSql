@@ -273,6 +273,8 @@ namespace DeclarativeSql.Helpers
         /// <remarks>右辺専用</remarks>
         private object ExtractValue(Expression expression)
         {
+            // ToDo: performance improvement
+
             //--- 定数
             if (expression is ConstantExpression)
                 return ((ConstantExpression)expression).Value;
