@@ -38,7 +38,7 @@ namespace DeclarativeSql.Dapper
         public override int BulkInsert<T>(IEnumerable<T> data)
         {
             //--- 挿入処理本体
-            Func<IEnumerable<T>, IDbTransaction, int> insert = (collection, transaction) =>
+            int insert(IEnumerable<T> collection, IDbTransaction transaction)
             {
                 var result = 0;
                 var sql = this.DbProvider.Insert<T>(false, true).ToString();
@@ -74,7 +74,7 @@ namespace DeclarativeSql.Dapper
         public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data)
         {
             //--- 挿入処理本体
-            Func<IEnumerable<T>, IDbTransaction, Task<int>> insert = async (collection, transaction) =>
+            async Task<int> insert(IEnumerable<T> collection, IDbTransaction transaction)
             {
                 var result = 0;
                 var sql = this.DbProvider.Insert<T>(false, true).ToString();
