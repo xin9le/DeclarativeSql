@@ -63,7 +63,7 @@ namespace DeclarativeSql.Helpers
                 case ExpressionType.OrElse:
                     {
                         var element = new PredicateElement(node.NodeType.ToPredicateOperator());
-                        return this.VisitCore(element, () => base.VisitBinary(node));
+                        return this.VisitCore(element, base.VisitBinary, node);
                     }
 
                 case ExpressionType.LessThan:
@@ -74,7 +74,7 @@ namespace DeclarativeSql.Helpers
                 case ExpressionType.NotEqual:
                     {
                         var element = this.ParseBinary(node);
-                        return this.VisitCore(element, () => base.VisitBinary(node));
+                        return this.VisitCore(element, base.VisitBinary, node);
                     }
             }
             return base.VisitBinary(node);
@@ -97,7 +97,7 @@ namespace DeclarativeSql.Helpers
                 if (parent == null)
                 {
                     var element = new PredicateElement(PredicateOperator.Equal, info.PropertyType, info.Name, true);
-                    return this.VisitCore(element, () => base.VisitMember(node));
+                    return this.VisitCore(element, base.VisitMember, node);
                 }
 
                 switch (parent.Operator)
@@ -107,7 +107,7 @@ namespace DeclarativeSql.Helpers
                     case PredicateOperator.OrElse:
                         {
                             var element = new PredicateElement(PredicateOperator.Equal, info.PropertyType, info.Name, true);
-                            return this.VisitCore(element, () => base.VisitMember(node));
+                            return this.VisitCore(element, base.VisitMember, node);
                         }
 
                     //--- == / != / !x.CanPlay の場合
@@ -162,7 +162,7 @@ namespace DeclarativeSql.Helpers
                     }
                     root = new PredicateElement(PredicateOperator.Contains, this.Parameter.Type, propertyName, x);
                 }
-                return this.VisitCore(root, () => base.VisitMethodCall(node));
+                return this.VisitCore(root, base.VisitMethodCall, node);
             }
 
             //--- default
@@ -182,7 +182,7 @@ namespace DeclarativeSql.Helpers
             if (this.IsBooleanProperty(node.Operand as MemberExpression))
             {
                 var element = new PredicateElement(PredicateOperator.NotEqual);
-                return this.VisitCore(element, () => base.VisitUnary(node));
+                return this.VisitCore(element, base.VisitUnary, node);
             }   
            return base.VisitUnary(node);
         }
@@ -196,7 +196,7 @@ namespace DeclarativeSql.Helpers
         /// <param name="element">要素生成</param>
         /// <param name="baseCall">基底メソッド呼び出しデリゲート</param>
         /// <returns>式またはいずれかの部分式が変更された場合は変更された式。それ以外の場合は元の式。</returns>
-        private Expression VisitCore(PredicateElement element, Func<Expression> baseCall)
+        private Expression VisitCore<TState>(PredicateElement element, Func<TState, Expression> baseCall, TState state)
         {
             //--- 親要素と関連付け
             var parent = this.Cache.Count == 0 ? null : this.Cache.Peek();
@@ -209,7 +209,7 @@ namespace DeclarativeSql.Helpers
 
             //--- 子要素を解析
             this.Cache.Push(element);
-            var result = baseCall();
+            var result = baseCall(state);
             this.Cache.Pop();
 
             //--- キャッシュがなくなった場合 (= Root)
