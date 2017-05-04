@@ -19,12 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170106-08" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.8-rc" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.0.8-rc" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
     <PackageReference Include="MySql.Data" Version="7.0.6-IR31" />
-    <PackageReference Include="Npgsql" Version="3.1.9" />
+    <PackageReference Include="Npgsql" Version="3.2.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
   </ItemGroup>
 
