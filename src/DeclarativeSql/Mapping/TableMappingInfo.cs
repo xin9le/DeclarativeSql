@@ -93,8 +93,9 @@ namespace DeclarativeSql.Mapping
                     };
 
                     //--- column info
-                    var flags = BindingFlags.Instance | BindingFlags.Public;
-                    result.Columns = typeInfo.GetProperties(flags)
+                    result.Columns = type
+                                    .GetRuntimeProperties()
+                                    .Where(x => !x.GetMethod.IsStatic && x.GetMethod.IsPublic)
                                     .Where(x => x.CustomAttributes.All(y => y.AttributeType != typeof(NotMappedAttribute)))
                                     .Select(ColumnMappingInfo.From)
                                     .ToArray();

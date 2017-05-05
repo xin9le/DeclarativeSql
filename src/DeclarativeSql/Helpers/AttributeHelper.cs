@@ -24,7 +24,7 @@ namespace DeclarativeSql.Helpers
 
             var type = value.GetType();
             var name = Enum.GetName(type, value);
-            var info = type.GetTypeInfo().GetField(name);
+            var info = type.GetRuntimeField(name);
             return info.IsDefined<TAttribute>();
         }
 

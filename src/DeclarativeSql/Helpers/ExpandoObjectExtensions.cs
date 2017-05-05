@@ -29,14 +29,11 @@ namespace DeclarativeSql.Helpers
             if (self == null)     throw new ArgumentNullException(nameof(self));
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
-            var flags = BindingFlags.Instance | BindingFlags.Public;
-            if (includeNonPublic)
-                flags |= BindingFlags.NonPublic;
-
             var propertyNames
                 = typeof(T)
-                .GetTypeInfo()
-                .GetProperties(flags)
+                .GetRuntimeProperties()
+                .Where(x => !x.GetMethod.IsStatic)
+                .Where(x => includeNonPublic || x.GetMethod.IsPublic)
                 .Where(x => includeNotMapped || !x.IsDefined<NotMappedAttribute>())
                 .Select(x => x.Name);
             return self.Merge(instance, propertyNames);

@@ -353,16 +353,8 @@ namespace DeclarativeSql.Helpers
                 //--- static
                 if (member.Expression == null)
                 {
-                    if (member.Member.MemberType == MemberTypes.Property)
-                    {
-                        var info = (PropertyInfo)member.Member;
-                        return info.GetValue(null);
-                    }
-                    if (member.Member.MemberType == MemberTypes.Field)
-                    {
-                        var info = (FieldInfo)member.Member;
-                        return info.GetValue(null);
-                    }
+                    if (member.Member is PropertyInfo pi) return pi.GetValue(null);
+                    if (member.Member is FieldInfo fi)    return fi.GetValue(null);
                     throw new InvalidOperationException("Not field or property.");
                 }
 
@@ -389,7 +381,7 @@ namespace DeclarativeSql.Helpers
         /// <remarks>左辺専用</remarks>
         private bool IsBooleanProperty(MemberExpression expression)
             =>  expression != null
-            &&  expression.Member.MemberType == MemberTypes.Property
+            &&  expression.Member is PropertyInfo
             &&  expression.Expression == this.Parameter
             &&  ((PropertyInfo)expression.Member).PropertyType == typeof(bool);
         #endregion

@@ -65,8 +65,7 @@ namespace DeclarativeSql
 
                     var name = new AssemblyName(this.AssemblyName);
                     var assembly = Assembly.Load(name);
-                    var typeInfo = assembly.GetType(this.FactoryTypeName).GetTypeInfo();
-                    var field = typeInfo.GetField("Instance", BindingFlags.Static | BindingFlags.Public);
+                    var field = assembly.GetType(this.FactoryTypeName).GetRuntimeField("Instance");
                     this.factory = (DbProviderFactory)field.GetValue(null);
                     return this.factory;
                 }

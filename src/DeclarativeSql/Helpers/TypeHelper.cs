@@ -35,10 +35,10 @@ namespace DeclarativeSql.Helpers
             var type = collectionType.GetTypeInfo();
             return  new []{ type }
                     .Where(x => x.IsInterface)
-                    .Concat(type.GetInterfaces().Select(x => x.GetTypeInfo()))
+                    .Concat(type.ImplementedInterfaces.Select(x => x.GetTypeInfo()))
                     .Where(x => x.IsGenericType)
                     .Where(x => x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    .Select(x => x.GetGenericArguments()[0])
+                    .Select(x => x.GenericTypeArguments[0])
                     .FirstOrDefault();
         }
 
@@ -64,18 +64,20 @@ namespace DeclarativeSql.Helpers
         /// </summary>
         /// <param name="assembly">Assembly</param>
         /// <returns>Type information</returns>
-        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
+        public static IEnumerable<TypeInfo> GetLoadableTypes(this Assembly assembly)
         {
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
 
             try
             {
-                return assembly.GetTypes();
+                return assembly.DefinedTypes;
             }
             catch (ReflectionTypeLoadException ex)
             {
-                return ex.Types.Where(x => x != null);
+                return ex.Types
+                    .Where(x => x != null)
+                    .Select(x => x.GetTypeInfo());
             }
         }
     }
