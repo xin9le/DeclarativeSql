@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>DeclarativeSql.Core</id>
-        <version>0.3.0-alpha1</version>
+        <version>0.3.0-alpha2</version>
         <title>DeclarativeSql</title>
         <authors>xin9le</authors>
         <owners>xin9le</owners>
@@ -15,7 +15,7 @@
 - Changes query building syntax.
 - Supports 'order by' query.
 - Performance improvement.
-		</releaseNotes>
+        </releaseNotes>
         <copyright>Copyright© xin9le, All rights reserved.</copyright>
         <tags>Database, SQL, Mapping, Micro-ORM</tags>
         <dependencies>
@@ -28,8 +28,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\net45" />
-        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\net461" />
         <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\net47" />
         <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\netstandard1.6" />
     </files>
