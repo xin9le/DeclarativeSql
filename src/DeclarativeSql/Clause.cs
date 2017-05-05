@@ -376,7 +376,7 @@ namespace DeclarativeSql
                         break;
 
                     default:
-                        throw new NotImplementedException();
+                        throw new NotSupportedException($"Sequence syntax for {this.DbProvider.Kind} is not supported.");
                 }
             }
             statement.Length--;  //--- remove last colon.
