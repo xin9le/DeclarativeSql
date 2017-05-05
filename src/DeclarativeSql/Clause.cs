@@ -138,9 +138,7 @@ namespace DeclarativeSql
         /// <param name="previous">Previous clause</param>
         protected Clause(DbProvider provider, IClause previous)
         {
-            if (provider == null)
-                throw new ArgumentNullException(nameof(provider));
-            this.DbProvider = provider;
+            this.DbProvider = provider ?? throw new ArgumentNullException(nameof(provider));
             this.Previous = (Clause)previous;
         }
         #endregion

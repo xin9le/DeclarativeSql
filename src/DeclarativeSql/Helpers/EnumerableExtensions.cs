@@ -41,31 +41,24 @@ namespace DeclarativeSql.Helpers
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             if (count <= 0)         throw new ArgumentOutOfRangeException(nameof(count));
-            return collection.BufferCore(count);
-        }
 
-
-        /// <summary>
-        /// Provide core function of Buffer method.
-        /// </summary>
-        /// <typeparam name="T">Element type</typeparam>
-        /// <param name="collection">Target collection</param>
-        /// <param name="count">Buffering count</param>
-        /// <returns>Buffered collection</returns>
-        private static IEnumerable<IEnumerable<T>> BufferCore<T>(this IEnumerable<T> collection, int count)
-        {
-            var result = new List<T>(count);
-            foreach (var item in collection)
+            IEnumerable<IEnumerable<T>> core()
             {
-                result.Add(item);
-                if (result.Count == count)
+                var result = new List<T>(count);
+                foreach (var item in collection)
                 {
-                    yield return result;
-                    result = new List<T>(count);
+                    result.Add(item);
+                    if (result.Count == count)
+                    {
+                        yield return result;
+                        result = new List<T>(count);
+                    }
                 }
+                if (result.Count != 0)
+                    yield return result.ToArray();
             }
-            if (result.Count != 0)
-                yield return result.ToArray();
+
+            return core();
         }
         #endregion
 
