@@ -88,7 +88,8 @@ namespace DeclarativeSql.Dapper
                 {
                     var types = new []{ typeof(IDbConnection), typeof(IDbTransaction), typeof(DbProvider), typeof(int?) };
                     var @params = types.Select(Expression.Parameter).ToArray();
-                    var ctor = x.Type.GetConstructor(types);
+                    //var ctor = x.Type.GetConstructor(types);
+                    var ctor = x.Type.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)[0];  //--- workaround
                     var @new = Expression.New(ctor, @params);
                     var lambda = Expression.Lambda<Constructor>(@new, @params);
                     return new
