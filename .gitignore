@@ -29,6 +29,7 @@ bld/
 UnitTestResults.html
 
 # NuGet V3 artifacts
+*.nupkg
 *-packages.config
 *.nuget.props
 *.nuget.targets
