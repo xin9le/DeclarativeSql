@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>DeclarativeSql.Dapper</id>
-        <version>0.3.0-alpha2</version>
+        <version>0.3.0-alpha4</version>
         <title>DeclarativeSql.Dapper</title>
         <authors>xin9le</authors>
         <owners>xin9le</owners>
@@ -14,24 +14,31 @@
         <copyright>Copyright© xin9le, All rights reserved.</copyright>
         <tags>Database, SQL, CRUD, Micro-ORM, Dapper</tags>
         <dependencies>
+            <group targetFramework=".NETFramework4.6.1">
+                <dependency id="Dapper" version="1.50.2" />
+                <dependency id="FastMember" version="1.1.0" />
+                <dependency id="System.Data.Common" version="4.3.0" />
+                <dependency id="DeclarativeSql.Core" version="0.3.0-alpha4" />
+            </group>
             <group targetFramework=".NETFramework4.7">
                 <dependency id="Dapper" version="1.50.2" />
                 <dependency id="FastMember" version="1.1.0" />
-                <dependency id="DeclarativeSql.Core" version="0.3.0-alpha2" />
+                <dependency id="DeclarativeSql.Core" version="0.3.0-alpha4" />
             </group>
-            <group targetFramework=".NETStandard1.6">
+            <group targetFramework=".NETStandard1.4">
                 <dependency id="Dapper" version="1.50.2" />
                 <dependency id="FastMember" version="1.1.0" />
                 <dependency id="Microsoft.CSharp" version="4.3.0" />
                 <dependency id="System.Data.Common" version="4.3.0" />
                 <dependency id="System.Dynamic.Runtime" version="4.3.0" />
                 <dependency id="System.Reflection.Extensions" version="4.3.0" />
-                <dependency id="DeclarativeSql.Core" version="0.3.0-alpha2" />
+                <dependency id="DeclarativeSql.Core" version="0.3.0-alpha4" />
             </group>
         </dependencies>
     </metadata>
     <files>
-        <file src="..\src\DeclarativeSql.Dapper\bin\Release\netstandard1.6\DeclarativeSql.Dapper.dll" target="lib\net47" />
-        <file src="..\src\DeclarativeSql.Dapper\bin\Release\netstandard1.6\DeclarativeSql.Dapper.dll" target="lib\netstandard1.6" />
+        <file src="..\src\DeclarativeSql.Dapper\bin\Release\netstandard1.4\DeclarativeSql.Dapper.dll" target="lib\net461" />
+        <file src="..\src\DeclarativeSql.Dapper\bin\Release\netstandard1.4\DeclarativeSql.Dapper.dll" target="lib\net47" />
+        <file src="..\src\DeclarativeSql.Dapper\bin\Release\netstandard1.4\DeclarativeSql.Dapper.dll" target="lib\netstandard1.4" />
     </files>
 </package>

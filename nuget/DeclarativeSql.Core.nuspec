@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>DeclarativeSql.Core</id>
-        <version>0.3.0-alpha2</version>
+        <version>0.3.0-alpha4</version>
         <title>DeclarativeSql</title>
         <authors>xin9le</authors>
         <owners>xin9le</owners>
@@ -19,7 +19,11 @@
         <copyright>Copyright© xin9le, All rights reserved.</copyright>
         <tags>Database, SQL, Mapping, Micro-ORM</tags>
         <dependencies>
-            <group targetFramework=".NETStandard1.6">
+            <group targetFramework=".NETFramework4.6.1">
+                <dependency id="System.ComponentModel.Annotations" version="4.3.0" />
+                <dependency id="System.Data.Common" version="4.3.0" />
+            </group>
+            <group targetFramework=".NETStandard1.4">
                 <dependency id="System.ComponentModel.Annotations" version="4.3.0" />
                 <dependency id="System.Data.Common" version="4.3.0" />
                 <dependency id="System.Dynamic.Runtime" version="4.3.0" />
@@ -28,7 +32,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\net47" />
-        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.6\DeclarativeSql.dll" target="lib\netstandard1.6" />
+        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.4\DeclarativeSql.dll" target="lib\net461" />
+        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.4\DeclarativeSql.dll" target="lib\net47" />
+        <file src="..\src\DeclarativeSql\bin\Release\netstandard1.4\DeclarativeSql.dll" target="lib\netstandard1.4" />
     </files>
 </package>
