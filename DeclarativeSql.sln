@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6590E0EF-50CF-49FB-BBD5-63387CACFA03}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{76EDDFEE-EA46-4E31-B36A-E5434BD86B92}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B0CC91F0-6B7A-475E-8AA7-51EB27B2891C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql", "src\DeclarativeSql\DeclarativeSql.csproj", "{8FDBC06B-4A68-45FE-9BDA-4E728E3FAD8B}"
