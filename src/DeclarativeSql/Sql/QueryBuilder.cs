@@ -65,9 +65,10 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
+        /// <param name="modifiedAtPriority"></param>
         /// <returns></returns>
-        public IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null)
-            => new Update<T>(this.DbProvider, properties);
+        public IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null, ValuePriority modifiedAtPriority = ValuePriority.Attribute)
+            => new Update<T>(this.DbProvider, properties, modifiedAtPriority);
 
 
         /// <summary>
