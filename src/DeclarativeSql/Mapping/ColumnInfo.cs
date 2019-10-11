@@ -67,6 +67,32 @@ namespace DeclarativeSql.Mapping
         /// Gets the index of unique constraint.
         /// </summary>
         public int? UniqueIndex { get; }
+
+
+        /// <summary>
+        /// Gets whether CreatedAt column.
+        /// </summary>
+        public bool IsCreatedAt
+            => this.CreatedAt != null;
+
+
+        /// <summary>
+        /// Gets whether UpdatedAt column.
+        /// </summary>
+        public bool IsUpdatedAt
+            => this.UpdatedAt != null;
+
+
+        /// <summary>
+        /// Gets the CreatedAt attribute.
+        /// </summary>
+        internal CreatedAtAttribute CreatedAt { get; }
+
+
+        /// <summary>
+        /// Gets the UpdatedAt attribute.
+        /// </summary>
+        internal UpdatedAtAttribute UpdatedAt { get; }
         #endregion
 
 
@@ -109,6 +135,8 @@ namespace DeclarativeSql.Mapping
             this.IsAutoIncrement = Attribute.IsDefined(member, typeof(AutoIncrementAttribute));
             this.AllowNull = Attribute.IsDefined(member, typeof(AllowNullAttribute));
             this.UniqueIndex = this.IsPrimaryKey ? -1 : (int?)unique?.Index;
+            this.CreatedAt = member.GetCustomAttribute<CreatedAtAttribute>(true);
+            this.UpdatedAt = member.GetCustomAttribute<UpdatedAtAttribute>(true);
         }
         #endregion
     }
