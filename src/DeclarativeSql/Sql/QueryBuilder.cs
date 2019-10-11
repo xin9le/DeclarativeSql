@@ -54,9 +54,10 @@ namespace DeclarativeSql.Sql
         /// Builds insert statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="createdAtPriority"></param>
         /// <returns></returns>
-        public IInsert<T> Insert<T>()
-            => new Insert<T>(this.DbProvider);
+        public IInsert<T> Insert<T>(ValuePriority createdAtPriority = ValuePriority.Attribute)
+            => new Insert<T>(this.DbProvider, createdAtPriority);
 
 
         /// <summary>
