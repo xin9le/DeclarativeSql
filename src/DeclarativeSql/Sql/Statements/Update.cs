@@ -19,6 +19,12 @@ namespace DeclarativeSql.Sql.Statements
         /// Gets update target properties.
         /// </summary>
         private Expression<Func<T, object>> Properties { get; }
+
+
+        /// <summary>
+        /// Gets the value priority of ModifiedAt column.
+        /// </summary>
+        private ValuePriority ModifiedAtPriority { get; }
         #endregion
 
 
@@ -28,9 +34,13 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="provider"></param>
         /// <param name="properties">Update target properties</param>
-        public Update(DbProvider provider, Expression<Func<T, object>> properties)
+        /// <param name="modifiedAtPriority"></param>
+        public Update(DbProvider provider, Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
             : base(provider)
-            => this.Properties = properties;
+        {
+            this.Properties = properties;
+            this.ModifiedAtPriority = modifiedAtPriority;
+        }
         #endregion
 
 
@@ -64,10 +74,20 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(x.ColumnName);
                 builder.Append(bracket.End);
                 builder.Append(" = ");
-                builder.Append(prefix);
-                builder.Append(x.MemberName);
-                builder.Append(',');
-                bindParameter.Add(x.MemberName, null);
+                if (x.IsModifiedAt
+                    && this.ModifiedAtPriority == ValuePriority.Attribute
+                    && x.ModifiedAt.DefaultValue != null)
+                {
+                    builder.Append(x.ModifiedAt.DefaultValue);
+                    builder.Append(',');
+                }
+                else
+                {
+                    builder.Append(prefix);
+                    builder.Append(x.MemberName);
+                    builder.Append(',');
+                    bindParameter.Add(x.MemberName, null);
+                }
             }
             builder.Length--;  // remove last colon
         }
