@@ -43,27 +43,44 @@ namespace DeclarativeSql.Sql.Statements
             var prefix = this.DbProvider.BindParameterPrefix;
             var columns = this.Table.Columns.Where(x => !x.IsAutoIncrement).ToArray();
 
-            builder.AppendLine($"insert into {this.Table.FullName}");
-            builder.AppendLine("(");
-            foreach (var x in columns)
-                builder.AppendLine($"    {bracket.Begin}{x.ColumnName}{bracket.End},");
-            builder.AppendLine(")");
-            builder.AppendLine("values");
-            builder.AppendLine("(");
+            builder.Append("insert into ");
+            builder.AppendLine(this.Table.FullName);
+            builder.Append("(");
             foreach (var x in columns)
             {
+                builder.AppendLine();
+                builder.Append("    ");
+                builder.Append(bracket.Begin);
+                builder.Append(x.ColumnName);
+                builder.Append(bracket.End);
+                builder.Append(',');
+            }
+            builder.Length--;
+            builder.AppendLine();
+            builder.AppendLine(")");
+            builder.AppendLine("values");
+            builder.Append("(");
+            foreach (var x in columns)
+            {
+                builder.AppendLine();
+                builder.Append("    ");
                 if ((x.IsCreatedAt || x.IsModifiedAt)
                     && this.CreatedAtPriority == ValuePriority.Attribute
                     && x.CreatedAt.DefaultValue != null)
                 {
-                    builder.AppendLine($"    {x.CreatedAt.DefaultValue},");
+                    builder.Append(x.CreatedAt.DefaultValue);
+                    builder.Append(',');
                 }
                 else
                 {
-                    builder.AppendLine($"    {prefix}{x.MemberName},");
+                    builder.Append(prefix);
+                    builder.Append(x.MemberName);
+                    builder.Append(',');
                     bindParameter.Add(x.MemberName, null);
                 }
             }
+            builder.Length--;
+            builder.AppendLine();
             builder.Append(")");
         }
         #endregion

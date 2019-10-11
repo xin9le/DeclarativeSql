@@ -28,7 +28,10 @@ namespace DeclarativeSql.Sql.Statements
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
         internal override void Build(StringBuilder builder, BindParameter bindParameter)
-            => builder.Append($"delete from {this.Table.FullName}");
+        {
+            builder.Append("delete from ");
+            builder.Append(this.Table.FullName);
+        }
         #endregion
     }
 }

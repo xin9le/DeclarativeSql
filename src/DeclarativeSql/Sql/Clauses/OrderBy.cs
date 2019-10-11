@@ -81,11 +81,14 @@ namespace DeclarativeSql.Sql.Clauses
             //--- Build body
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var bracket = this.DbProvider.KeywordBracket;
-            var column = $"{bracket.Begin}{propertyName}{bracket.End}";
 
             builder.AppendLine("order by");
-            if (this.IsAscending) builder.Append($"    {column}");
-            else                  builder.Append($"    {column} desc");
+            builder.Append("    ");
+            builder.Append(bracket.Begin);
+            builder.Append(propertyName);
+            builder.Append(bracket.End);
+            if (!this.IsAscending)
+                builder.Append(" desc");
         }
         #endregion
     }

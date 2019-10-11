@@ -28,7 +28,10 @@ namespace DeclarativeSql.Sql.Statements
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
         internal override void Build(StringBuilder builder, BindParameter bindParameter)
-            => builder.Append($"truncate table {this.Table.FullName}");
+        {
+            builder.Append("truncate table ");
+            builder.Append(this.Table.FullName);
+        }
         #endregion
     }
 }

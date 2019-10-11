@@ -28,7 +28,12 @@ namespace DeclarativeSql.Sql.Statements
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
         internal override void Build(StringBuilder builder, BindParameter bindParameter)
-            => builder.Append($"select count(*) as Count from {this.Table.FullName}");
+        {
+            builder.Append("select");
+            builder.Append("    count(*) as Count");
+            builder.Append("from ");
+            builder.Append(this.Table.FullName);
+        }
         #endregion
     }
 }

@@ -53,13 +53,23 @@ namespace DeclarativeSql.Sql.Statements
             //--- Build SQL
             var bracket = this.DbProvider.KeywordBracket;
             var prefix = this.DbProvider.BindParameterPrefix;
-            builder.AppendLine($"update {this.Table.FullName}");
-            builder.AppendLine("set");
+            builder.Append("update ");
+            builder.AppendLine(this.Table.FullName);
+            builder.Append("set");
             foreach (var x in columns)
             {
-                builder.AppendLine($"    {bracket.Begin}{x.ColumnName}{bracket.End} = {prefix}{x.MemberName},");
+                builder.AppendLine();
+                builder.Append("    ");
+                builder.Append(bracket.Begin);
+                builder.Append(x.ColumnName);
+                builder.Append(bracket.End);
+                builder.Append(" = ");
+                builder.Append(prefix);
+                builder.Append(x.MemberName);
+                builder.Append(',');
                 bindParameter.Add(x.MemberName, null);
             }
+            builder.Length--;  // remove last colon
         }
         #endregion
     }

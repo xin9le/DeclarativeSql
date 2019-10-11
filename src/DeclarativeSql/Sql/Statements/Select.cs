@@ -60,11 +60,18 @@ namespace DeclarativeSql.Sql.Statements
             foreach (var x in columns)
             {
                 builder.AppendLine();
-                builder.Append($"    {bracket.Begin}{x.ColumnName}{bracket.End} as {x.MemberName},");
+                builder.Append("    ");
+                builder.Append(bracket.Begin);
+                builder.Append(x.ColumnName);
+                builder.Append(bracket.End);
+                builder.Append(" as ");
+                builder.Append(x.MemberName);
+                builder.Append(',');
             }
             builder.Length--;  //--- remove last colon.
             builder.AppendLine();
-            builder.Append($"from {this.Table.FullName}");
+            builder.Append("from ");
+            builder.Append(this.Table.FullName);
         }   
         #endregion
     }
