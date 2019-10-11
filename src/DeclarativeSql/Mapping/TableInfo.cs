@@ -11,7 +11,7 @@ namespace DeclarativeSql.Mapping
     /// <summary>
     /// Provides table mapping information.
     /// </summary>
-    public sealed class TableInfo
+    internal sealed class TableInfo
     {
         #region Properties
         /// <summary>

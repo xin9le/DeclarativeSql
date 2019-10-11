@@ -11,7 +11,7 @@ namespace DeclarativeSql.Mapping
     /// <summary>
     /// Provides column mapping information.
     /// </summary>
-    public sealed class ColumnInfo
+    internal sealed class ColumnInfo
     {
         #region Properties
         /// <summary>
