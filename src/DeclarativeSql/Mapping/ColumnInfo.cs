@@ -77,10 +77,10 @@ namespace DeclarativeSql.Mapping
 
 
         /// <summary>
-        /// Gets whether UpdatedAt column.
+        /// Gets whether ModifiedAt column.
         /// </summary>
-        public bool IsUpdatedAt
-            => this.UpdatedAt != null;
+        public bool IsModifiedAt
+            => this.ModifiedAt != null;
 
 
         /// <summary>
@@ -90,9 +90,9 @@ namespace DeclarativeSql.Mapping
 
 
         /// <summary>
-        /// Gets the UpdatedAt attribute.
+        /// Gets the ModifiedAt attribute.
         /// </summary>
-        internal UpdatedAtAttribute UpdatedAt { get; }
+        internal ModifiedAtAttribute ModifiedAt { get; }
         #endregion
 
 
@@ -136,7 +136,7 @@ namespace DeclarativeSql.Mapping
             this.AllowNull = Attribute.IsDefined(member, typeof(AllowNullAttribute));
             this.UniqueIndex = this.IsPrimaryKey ? -1 : (int?)unique?.Index;
             this.CreatedAt = member.GetCustomAttribute<CreatedAtAttribute>(true);
-            this.UpdatedAt = member.GetCustomAttribute<UpdatedAtAttribute>(true);
+            this.ModifiedAt = member.GetCustomAttribute<ModifiedAtAttribute>(true);
         }
         #endregion
     }

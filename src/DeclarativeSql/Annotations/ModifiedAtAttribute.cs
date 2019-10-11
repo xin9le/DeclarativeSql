@@ -5,10 +5,10 @@
 namespace DeclarativeSql.Annotations
 {
     /// <summary>
-    /// Provides an attribute that indicates whether is UpdatedAt column.
+    /// Provides an attribute that indicates whether is ModifiedAt column.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public sealed class UpdatedAtAttribute : Attribute
+    public sealed class ModifiedAtAttribute : Attribute
     {
         #region Properties
         /// <summary>
@@ -23,7 +23,7 @@ namespace DeclarativeSql.Annotations
         /// Creates instance.
         /// </summary>
         /// <param name="defaultValue"></param>
-        public UpdatedAtAttribute(string defaultValue = null)
+        public ModifiedAtAttribute(string defaultValue = null)
             => this.DefaultValue = defaultValue;
         #endregion
     }
