@@ -11,14 +11,23 @@ namespace DeclarativeSql.Sql.Statements
     /// <typeparam name="T"></typeparam>
     internal sealed class Insert<T> : Statement<T>, IInsert<T>
     {
+        #region Properties
+        /// <summary>
+        /// Gets the value priority of CreatedAt column.
+        /// </summary>
+        private ValuePriority CreatedAtPriority { get; }
+        #endregion
+
+
         #region Constructors
         /// <summary>
         /// Creates instance.
         /// </summary>
         /// <param name="provider"></param>
-        public Insert(DbProvider provider)
+        /// <param name="createdAtPriority"></param>
+        public Insert(DbProvider provider, ValuePriority createdAtPriority)
             : base(provider)
-        { }
+            => this.CreatedAtPriority = createdAtPriority;
         #endregion
 
 
@@ -43,8 +52,17 @@ namespace DeclarativeSql.Sql.Statements
             builder.AppendLine("(");
             foreach (var x in columns)
             {
-                builder.AppendLine($"    {prefix}{x.MemberName},");
-                bindParameter.Add(x.MemberName, null);
+                if ((x.IsCreatedAt || x.IsModifiedAt)
+                    && this.CreatedAtPriority == ValuePriority.Attribute
+                    && x.CreatedAt.DefaultValue != null)
+                {
+                    builder.AppendLine($"    {x.CreatedAt.DefaultValue},");
+                }
+                else
+                {
+                    builder.AppendLine($"    {prefix}{x.MemberName},");
+                    bindParameter.Add(x.MemberName, null);
+                }
             }
             builder.Append(")");
         }
