@@ -58,8 +58,8 @@ namespace DeclarativeSql.Sql
         public Query Build()
         {
             var builder = new StringBuilder();
-            var bindParameter = new BindParameter();
-            this.Build(builder, bindParameter);
+            BindParameter bindParameter = null;
+            this.Build(builder, ref bindParameter);
             return new Query(builder.ToString(), bindParameter);
         }
         #endregion
@@ -71,7 +71,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal abstract void Build(StringBuilder builder, BindParameter bindParameter);
+        internal abstract void Build(StringBuilder builder, ref BindParameter bindParameter);
         #endregion
 
 

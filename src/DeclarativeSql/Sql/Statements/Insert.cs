@@ -37,7 +37,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, BindParameter bindParameter)
+        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
         {
             var bracket = this.DbProvider.KeywordBracket;
             var prefix = this.DbProvider.BindParameterPrefix;
@@ -82,7 +82,7 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(prefix);
                 builder.Append(x.MemberName);
                 builder.Append(',');
-                bindParameter.Add(x.MemberName, null);
+                //bindParameter.Add(x.MemberName, null);
             }
             builder.Length--;
             builder.AppendLine();

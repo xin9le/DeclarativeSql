@@ -17,6 +17,7 @@ namespace DeclarativeSql.Tests.Cases
             var actual = this.DbProvider.QueryBuilder.Count<Person>().Build();
             var expect = "select count(*) as Count from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

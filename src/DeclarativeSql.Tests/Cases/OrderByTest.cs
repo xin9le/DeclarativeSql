@@ -20,6 +20,7 @@ namespace DeclarativeSql.Tests.Cases
 @"order by
     [名前]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -31,6 +32,7 @@ namespace DeclarativeSql.Tests.Cases
 @"order by
     [Age] desc";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

@@ -25,6 +25,7 @@ namespace DeclarativeSql.Tests.Cases
     [ModifiedAt] as ModifiedAt
 from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -37,6 +38,7 @@ from [dbo].[Person]";
     [名前] as Name
 from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -49,6 +51,7 @@ from [dbo].[Person]";
     [名前] as Name
 from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -62,6 +65,7 @@ from [dbo].[Person]";
     [Age] as Age
 from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

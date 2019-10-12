@@ -21,6 +21,7 @@ namespace DeclarativeSql.Tests.Cases
 where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -41,6 +42,7 @@ from [dbo].[Person]
 where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -59,6 +61,7 @@ set
 where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -72,6 +75,7 @@ where
 where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -92,6 +96,7 @@ from [dbo].[Person]
 order by
     [Id]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -111,6 +116,7 @@ from [dbo].[Person]
 order by
     [Id] desc";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -141,6 +147,7 @@ order by
     [名前],
     [Age] desc";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
     }

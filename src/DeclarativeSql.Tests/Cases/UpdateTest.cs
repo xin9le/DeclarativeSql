@@ -23,6 +23,7 @@ set
     [HasChildren] = @HasChildren,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -36,6 +37,7 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -49,6 +51,7 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -62,6 +65,7 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

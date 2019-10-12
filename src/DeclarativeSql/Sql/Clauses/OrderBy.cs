@@ -65,17 +65,17 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, BindParameter bindParameter)
+        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Build parent
             if (this.ParentStatement != null)
             {
-                this.ParentStatement.Build(builder, bindParameter);
+                this.ParentStatement.Build(builder, ref bindParameter);
                 builder.AppendLine();
             }
             if (this.ParentClause != null)
             {
-                this.ParentClause.Build(builder, bindParameter);
+                this.ParentClause.Build(builder, ref bindParameter);
                 builder.AppendLine();
             }
 

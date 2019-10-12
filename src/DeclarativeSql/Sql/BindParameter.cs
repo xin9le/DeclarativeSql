@@ -200,9 +200,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static BindParameter From<T>(T obj)
         {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
             var result = new BindParameter();
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
             var accessor = ObjectAccessor.Create(obj);
@@ -238,9 +235,6 @@ namespace DeclarativeSql.Sql
         /// <param name="source"></param>
         public void Update<T>(T source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
             var accessor = ObjectAccessor.Create(source);
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
             for (var i = 0; i < members.Count; i++)
@@ -263,6 +257,23 @@ namespace DeclarativeSql.Sql
 
             foreach (var x in kvs)
                 this.Add(x.Key, x.Value);
+        }
+
+
+        /// <summary>
+        /// Merges the specified values.
+        /// </summary>
+        /// <param name="kvs"></param>
+        public void Merge<T>(T obj)
+        {
+            var members = TypeAccessor.Create(typeof(T)).GetMembers();
+            var accessor = ObjectAccessor.Create(obj);
+            for (var i = 0; i < members.Count; i++)
+            {
+                var member = members[i];
+                if (member.CanRead)
+                    this.Add(member.Name, accessor[member.Name]);
+            }
         }
         #endregion
     }

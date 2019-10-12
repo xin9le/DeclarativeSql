@@ -98,7 +98,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] is null";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeEmpty();
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -110,7 +110,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] is not null";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeEmpty();
+            actual.BindParameter.Should().BeNull();
         }
 
 

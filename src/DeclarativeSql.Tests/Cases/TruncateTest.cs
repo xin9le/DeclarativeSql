@@ -17,6 +17,7 @@ namespace DeclarativeSql.Tests.Cases
             var actual = this.DbProvider.QueryBuilder.Truncate<Person>().Build();
             var expect = "truncate table [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

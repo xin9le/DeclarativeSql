@@ -17,6 +17,7 @@ namespace DeclarativeSql.Tests.Cases
             var actual = this.DbProvider.QueryBuilder.Delete<Person>().Build();
             var expect = "delete from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

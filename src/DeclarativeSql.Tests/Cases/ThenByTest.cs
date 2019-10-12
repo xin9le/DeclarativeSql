@@ -25,6 +25,7 @@ namespace DeclarativeSql.Tests.Cases
     [名前],
     [CreatedAt]";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -41,6 +42,7 @@ namespace DeclarativeSql.Tests.Cases
     [Age] desc,
     [ModifiedAt] desc";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }

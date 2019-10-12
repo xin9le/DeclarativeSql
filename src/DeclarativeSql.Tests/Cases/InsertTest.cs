@@ -33,6 +33,7 @@ values
     @ModifiedAt
 )";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
 
 
@@ -58,6 +59,7 @@ values
     @ModifiedAt
 )";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
         }
     }
 }
