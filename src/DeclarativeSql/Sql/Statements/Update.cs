@@ -53,12 +53,19 @@ namespace DeclarativeSql.Sql.Statements
         internal override void Build(StringBuilder builder, BindParameter bindParameter)
         {
             //--- Extract update target columns
-            var columns = this.Table.Columns.Where(x => !x.IsAutoIncrement);
+            var columns
+                = this.Table.Columns
+                .Where(x => !x.IsAutoIncrement)
+                .Where(x => !x.IsCreatedAt)
+                .Where(x => !x.IsModifiedAt);
             if (this.Properties != null)  // Pick up only specified columns
             {
                 var propertyNames = ExpressionHelper.GetMemberNames(this.Properties);
                 columns = columns.Join(propertyNames, x => x.MemberName, y => y, (x, y) => x);
             }
+            var modifiedAt = this.Table.Columns.FirstOrDefault(x => x.IsModifiedAt);
+            if (modifiedAt != null)
+                columns = columns.Append(modifiedAt);
 
             //--- Build SQL
             var bracket = this.DbProvider.KeywordBracket;
