@@ -123,7 +123,7 @@ namespace DeclarativeSql.DbOperations
                     => new MySqlOperation(connection, transaction, DbProvider.MySql, timeout),
 
                 "Microsoft.Data.Sqlite.SqliteConnection"
-                    => new DbOperation(connection, transaction, DbProvider.Sqlite, timeout),
+                    => new SqliteOperation(connection, transaction, DbProvider.Sqlite, timeout),
 
                 "Npgsql.NpgsqlConnection"
                     => new DbOperation(connection, transaction, DbProvider.PostgreSql, timeout),
