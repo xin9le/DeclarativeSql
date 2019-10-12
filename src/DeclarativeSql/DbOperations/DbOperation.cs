@@ -11,6 +11,9 @@ using DeclarativeSql.Sql;
 
 namespace DeclarativeSql.DbOperations
 {
+    using Ctor = Func<IDbConnection, IDbTransaction, int?, DbOperation>;
+
+
     /// <summary>
     /// Provides database operations.
     /// </summary>
@@ -39,6 +42,13 @@ namespace DeclarativeSql.DbOperations
         /// Gets the operation timeout.
         /// </summary>
         protected int? Timeout { get; }
+
+
+        /// <summary>
+        /// Gets the <see cref="DbOperation"/> factory by database connection type.
+        /// </summary>
+        internal static Dictionary<Type, Ctor> Factory { get; }
+            = new Dictionary<Type, Ctor>();
         #endregion
 
 
@@ -97,7 +107,14 @@ namespace DeclarativeSql.DbOperations
         /// <param name="timeout"></param>
         /// <returns></returns>
         private static DbOperation Create(IDbConnection connection, IDbTransaction transaction, int? timeout)
-            => connection.GetType().FullName switch
+        {
+            //--- override
+            var type = connection.GetType();
+            if (Factory.TryGetValue(type, out var ctor))
+                return ctor(connection, transaction, timeout);
+
+            //--- default
+            return type.FullName switch
             {
                 "System.Data.SqlClient.SqlConnection"
                     => new SqlServerOperation(connection, transaction, DbProvider.SqlServer, timeout),
@@ -116,6 +133,7 @@ namespace DeclarativeSql.DbOperations
 
                 _ => throw new NotSupportedException(),
             };
+        }
         #endregion
 
 
