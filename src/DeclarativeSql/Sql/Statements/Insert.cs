@@ -64,20 +64,25 @@ namespace DeclarativeSql.Sql.Statements
             {
                 builder.AppendLine();
                 builder.Append("    ");
-                if ((x.IsCreatedAt || x.IsModifiedAt)
-                    && this.CreatedAtPriority == ValuePriority.Attribute
-                    && x.CreatedAt.DefaultValue != null)
+                if (this.CreatedAtPriority == ValuePriority.Attribute)
                 {
-                    builder.Append(x.CreatedAt.DefaultValue);
-                    builder.Append(',');
+                    if (x.IsCreatedAt && x.CreatedAt.DefaultValue != null)
+                    {
+                        builder.Append(x.CreatedAt.DefaultValue);
+                        builder.Append(',');
+                        continue;
+                    }
+                    if (x.IsModifiedAt && x.ModifiedAt?.DefaultValue != null)
+                    {
+                        builder.Append(x.ModifiedAt.DefaultValue);
+                        builder.Append(',');
+                        continue;
+                    }
                 }
-                else
-                {
-                    builder.Append(prefix);
-                    builder.Append(x.MemberName);
-                    builder.Append(',');
-                    bindParameter.Add(x.MemberName, null);
-                }
+                builder.Append(prefix);
+                builder.Append(x.MemberName);
+                builder.Append(',');
+                bindParameter.Add(x.MemberName, null);
             }
             builder.Length--;
             builder.AppendLine();
