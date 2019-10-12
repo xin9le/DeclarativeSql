@@ -14,9 +14,9 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = this.DbProvider.QueryBuilder.Count<Person>().ToString();
+            var actual = this.DbProvider.QueryBuilder.Count<Person>().Build();
             var expect = "select count(*) as Count from [dbo].[Person]";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
     }
 }

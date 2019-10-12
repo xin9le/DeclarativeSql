@@ -14,7 +14,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AllColumns()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>().ToString();
+            var actual = this.DbProvider.QueryBuilder.Update<Person>().Build();
             var expect =
 @"update [dbo].[Person]
 set
@@ -22,46 +22,46 @@ set
     [Age] = @Age,
     [HasChildren] = @HasChildren,
     [ModifiedAt] = @ModifiedAt";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
 
 
         [Fact]
         public void OneColumn()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => x.Name).ToString();
+            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => x.Name).Build();
             var expect =
 @"update [dbo].[Person]
 set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
 
 
         [Fact]
         public void OneColumn_AnonymousType()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name }).ToString();
+            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name }).Build();
             var expect =
 @"update [dbo].[Person]
 set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
 
 
         [Fact]
         public void TwoColumns()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name, x.CreatedAt }).ToString();
+            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name, x.CreatedAt }).Build();
             var expect =
 @"update [dbo].[Person]
 set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
     }
 }

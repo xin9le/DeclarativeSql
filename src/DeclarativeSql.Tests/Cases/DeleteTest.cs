@@ -14,9 +14,9 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = this.DbProvider.QueryBuilder.Delete<Person>().ToString();
+            var actual = this.DbProvider.QueryBuilder.Delete<Person>().Build();
             var expect = "delete from [dbo].[Person]";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
     }
 }

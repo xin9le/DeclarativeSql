@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 
 
@@ -30,6 +31,7 @@ namespace DeclarativeSql.Sql
     /// Represents SQL for specified mapping table.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal abstract class Sql<T> : ISql<T>
     {
         #region Constructors
@@ -73,12 +75,8 @@ namespace DeclarativeSql.Sql
         #endregion
 
 
-        #region override
-        /// <summary>
-        /// Converts to string.
-        /// </summary>
-        /// <returns></returns>
-        public sealed override string ToString()
+        #region Debug
+        private string DebuggerDisplay()
             => this.Build().Statement;
         #endregion
     }

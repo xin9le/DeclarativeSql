@@ -14,9 +14,9 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = this.DbProvider.QueryBuilder.Truncate<Person>().ToString();
+            var actual = this.DbProvider.QueryBuilder.Truncate<Person>().Build();
             var expect = "truncate table [dbo].[Person]";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
     }
 }

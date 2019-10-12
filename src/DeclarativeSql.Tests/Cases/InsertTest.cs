@@ -14,7 +14,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void CreatedAt_PreferAttribute()
         {
-            var actual = this.DbProvider.QueryBuilder.Insert<Person>().ToString();
+            var actual = this.DbProvider.QueryBuilder.Insert<Person>().Build();
             var expect =
 @"insert into [dbo].[Person]
 (
@@ -32,14 +32,14 @@ values
     SYSDATETIME(),
     @ModifiedAt
 )";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
 
 
         [Fact]
         public void CreatedAt_PreferProperty()
         {
-            var actual = this.DbProvider.QueryBuilder.Insert<Person>(ValuePriority.Property).ToString();
+            var actual = this.DbProvider.QueryBuilder.Insert<Person>(ValuePriority.Property).Build();
             var expect =
 @"insert into [dbo].[Person]
 (
@@ -57,7 +57,7 @@ values
     @CreatedAt,
     @ModifiedAt
 )";
-            actual.Should().Be(expect);
+            actual.Statement.Should().Be(expect);
         }
     }
 }
