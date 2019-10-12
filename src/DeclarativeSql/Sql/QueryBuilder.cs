@@ -298,6 +298,36 @@ namespace DeclarativeSql.Sql
             if (property == null) throw new ArgumentNullException(nameof(property));
             return new ThenBy<T>(orderBy, property, false);
         }
+
+
+        /// <summary>
+        /// Builds ascending then by clause.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="thenBy"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static IThenBy<T> ThenBy<T>(this IThenBy<T> thenBy, Expression<Func<T, object>> property)
+        {
+            if (thenBy == null) throw new ArgumentNullException(nameof(thenBy));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenBy<T>(thenBy, property, true);
+        }
+
+
+        /// <summary>
+        /// Builds descending then by clause.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="thenBy"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static IThenBy<T> ThenByDescending<T>(this IThenBy<T> thenBy, Expression<Func<T, object>> property)
+        {
+            if (thenBy == null) throw new ArgumentNullException(nameof(thenBy));
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return new ThenBy<T>(thenBy, property, false);
+        }
         #endregion
     }
 }

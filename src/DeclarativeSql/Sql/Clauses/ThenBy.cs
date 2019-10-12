@@ -41,6 +41,20 @@ namespace DeclarativeSql.Sql.Clauses
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
         }
+
+
+        /// <summary>
+        /// Creates instance.
+        /// </summary>
+        /// <param name="thenBy"></param>
+        /// <param name="property"></param>
+        /// <param name="isAscending"></param>
+        public ThenBy(IThenBy<T> thenBy, Expression<Func<T, object>> property, bool isAscending)
+            : base(null, thenBy)
+        {
+            this.Property = property ?? throw new ArgumentNullException(nameof(property));
+            this.IsAscending = isAscending;
+        }
         #endregion
 
 
