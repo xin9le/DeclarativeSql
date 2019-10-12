@@ -56,7 +56,7 @@ namespace DeclarativeSql.Sql
         /// <typeparam name="T"></typeparam>
         /// <param name="createdAtPriority"></param>
         /// <returns></returns>
-        public IInsert<T> Insert<T>(ValuePriority createdAtPriority = ValuePriority.Attribute)
+        public IInsert<T> Insert<T>(ValuePriority createdAtPriority = default)
             => new Insert<T>(this.DbProvider, createdAtPriority);
 
 
@@ -67,7 +67,7 @@ namespace DeclarativeSql.Sql
         /// <param name="properties"></param>
         /// <param name="modifiedAtPriority"></param>
         /// <returns></returns>
-        public IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null, ValuePriority modifiedAtPriority = ValuePriority.Attribute)
+        public IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null, ValuePriority modifiedAtPriority = default)
             => new Update<T>(this.DbProvider, properties, modifiedAtPriority);
 
 
