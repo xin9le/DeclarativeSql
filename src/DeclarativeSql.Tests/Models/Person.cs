@@ -20,6 +20,9 @@ namespace DeclarativeSql.Tests.Models
         public int Age { get; set; }
 
 
+        public bool HasChildren { get; set; }
+
+
         [CreatedAt("SYSDATETIME()")]
         public DateTimeOffset CreatedAt { get; set; }
 

@@ -20,6 +20,7 @@ namespace DeclarativeSql.Tests.Cases
     [Id] as Id,
     [名前] as Name,
     [Age] as Age,
+    [HasChildren] as HasChildren,
     [CreatedAt] as CreatedAt,
     [ModifiedAt] as ModifiedAt
 from [dbo].[Person]";

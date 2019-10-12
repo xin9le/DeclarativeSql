@@ -20,6 +20,7 @@ namespace DeclarativeSql.Tests.Cases
 (
     [名前],
     [Age],
+    [HasChildren],
     [CreatedAt],
     [ModifiedAt]
 )
@@ -27,6 +28,7 @@ values
 (
     @Name,
     @Age,
+    @HasChildren,
     SYSDATETIME(),
     @ModifiedAt
 )";
@@ -43,6 +45,7 @@ values
 (
     [名前],
     [Age],
+    [HasChildren],
     [CreatedAt],
     [ModifiedAt]
 )
@@ -50,6 +53,7 @@ values
 (
     @Name,
     @Age,
+    @HasChildren,
     @CreatedAt,
     @ModifiedAt
 )";

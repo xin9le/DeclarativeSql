@@ -20,6 +20,7 @@ namespace DeclarativeSql.Tests.Cases
 set
     [名前] = @Name,
     [Age] = @Age,
+    [HasChildren] = @HasChildren,
     [ModifiedAt] = @ModifiedAt";
             actual.Should().Be(expect);
         }
