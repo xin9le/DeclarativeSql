@@ -120,7 +120,7 @@ namespace DeclarativeSql.DbOperations
                     => new SqlServerOperation(connection, transaction, DbProvider.SqlServer, timeout),
 
                 "MySql.Data.MySqlClient.MySqlConnection"
-                    => new DbOperation(connection, transaction, DbProvider.MySql, timeout),
+                    => new MySqlOperation(connection, transaction, DbProvider.MySql, timeout),
 
                 "Microsoft.Data.Sqlite.SqliteConnection"
                     => new DbOperation(connection, transaction, DbProvider.Sqlite, timeout),
