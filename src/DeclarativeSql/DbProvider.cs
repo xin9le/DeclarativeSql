@@ -19,12 +19,6 @@ namespace DeclarativeSql
 
 
         /// <summary>
-        /// Gets the database connection type.
-        /// </summary>
-        internal string ConnectionTypeName { get; }
-
-
-        /// <summary>
         /// Gets the default schema.
         /// </summary>
         public string DefaultSchema { get; }
@@ -54,14 +48,12 @@ namespace DeclarativeSql
         /// Creates instance.
         /// </summary>
         /// <param name="database"></param>
-        /// <param name="connectionTypeName"></param>
         /// <param name="defaultSchema"></param>
         /// <param name="bindParameterPrefix"></param>
         /// <param name="keywordBracket"></param>
-        private DbProvider(DbKind database, string connectionTypeName, string defaultSchema, char bindParameterPrefix, in BracketPair keywordBracket)
+        private DbProvider(DbKind database, string defaultSchema, char bindParameterPrefix, in BracketPair keywordBracket)
         {
             this.Database = database;
-            this.ConnectionTypeName = connectionTypeName;
             this.DefaultSchema = defaultSchema;
             this.BindParameterPrefix = bindParameterPrefix;
             this.KeywordBracket = keywordBracket;
@@ -83,7 +75,6 @@ namespace DeclarativeSql
                 Oracle,
             };
             ByDatabase = All.ToDictionary(x => x.Database);
-            ByConnectionTypeName = All.ToDictionary(x => x.ConnectionTypeName);
         }
         #endregion
 
@@ -113,7 +104,6 @@ namespace DeclarativeSql
         public static DbProvider SqlServer { get; } = new DbProvider
         (
             DbKind.SqlServer,
-            "System.Data.SqlClient.SqlConnection",
             "dbo",
             '@',
             new BracketPair('[', ']')
@@ -126,7 +116,6 @@ namespace DeclarativeSql
         public static DbProvider MySql { get; } = new DbProvider
         (
             DbKind.MySql,
-            "MySql.Data.MySqlClient.MySqlConnection",
             null,
             '@',
             new BracketPair('`', '`')
@@ -139,7 +128,6 @@ namespace DeclarativeSql
         public static DbProvider Sqlite { get; } = new DbProvider
         (
             DbKind.Sqlite,
-            "Microsoft.Data.Sqlite.SqliteConnection",
             null,
             '@',
             new BracketPair('"', '"')
@@ -152,7 +140,6 @@ namespace DeclarativeSql
         public static DbProvider PostgreSql { get; } = new DbProvider
         (
             DbKind.PostgreSql,
-            "Npgsql.NpgsqlConnection",
             null,
             ':',
             new BracketPair('"', '"')
@@ -165,7 +152,6 @@ namespace DeclarativeSql
         public static DbProvider Oracle { get; } = new DbProvider
         (
             DbKind.Oracle,
-            "Oracle.ManagedDataAccess.Client.OracleConnection",
             null,
             ':',
             new BracketPair('"', '"')
