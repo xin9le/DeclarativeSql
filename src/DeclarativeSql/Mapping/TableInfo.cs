@@ -47,7 +47,7 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets the column mapping information.
         /// </summary>
-        public ReadOnlyArray<ColumnInfo> Columns { get; private set; }
+        public IReadOnlyList<ColumnInfo> Columns { get; private set; }
 
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace DeclarativeSql.Mapping
                     var columns
                         = properties.Select(x => new ColumnInfo(db, x))
                         .Concat(fields.Select(x => new ColumnInfo(db, x)))
-                        .ToReadOnlyArray();
+                        .ToArray();
                     result[db] = new TableInfo
                     {
                         Database = db,
