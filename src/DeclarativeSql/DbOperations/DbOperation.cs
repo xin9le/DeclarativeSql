@@ -97,10 +97,25 @@ namespace DeclarativeSql.DbOperations
         /// <param name="timeout"></param>
         /// <returns></returns>
         private static DbOperation Create(IDbConnection connection, IDbTransaction transaction, int? timeout)
-        {
-            var provider = DbProvider.ByConnectionTypeName[connection.GetType().FullName];
-            return new DbOperation(connection, transaction, provider, timeout);
-        }
+            => connection.GetType().FullName switch
+            {
+                "System.Data.SqlClient.SqlConnection"
+                    => new SqlServerOperation(connection, transaction, DbProvider.SqlServer, timeout),
+
+                "MySql.Data.MySqlClient.MySqlConnection"
+                    => new DbOperation(connection, transaction, DbProvider.MySql, timeout),
+
+                "Microsoft.Data.Sqlite.SqliteConnection"
+                    => new DbOperation(connection, transaction, DbProvider.Sqlite, timeout),
+
+                "Npgsql.NpgsqlConnection"
+                    => new DbOperation(connection, transaction, DbProvider.PostgreSql, timeout),
+
+                "Oracle.ManagedDataAccess.Client.OracleConnection"
+                    => new DbOperation(connection, transaction, DbProvider.Oracle, timeout),
+
+                _ => throw new NotSupportedException(),
+            };
         #endregion
 
 
