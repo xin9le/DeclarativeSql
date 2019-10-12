@@ -11,6 +11,18 @@ namespace DeclarativeSql.Internals
     /// </summary>
     internal static class EnumerableExtensions
     {
+        #region WithIndex
+        /// <summary>
+        /// Add an index to the element.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IEnumerable<(T element, int index)> WithIndex<T>(this IEnumerable<T> source)
+            => source.Select((x, i) => (x, i));
+        #endregion
+
+
         #region Materialize
         /// <summary>
         /// Return array that is materialized if source is deferred, otherwise return itself without do nothing.
