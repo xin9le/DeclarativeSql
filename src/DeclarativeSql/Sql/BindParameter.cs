@@ -244,8 +244,10 @@ namespace DeclarativeSql.Sql
                     this[member.Name] = accessor[member.Name];
             }
         }
+        #endregion
 
 
+        #region Merge
         /// <summary>
         /// Merges the specified values.
         /// </summary>
