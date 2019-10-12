@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using DeclarativeSql.Internals;
+using DeclarativeSql.Mapping;
 using DeclarativeSql.Sql.Statements;
 using FastMember;
 
@@ -387,7 +388,8 @@ namespace DeclarativeSql.Sql.Clauses
             public override void Build(DbProvider provider, StringBuilder builder, BindParameter bindParameter, in string digitFormat)
             {
                 var bracket = provider.KeywordBracket;
-                builder.Append($"{bracket.Begin}{this.PropertyName}{bracket.End}");
+                var columnName = TableInfo.Get<T>(provider.Database).ColumnsByMemberName[this.PropertyName].ColumnName;
+                builder.Append($"{bracket.Begin}{columnName}{bracket.End}");
 
                 switch (this.Operator)
                 {

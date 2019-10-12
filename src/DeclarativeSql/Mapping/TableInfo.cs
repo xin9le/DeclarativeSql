@@ -48,6 +48,12 @@ namespace DeclarativeSql.Mapping
         /// Gets the column mapping information.
         /// </summary>
         public ReadOnlyArray<ColumnInfo> Columns { get; private set; }
+
+
+        /// <summary>
+        /// Gets the column mapping information by member name.
+        /// </summary>
+        public IReadOnlyDictionary<string, ColumnInfo> ColumnsByMemberName { get; private set; }
         #endregion
 
 
@@ -106,6 +112,10 @@ namespace DeclarativeSql.Mapping
                     var b = provider.KeywordBracket;
                     var schema = table?.Schema ?? provider.DefaultSchema;
                     var name = table?.Name ?? type.Name;
+                    var columns
+                        = properties.Select(x => new ColumnInfo(db, x))
+                        .Concat(fields.Select(x => new ColumnInfo(db, x)))
+                        .ToReadOnlyArray();
                     result[db] = new TableInfo
                     {
                         Database = db,
@@ -116,10 +126,8 @@ namespace DeclarativeSql.Mapping
                             = string.IsNullOrEmpty(schema)
                             ? $"{b.Begin}{name}{b.End}"
                             : $"{b.Begin}{schema}{b.End}.{b.Begin}{name}{b.End}",
-                        Columns
-                            = properties.Select(x => new ColumnInfo(db, x))
-                            .Concat(fields.Select(x => new ColumnInfo(db, x)))
-                            .ToReadOnlyArray(),
+                        Columns = columns,
+                        ColumnsByMemberName = columns.ToDictionary(x => x.MemberName),
                     };
                 }
                 Instances = result;
