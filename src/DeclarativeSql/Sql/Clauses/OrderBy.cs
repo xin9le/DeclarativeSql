@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Text;
 using DeclarativeSql.Internals;
+using DeclarativeSql.Mapping;
 using DeclarativeSql.Sql.Statements;
 
 
@@ -79,13 +80,15 @@ namespace DeclarativeSql.Sql.Clauses
             }
 
             //--- Build body
+            var table = TableInfo.Get<T>(this.DbProvider.Database);
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
+            var columnName = table.ColumnsByMemberName[propertyName].ColumnName;
             var bracket = this.DbProvider.KeywordBracket;
 
             builder.AppendLine("order by");
             builder.Append("    ");
             builder.Append(bracket.Begin);
-            builder.Append(propertyName);
+            builder.Append(columnName);
             builder.Append(bracket.End);
             if (!this.IsAscending)
                 builder.Append(" desc");
