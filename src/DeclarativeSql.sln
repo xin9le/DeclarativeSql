@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29403.142
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6590E0EF-50CF-49FB-BBD5-63387CACFA03}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B0CC91F0-6B7A-475E-8AA7-51EB27B2891C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql", "DeclarativeSql\DeclarativeSql.csproj", "{1B6F58AD-3905-4736-AD4E-65C0FB50F04C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.Tests", "DeclarativeSql.Tests\DeclarativeSql.Tests.csproj", "{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,12 +17,13 @@ Global
 		{1B6F58AD-3905-4736-AD4E-65C0FB50F04C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B6F58AD-3905-4736-AD4E-65C0FB50F04C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B6F58AD-3905-4736-AD4E-65C0FB50F04C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1B6F58AD-3905-4736-AD4E-65C0FB50F04C} = {6590E0EF-50CF-49FB-BBD5-63387CACFA03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {570A4369-5F2D-4C11-A572-00CB102CD6C6}
