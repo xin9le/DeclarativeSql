@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -10,6 +11,29 @@ namespace DeclarativeSql.Internals
     /// </summary>
     internal static class EnumerableExtensions
     {
+        #region Materialize
+        /// <summary>
+        /// Return array that is materialized if source is deferred, otherwise return itself without do nothing.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="nullToEmpty"></param>
+        public static IEnumerable<T> Materialize<T>(this IEnumerable<T> source, bool nullToEmpty = true)
+        {
+            if (source == null)
+            {
+                if (nullToEmpty)
+                    return Enumerable.Empty<T>();
+                throw new ArgumentNullException("source is null.");
+            }
+            if (source is ICollection<T>) return source;
+            if (source is IReadOnlyCollection<T>) return source;
+            return source.ToArray();
+        }
+        #endregion
+
+
+        #region Buffer
         /// <summary>
         /// Generates a sequence of non-overlapping adjacent buffers over the source sequence.
         /// </summary>
@@ -66,5 +90,6 @@ namespace DeclarativeSql.Internals
             while (buffers.Count > 0)
                 yield return buffers.Dequeue();
         }
+        #endregion
     }
 }
