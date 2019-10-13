@@ -39,6 +39,12 @@ namespace DeclarativeSql.Mapping
 
 
         /// <summary>
+        /// Gets the default value.
+        /// </summary>
+        public object DefaultValue { get; }
+
+
+        /// <summary>
         /// Gets whether primary key.
         /// </summary>
         public bool IsPrimaryKey { get; }
@@ -72,27 +78,13 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets whether CreatedAt column.
         /// </summary>
-        public bool IsCreatedAt
-            => this.CreatedAt != null;
+        public bool IsCreatedAt { get; }
 
 
         /// <summary>
         /// Gets whether ModifiedAt column.
         /// </summary>
-        public bool IsModifiedAt
-            => this.ModifiedAt != null;
-
-
-        /// <summary>
-        /// Gets the CreatedAt attribute.
-        /// </summary>
-        internal CreatedAtAttribute CreatedAt { get; }
-
-
-        /// <summary>
-        /// Gets the ModifiedAt attribute.
-        /// </summary>
-        internal ModifiedAtAttribute ModifiedAt { get; }
+        public bool IsModifiedAt { get; }
         #endregion
 
 
@@ -125,18 +117,20 @@ namespace DeclarativeSql.Mapping
         private ColumnInfo(DbKind database, MemberInfo member, Type memberType)
         {
             var column = member.GetCustomAttributes<ColumnAttribute>(true).FirstOrDefault(x => x.Database == database);
+            var @default = member.GetCustomAttributes<DefaultValueAttribute>(true).FirstOrDefault(x => x.Database == database);
             var unique = member.GetCustomAttribute<UniqueAttribute>(true);
 
             this.MemberName = member.Name;
             this.MemberType = memberType;
             this.ColumnName = column?.Name ?? member.Name;
             this.ColumnType = column?.Type;
+            this.DefaultValue = @default?.Value;
             this.IsPrimaryKey = Attribute.IsDefined(member, typeof(PrimaryKeyAttribute));
             this.IsAutoIncrement = Attribute.IsDefined(member, typeof(AutoIncrementAttribute));
             this.AllowNull = Attribute.IsDefined(member, typeof(AllowNullAttribute));
             this.UniqueIndex = this.IsPrimaryKey ? -1 : (int?)unique?.Index;
-            this.CreatedAt = member.GetCustomAttribute<CreatedAtAttribute>(true);
-            this.ModifiedAt = member.GetCustomAttribute<ModifiedAtAttribute>(true);
+            this.IsCreatedAt = Attribute.IsDefined(member, typeof(CreatedAtAttribute));
+            this.IsModifiedAt = Attribute.IsDefined(member, typeof(ModifiedAtAttribute));
         }
         #endregion
     }

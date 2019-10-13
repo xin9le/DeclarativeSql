@@ -23,12 +23,14 @@ namespace DeclarativeSql.Tests.Models
         public bool HasChildren { get; set; }
 
 
-        [CreatedAt("SYSDATETIME()")]
+        [CreatedAt]
+        [DefaultValue(DbKind.SqlServer, "SYSDATETIME()")]
         public DateTimeOffset CreatedAt { get; set; }
 
 
         [ModifiedAt]
         [Column(DbKind.MySql, "UpdatedOn")]
+        [DefaultValue(DbKind.MySql, "SYSDATETIME()")]
         public DateTimeOffset ModifiedAt { get; set; }
     }
 }

@@ -83,9 +83,9 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(" = ");
                 if (x.IsModifiedAt
                     && this.ModifiedAtPriority == ValuePriority.Default
-                    && x.ModifiedAt.DefaultValue != null)
+                    && x.DefaultValue != null)
                 {
-                    builder.Append(x.ModifiedAt.DefaultValue);
+                    builder.Append(x.DefaultValue);
                     builder.Append(',');
                 }
                 else

@@ -66,15 +66,15 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append("    ");
                 if (this.CreatedAtPriority == ValuePriority.Default)
                 {
-                    if (x.IsCreatedAt && x.CreatedAt.DefaultValue != null)
+                    if (x.IsCreatedAt && x.DefaultValue != null)
                     {
-                        builder.Append(x.CreatedAt.DefaultValue);
+                        builder.Append(x.DefaultValue);
                         builder.Append(',');
                         continue;
                     }
-                    if (x.IsModifiedAt && x.ModifiedAt?.DefaultValue != null)
+                    if (x.IsModifiedAt && x.DefaultValue != null)
                     {
-                        builder.Append(x.ModifiedAt.DefaultValue);
+                        builder.Append(x.DefaultValue);
                         builder.Append(',');
                         continue;
                     }
