@@ -101,7 +101,7 @@ namespace DeclarativeSql.DbOperations
                 .Where(x => !x.IsAutoIncrement)
                 .Where(x =>
                 {
-                    if (createdAt == ValuePriority.Attribute)
+                    if (createdAt == ValuePriority.Default)
                     {
                         if ((x.IsCreatedAt && x.CreatedAt.DefaultValue != null)
                         || (x.IsModifiedAt && x.ModifiedAt.DefaultValue != null))

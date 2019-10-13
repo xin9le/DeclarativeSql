@@ -198,7 +198,7 @@ select cast(scope_identity() as bigint) as Id;";
             builder.Append("    values (");
             foreach (var x in insertColumns)
             {
-                if (createdAtPriority == ValuePriority.Attribute)
+                if (createdAtPriority == ValuePriority.Default)
                 {
                     if (x.IsCreatedAt && x.CreatedAt.DefaultValue != null)
                     {

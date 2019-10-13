@@ -64,7 +64,7 @@ namespace DeclarativeSql.Sql.Statements
             {
                 builder.AppendLine();
                 builder.Append("    ");
-                if (this.CreatedAtPriority == ValuePriority.Attribute)
+                if (this.CreatedAtPriority == ValuePriority.Default)
                 {
                     if (x.IsCreatedAt && x.CreatedAt.DefaultValue != null)
                     {
