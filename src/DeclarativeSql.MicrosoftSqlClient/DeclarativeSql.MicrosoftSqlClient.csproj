@@ -11,7 +11,6 @@
         <Version>1.0.0.0</Version>
         <Description>Microsoft.Data.SqlClient specific feature for DeclarativeSql.</Description>
         <PackageProjectUrl>https://github.com/xin9le/DeclarativeSql</PackageProjectUrl>
-        <PackageIconUrl></PackageIconUrl>
         <PackageTags>Database, SQL, CRUD</PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
