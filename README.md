@@ -30,7 +30,7 @@ using DeclarativeSql.Annotations;
 
 namespace SampleApp
 {
-    [Table(DbKind.SqlServer, "T_Person", Schema = "dbo")]  // Customize table name per
+    [Table(DbKind.SqlServer, "T_Person", Schema = "dbo")]  // Customize table name per database
     public class Person
     {
         [PrimaryKey]  // Primary key constraint
@@ -40,7 +40,7 @@ namespace SampleApp
         [Unique(0)]  // Unique constraint by index
         public string Email { get; set; }
 
-        [Column(DbKind.SqlServer, "名前")]  // Customize column name
+        [Column(DbKind.SqlServer, "名前")]  // Customize column name per database
         public string Name { get; set; }
 
         [AllowNull]  // Nullable
