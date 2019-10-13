@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>DeclarativeSql</RootNamespace>
+        <LangVersion>8.0</LangVersion>
+        <Nullable>disable</Nullable>
+        <!-- NuGet -->
+        <IsPackable>true</IsPackable>
+        <PackageId>DeclarativeSql.SystemSqlClient</PackageId>
+        <Version>1.0.1.0</Version>
+        <Description>System.Data.SqlClient specific feature for DeclarativeSql.</Description>
+        <PackageProjectUrl>https://github.com/xin9le/DeclarativeSql</PackageProjectUrl>
+        <PackageTags>Database, SQL, CRUD</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <Company />
+        <Authors>xin9le</Authors>
+        <Copyright>Copyright© xin9le, All rights reserved.</Copyright>
+        <PackageReleaseNotes></PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DeclarativeSql\DeclarativeSql.csproj" />
+    </ItemGroup>
+
+</Project>
