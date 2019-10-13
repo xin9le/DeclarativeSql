@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29403.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql", "DeclarativeSql\DeclarativeSql.csproj", "{1B6F58AD-3905-4736-AD4E-65C0FB50F04C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.Tests", "DeclarativeSql.Tests\DeclarativeSql.Tests.csproj", "{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql.Tests", "DeclarativeSql.Tests\DeclarativeSql.Tests.csproj", "{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.MicrosoftSqlClient", "DeclarativeSql.MicrosoftSqlClient\DeclarativeSql.MicrosoftSqlClient.csproj", "{DA959C23-DF55-443B-8818-D82E54828F0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7967255A-C8D2-4BB0-BA95-FB7F2DA853FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA959C23-DF55-443B-8818-D82E54828F0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA959C23-DF55-443B-8818-D82E54828F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA959C23-DF55-443B-8818-D82E54828F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA959C23-DF55-443B-8818-D82E54828F0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>DeclarativeSql</RootNamespace>
+        <LangVersion>8.0</LangVersion>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DeclarativeSql\DeclarativeSql.csproj" />
+    </ItemGroup>
+
+</Project>
