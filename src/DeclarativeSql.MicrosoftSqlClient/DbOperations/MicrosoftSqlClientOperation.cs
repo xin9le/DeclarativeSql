@@ -13,7 +13,7 @@ using Microsoft.Data.SqlClient;
 namespace DeclarativeSql.DbOperations
 {
     /// <summary>
-    /// Provides MicrosoftSqlClient specific database operation.
+    /// Provides Microsoft.Data.SqlClient specific database operation.
     /// </summary>
     internal class MicrosoftSqlClientOperation : SqlServerOperation
     {
