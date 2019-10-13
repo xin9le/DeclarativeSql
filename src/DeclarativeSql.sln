@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql.Tests", "Dec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclarativeSql.MicrosoftSqlClient", "DeclarativeSql.MicrosoftSqlClient\DeclarativeSql.MicrosoftSqlClient.csproj", "{DA959C23-DF55-443B-8818-D82E54828F0D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeclarativeSql.SystemSqlClient", "DeclarativeSql.SystemSqlClient\DeclarativeSql.SystemSqlClient.csproj", "{B0C56C45-101C-4A7B-8D90-DBFC0834CDC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{DA959C23-DF55-443B-8818-D82E54828F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA959C23-DF55-443B-8818-D82E54828F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA959C23-DF55-443B-8818-D82E54828F0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C56C45-101C-4A7B-8D90-DBFC0834CDC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C56C45-101C-4A7B-8D90-DBFC0834CDC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C56C45-101C-4A7B-8D90-DBFC0834CDC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C56C45-101C-4A7B-8D90-DBFC0834CDC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
