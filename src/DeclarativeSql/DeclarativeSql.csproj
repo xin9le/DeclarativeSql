@@ -4,6 +4,22 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8.0</LangVersion>
         <Nullable>disable</Nullable>
+        <!-- NuGet -->
+        <IsPackable>true</IsPackable>
+        <PackageId>DeclarativeSql</PackageId>
+        <Version>1.0.0.0</Version>
+        <Description>Attribute-based table mapping and simple database access.</Description>
+        <PackageProjectUrl>https://github.com/xin9le/DeclarativeSql</PackageProjectUrl>
+        <PackageIconUrl></PackageIconUrl>
+        <PackageTags>Database, SQL, CRUD</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <Company />
+        <Authors>xin9le</Authors>
+        <Copyright>Copyright© xin9le, All rights reserved.</Copyright>
+        <PackageReleaseNotes></PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
