@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Cysharp.Text;
 using DeclarativeSql.Internals;
 
 
@@ -40,7 +40,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
+        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract target columns
             var columns
@@ -68,7 +68,7 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(x.MemberName);
                 builder.Append(',');
             }
-            builder.Length--;  //--- remove last colon.
+            builder.Advance(-1);  //--- remove last colon.
             builder.AppendLine();
             builder.Append("from ");
             builder.Append(this.Table.FullName);

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Text;
+using Cysharp.Text;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
 using DeclarativeSql.Sql.Statements;
@@ -65,17 +65,17 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
+        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Build parent
             if (this.ParentStatement != null)
             {
-                this.ParentStatement.Build(builder, ref bindParameter);
+                this.ParentStatement.Build(ref builder, ref bindParameter);
                 builder.AppendLine();
             }
             if (this.ParentClause != null)
             {
-                this.ParentClause.Build(builder, ref bindParameter);
+                this.ParentClause.Build(ref builder, ref bindParameter);
                 builder.AppendLine();
             }
 

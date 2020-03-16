@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using System.Text;
+using Cysharp.Text;
 
 
 
@@ -37,7 +37,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
+        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             var bracket = this.DbProvider.KeywordBracket;
             var prefix = this.DbProvider.BindParameterPrefix;
@@ -55,7 +55,7 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(bracket.End);
                 builder.Append(',');
             }
-            builder.Length--;
+            builder.Advance(-1);
             builder.AppendLine();
             builder.AppendLine(")");
             builder.AppendLine("values");
@@ -84,7 +84,7 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(',');
                 //bindParameter.Add(x.MemberName, null);
             }
-            builder.Length--;
+            builder.Advance(-1);
             builder.AppendLine();
             builder.Append(")");
         }

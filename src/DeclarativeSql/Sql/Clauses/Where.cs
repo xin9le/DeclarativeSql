@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
+using Cysharp.Text;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
 using DeclarativeSql.Sql.Statements;
@@ -46,18 +46,18 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
+        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Build parent
             if (this.ParentStatement != null)
             {
-                this.ParentStatement.Build(builder, ref bindParameter);
+                this.ParentStatement.Build(ref builder, ref bindParameter);
                 builder.AppendLine();
             }
 
             //--- Build body
             var tree = Parser.Parse(this.Predicate);
-            tree.Build(this.DbProvider, builder, ref bindParameter);
+            tree.Build(this.DbProvider, ref builder, ref bindParameter);
         }
         #endregion
 
@@ -197,13 +197,13 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="provider"></param>
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
-            public void Build(DbProvider provider, StringBuilder builder, ref BindParameter bindParameter)
+            public void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
             {
                 var digit = NumericHelper.GetDigit(this.BindParameterCount);
                 var digitFormat = $"D{digit}";
                 builder.AppendLine("where");
                 builder.Append("    ");
-                this.Root.Build(provider, builder, ref bindParameter, in digitFormat);
+                this.Root.Build(provider, ref builder, ref bindParameter, in digitFormat);
             }
             #endregion
         }
@@ -240,7 +240,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
             /// <param name="digitFormat"></param>
-            public abstract void Build(DbProvider provider, StringBuilder builder, ref BindParameter bindParameter, in string digitFormat);
+            public abstract void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter, in string digitFormat);
             #endregion
         }
 
@@ -283,7 +283,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
             /// <param name="digitFormat"></param>
-            public override void Build(DbProvider provider, StringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
+            public override void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
             {
                 if (this.Left == null || this.Right == null)
                     throw new InvalidOperationException();
@@ -292,12 +292,12 @@ namespace DeclarativeSql.Sql.Clauses
                 if ((this.Operator != this.Left.Operator) && this.Left is AndOr)  // needsBracket
                 {
                     builder.Append('(');
-                    this.Left.Build(provider, builder, ref bindParameter, in digitFormat);
+                    this.Left.Build(provider, ref builder, ref bindParameter, in digitFormat);
                     builder.Append(')');
                 }
                 else
                 {
-                    this.Left.Build(provider, builder, ref bindParameter, in digitFormat);
+                    this.Left.Build(provider, ref builder, ref bindParameter, in digitFormat);
                 }
 
                 //--- and / or
@@ -308,12 +308,12 @@ namespace DeclarativeSql.Sql.Clauses
                 if ((this.Operator != this.Right.Operator) && this.Right is AndOr)  // needsBracket
                 {
                     builder.Append('(');
-                    this.Right.Build(provider, builder, ref bindParameter, in digitFormat);
+                    this.Right.Build(provider, ref builder, ref bindParameter, in digitFormat);
                     builder.Append(')');
                 }
                 else
                 {
-                    this.Right.Build(provider, builder, ref bindParameter, in digitFormat);
+                    this.Right.Build(provider, ref builder, ref bindParameter, in digitFormat);
                 }
             }
             #endregion
@@ -385,7 +385,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
             /// <param name="digitFormat"></param>
-            public override void Build(DbProvider provider, StringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
+            public override void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
             {
                 var bracket = provider.KeywordBracket;
                 var columnName = TableInfo.Get<T>(provider.Database).ColumnsByMemberName[this.PropertyName].ColumnName;
@@ -461,7 +461,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
             /// <param name="digitFormat"></param>
-            public override void Build(DbProvider provider, StringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
+            public override void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter, in string digitFormat)
             {
                 var sql = this.Value ? "1 = 1" : "1 = 0";
                 builder.Append(sql);

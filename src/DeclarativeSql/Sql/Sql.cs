@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
+using Cysharp.Text;
 
 
 
@@ -57,10 +57,17 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public Query Build()
         {
-            var builder = new StringBuilder();
-            BindParameter bindParameter = null;
-            this.Build(builder, ref bindParameter);
-            return new Query(builder.ToString(), bindParameter);
+            var builder = ZString.CreateStringBuilder();
+            try
+            {
+                BindParameter bindParameter = null;
+                this.Build(ref builder, ref bindParameter);
+                return new Query(builder.ToString(), bindParameter);
+            }
+            finally
+            {
+                builder.Dispose();
+            }
         }
         #endregion
 
@@ -71,7 +78,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal abstract void Build(StringBuilder builder, ref BindParameter bindParameter);
+        internal abstract void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter);
         #endregion
 
 

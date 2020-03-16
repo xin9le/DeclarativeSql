@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Cysharp.Text;
 using DeclarativeSql.Internals;
 
 
@@ -50,7 +50,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        internal override void Build(StringBuilder builder, ref BindParameter bindParameter)
+        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract update target columns
             var columns
@@ -96,7 +96,7 @@ namespace DeclarativeSql.Sql.Statements
                     //bindParameter.Add(x.MemberName, null);
                 }
             }
-            builder.Length--;  // remove last colon
+            builder.Advance(-1);  // remove last colon
         }
         #endregion
     }
