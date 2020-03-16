@@ -200,7 +200,7 @@ namespace DeclarativeSql.Sql.Clauses
             public void Build(DbProvider provider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
             {
                 var digit = NumericHelper.GetDigit(this.BindParameterCount);
-                var digitFormat = $"D{digit}";
+                var digitFormat = "D" + digit;
                 builder.AppendLine("where");
                 builder.Append("    ");
                 this.Root.Build(provider, ref builder, ref bindParameter, in digitFormat);
@@ -389,7 +389,9 @@ namespace DeclarativeSql.Sql.Clauses
             {
                 var bracket = provider.KeywordBracket;
                 var columnName = TableInfo.Get<T>(provider.Database).ColumnsByMemberName[this.PropertyName].ColumnName;
-                builder.Append($"{bracket.Begin}{columnName}{bracket.End}");
+                builder.Append(bracket.Begin);
+                builder.Append(columnName);
+                builder.Append(bracket.End);
 
                 switch (this.Operator)
                 {
@@ -419,7 +421,7 @@ namespace DeclarativeSql.Sql.Clauses
                     default: throw new InvalidOperationException();
                 }
 
-                var name = $"p{this.BindParameterIndex.Value.ToString(digitFormat)}";
+                var name = "p" + this.BindParameterIndex.Value.ToString(digitFormat);
                 if (bindParameter == null)
                     bindParameter = new BindParameter();
                 bindParameter.Add(name, this.Value);  //--- cache parameter

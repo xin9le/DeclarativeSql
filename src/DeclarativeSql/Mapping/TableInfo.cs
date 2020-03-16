@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cysharp.Text;
 using DeclarativeSql.Annotations;
 
 
@@ -124,8 +125,8 @@ namespace DeclarativeSql.Mapping
                         Name = name,
                         FullName
                             = string.IsNullOrEmpty(schema)
-                            ? $"{b.Begin}{name}{b.End}"
-                            : $"{b.Begin}{schema}{b.End}.{b.Begin}{name}{b.End}",
+                            ? ZString.Concat(b.Begin, name, b.End)
+                            : ZString.Concat(b.Begin, schema, b.End, '.', b.Begin, name, b.End),
                         Columns = columns,
                         ColumnsByMemberName = columns.ToDictionary(x => x.MemberName),
                     };

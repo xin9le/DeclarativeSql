@@ -130,7 +130,7 @@ namespace DeclarativeSql
         private ref IDbConnection GetConnection(ref IDbConnection connection, string connectionString, AvailabilityTarget target)
         {
             if (this.IsDisposed)
-                throw new ObjectDisposedException($"{target}");
+                throw new ObjectDisposedException(target.ToString());
 
             if (connection == null)
             {

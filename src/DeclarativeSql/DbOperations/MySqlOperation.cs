@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Dapper;
 using DeclarativeSql.Sql;
 
@@ -70,9 +72,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="createdAt"></param>
         /// <returns></returns>
         private string ToInsertAndGetIdSql(string insert)
-            =>
-$@"{insert};
-select last_insert_id() as Id;";
+            => ZString.Concat(insert, ';', Environment.NewLine, "select last_insert_id() as Id;");
         #endregion
 
 
