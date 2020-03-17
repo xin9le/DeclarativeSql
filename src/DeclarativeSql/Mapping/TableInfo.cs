@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Cysharp.Text;
 using DeclarativeSql.Annotations;
+using DeclarativeSql.Internals;
 
 
 
@@ -48,13 +49,13 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets the column mapping information.
         /// </summary>
-        public IReadOnlyList<ColumnInfo> Columns { get; private set; }
+        public ReadOnlyArray<ColumnInfo> Columns { get; private set; }
 
 
         /// <summary>
         /// Gets the column mapping information by member name.
         /// </summary>
-        public IReadOnlyDictionary<string, ColumnInfo> ColumnsByMemberName { get; private set; }
+        public FrozenStringKeyDictionary<ColumnInfo> ColumnsByMemberName { get; private set; }
         #endregion
 
 
@@ -116,7 +117,7 @@ namespace DeclarativeSql.Mapping
                     var columns
                         = properties.Select(x => new ColumnInfo(db, x))
                         .Concat(fields.Select(x => new ColumnInfo(db, x)))
-                        .ToArray();
+                        .ToReadOnlyArray();
                     result[db] = new TableInfo
                     {
                         Database = db,
@@ -128,7 +129,7 @@ namespace DeclarativeSql.Mapping
                             ? ZString.Concat(b.Begin, name, b.End)
                             : ZString.Concat(b.Begin, schema, b.End, '.', b.Begin, name, b.End),
                         Columns = columns,
-                        ColumnsByMemberName = columns.ToDictionary(x => x.MemberName),
+                        ColumnsByMemberName = columns.ToFrozenStringKeyDictionary(x => x.MemberName),
                     };
                 }
                 Instances = result;
