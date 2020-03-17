@@ -63,9 +63,8 @@ namespace DeclarativeSql.Sql.Statements
                 var propertyNames = ExpressionHelper.GetMemberNames(this.Properties);
                 columns = columns.Join(propertyNames, x => x.MemberName, y => y, (x, y) => x);
             }
-            var modifiedAt = this.Table.Columns.FirstOrDefault(x => x.IsModifiedAt);
-            if (modifiedAt != null)
-                columns = columns.Append(modifiedAt);
+            foreach (var x in this.Table.Columns.Where(x => x.IsModifiedAt))
+                columns = columns.Append(x);
 
             //--- Build SQL
             var bracket = this.DbProvider.KeywordBracket;
