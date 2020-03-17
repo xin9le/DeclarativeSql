@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Cysharp.Text;
+﻿using Cysharp.Text;
 
 
 
@@ -41,13 +40,15 @@ namespace DeclarativeSql.Sql.Statements
         {
             var bracket = this.DbProvider.KeywordBracket;
             var prefix = this.DbProvider.BindParameterPrefix;
-            var columns = this.Table.Columns.Where(x => !x.IsAutoIncrement).ToArray();
 
             builder.Append("insert into ");
             builder.AppendLine(this.Table.FullName);
             builder.Append("(");
-            foreach (var x in columns)
+            foreach (var x in this.Table.Columns)
             {
+                if (x.IsAutoIncrement)
+                    continue;
+
                 builder.AppendLine();
                 builder.Append("    ");
                 builder.Append(bracket.Begin);
@@ -60,8 +61,11 @@ namespace DeclarativeSql.Sql.Statements
             builder.AppendLine(")");
             builder.AppendLine("values");
             builder.Append("(");
-            foreach (var x in columns)
+            foreach (var x in this.Table.Columns)
             {
+                if (x.IsAutoIncrement)
+                    continue;
+
                 builder.AppendLine();
                 builder.Append("    ");
                 if (this.CreatedAtPriority == ValuePriority.Default)
