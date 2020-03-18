@@ -8,7 +8,7 @@ namespace DeclarativeSql.Sql.Clauses
     /// Represents SQL clause.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal abstract class Clause<T> : Sql<T>, IClause<T>
+    internal abstract class Clause<T> : Sql, IClause<T>
     {
         #region Properties
         /// <summary>
@@ -28,16 +28,25 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parentStatement"></param>
-        /// <param name="parentClause"></param>
-        protected Clause(IStatement<T> parentStatement, IClause<T> parentClause)
-            : base(parentStatement?.DbProvider ?? parentClause?.DbProvider)
+        /// <param name="parent"></param>
+        protected Clause(IStatement<T> parent)
         {
             this.ParentStatement
-                = parentStatement is Null<T>
+                = parent is Null<T>
                 ? null
-                : parentStatement as Statement<T>;
-            this.ParentClause = parentClause as Clause<T>;
+                : parent as Statement<T>;
+            this.ParentClause = null;
+        }
+
+
+        /// <summary>
+        /// Creates instance.
+        /// </summary>
+        /// <param name="parent"></param>
+        protected Clause(IClause<T> parent)
+        {
+            this.ParentStatement = null;
+            this.ParentClause = parent as Clause<T>;
         }
         #endregion
     }

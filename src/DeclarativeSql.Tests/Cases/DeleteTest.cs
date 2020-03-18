@@ -1,4 +1,5 @@
-﻿using DeclarativeSql.Tests.Models;
+﻿using DeclarativeSql.Sql;
+using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = this.DbProvider.QueryBuilder.Delete<Person>().Build();
+            var actual = QueryBuilder.Delete<Person>().Build(this.DbProvider);
             var expect = "delete from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();

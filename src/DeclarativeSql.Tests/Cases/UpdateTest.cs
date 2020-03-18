@@ -1,4 +1,5 @@
-﻿using DeclarativeSql.Tests.Models;
+﻿using DeclarativeSql.Sql;
+using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AllColumns()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>().Build();
+            var actual = QueryBuilder.Update<Person>().Build(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set
@@ -30,7 +31,7 @@ set
         [Fact]
         public void OneColumn()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => x.Name).Build();
+            var actual = QueryBuilder.Update<Person>(x => x.Name).Build(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set
@@ -44,7 +45,7 @@ set
         [Fact]
         public void OneColumn_AnonymousType()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name }).Build();
+            var actual = QueryBuilder.Update<Person>(x => new { x.Name }).Build(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set
@@ -58,7 +59,7 @@ set
         [Fact]
         public void TwoColumns()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>(x => new { x.Name, x.CreatedAt }).Build();
+            var actual = QueryBuilder.Update<Person>(x => new { x.Name, x.CreatedAt }).Build(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set

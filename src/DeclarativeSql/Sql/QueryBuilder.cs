@@ -8,36 +8,18 @@ using DeclarativeSql.Sql.Statements;
 namespace DeclarativeSql.Sql
 {
     /// <summary>
-    /// Provides query builder.
+    /// Provides <see cref="QueryBuilder"/> extension methods.
     /// </summary>
-    public sealed class QueryBuilder
+    public static class QueryBuilder
     {
-        #region Properties
-        /// <summary>
-        /// Gets database provider.
-        /// </summary>
-        internal DbProvider DbProvider { get; }
-        #endregion
-
-
-        #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="provider"></param>
-        internal QueryBuilder(DbProvider provider)
-            => this.DbProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-        #endregion
-
-
         #region Statement
         /// <summary>
         /// Builds count statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ICount<T> Count<T>()
-            => new Count<T>(this.DbProvider);
+        public static ICount<T> Count<T>()
+            => new Count<T>();
 
 
         /// <summary>
@@ -46,8 +28,8 @@ namespace DeclarativeSql.Sql
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public ISelect<T> Select<T>(Expression<Func<T, object>> properties = null)
-            => new Select<T>(this.DbProvider, properties);
+        public static ISelect<T> Select<T>(Expression<Func<T, object>> properties = null)
+            => new Select<T>(properties);
 
 
         /// <summary>
@@ -56,8 +38,8 @@ namespace DeclarativeSql.Sql
         /// <typeparam name="T"></typeparam>
         /// <param name="createdAtPriority"></param>
         /// <returns></returns>
-        public IInsert<T> Insert<T>(ValuePriority createdAtPriority = default)
-            => new Insert<T>(this.DbProvider, createdAtPriority);
+        public static IInsert<T> Insert<T>(ValuePriority createdAtPriority = default)
+            => new Insert<T>(createdAtPriority);
 
 
         /// <summary>
@@ -67,8 +49,8 @@ namespace DeclarativeSql.Sql
         /// <param name="properties"></param>
         /// <param name="modifiedAtPriority"></param>
         /// <returns></returns>
-        public IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null, ValuePriority modifiedAtPriority = default)
-            => new Update<T>(this.DbProvider, properties, modifiedAtPriority);
+        public static IUpdate<T> Update<T>(Expression<Func<T, object>> properties = null, ValuePriority modifiedAtPriority = default)
+            => new Update<T>(properties, modifiedAtPriority);
 
 
         /// <summary>
@@ -76,8 +58,8 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IDelete<T> Delete<T>()
-            => new Delete<T>(this.DbProvider);
+        public static IDelete<T> Delete<T>()
+            => new Delete<T>();
 
 
         /// <summary>
@@ -85,18 +67,11 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ITruncate<T> Truncate<T>()
-            => new Truncate<T>(this.DbProvider);
+        public static ITruncate<T> Truncate<T>()
+            => new Truncate<T>();
         #endregion
-    }
 
 
-
-    /// <summary>
-    /// Provides <see cref="QueryBuilder"/> extension methods.
-    /// </summary>
-    public static class QueryBuilderExtensions
-    {
         #region Where
         /// <summary>
         /// Builds where clause.
@@ -105,11 +80,11 @@ namespace DeclarativeSql.Sql
         /// <param name="builder"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public static IWhere<T> Where<T>(this QueryBuilder builder, Expression<Func<T, bool>> predicate)
+        public static IWhere<T> Where<T>(Expression<Func<T, bool>> predicate)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-            var @null = new Null<T>(builder.DbProvider);
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+            var @null = new Null<T>();
             return new Where<T>(@null, predicate);
         }
 
@@ -183,11 +158,11 @@ namespace DeclarativeSql.Sql
         /// <param name="builder"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static IOrderBy<T> OrderBy<T>(this QueryBuilder builder, Expression<Func<T, object>> property)
+        public static IOrderBy<T> OrderBy<T>(Expression<Func<T, object>> property)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (property == null) throw new ArgumentNullException(nameof(property));
-            var @null = new Null<T>(builder.DbProvider);
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+            var @null = new Null<T>();
             return new OrderBy<T>(@null, property, true);
         }
 
@@ -199,11 +174,11 @@ namespace DeclarativeSql.Sql
         /// <param name="builder"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static IOrderBy<T> OrderByDescending<T>(this QueryBuilder builder, Expression<Func<T, object>> property)
+        public static IOrderBy<T> OrderByDescending<T>(Expression<Func<T, object>> property)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (property == null) throw new ArgumentNullException(nameof(property));
-            var @null = new Null<T>(builder.DbProvider);
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+            var @null = new Null<T>();
             return new OrderBy<T>(@null, property, false);
         }
 

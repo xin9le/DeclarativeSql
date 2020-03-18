@@ -11,24 +11,16 @@ namespace DeclarativeSql.Sql.Statements
     internal sealed class Null<T> : Statement<T>
     {
         #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="provider"></param>
-        public Null(DbProvider provider)
-            : base(provider)
-        {}
+        /// <inheritdoc/>
+        public Null()
+        { }
         #endregion
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
-        {}
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        { }
         #endregion
     }
 }

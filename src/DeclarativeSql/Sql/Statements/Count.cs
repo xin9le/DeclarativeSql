@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using DeclarativeSql.Mapping;
 
 
 
@@ -11,26 +12,19 @@ namespace DeclarativeSql.Sql.Statements
     internal sealed class Count<T> : Statement<T>, ICount<T>
     {
         #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="provider"></param>
-        public Count(DbProvider provider)
-            : base(provider)
-        {}
+        /// <inheritdoc/>
+        public Count()
+        { }
         #endregion
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
+            var table = TableInfo.Get<T>(dbProvider.Database);
             builder.Append("select count(*) as Count from ");
-            builder.Append(this.Table.FullName);
+            builder.Append(table.FullName);
         }
         #endregion
     }

@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Count_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Count<Person>().Where(x => x.Id == 1).Build();
+            var actual = QueryBuilder.Count<Person>().Where(x => x.Id == 1).Build(this.DbProvider);
             var expect =
 @"select count(*) as Count from [dbo].[Person]
 where
@@ -29,7 +29,7 @@ where
         [Fact]
         public void Select_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().Where(x => x.Id == 1).Build();
+            var actual = QueryBuilder.Select<Person>().Where(x => x.Id == 1).Build(this.DbProvider);
             var expect =
 @"select
     [Id] as Id,
@@ -50,7 +50,7 @@ where
         [Fact]
         public void Update_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>().Where(x => x.Id == 1).Build();
+            var actual = QueryBuilder.Update<Person>().Where(x => x.Id == 1).Build(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set
@@ -69,7 +69,7 @@ where
         [Fact]
         public void Delete_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Delete<Person>().Where(x => x.Id == 1).Build();
+            var actual = QueryBuilder.Delete<Person>().Where(x => x.Id == 1).Build(this.DbProvider);
             var expect =
 @"delete from [dbo].[Person]
 where
@@ -83,7 +83,7 @@ where
         [Fact]
         public void Select_OrderBy()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().OrderBy(x => x.Id).Build();
+            var actual = QueryBuilder.Select<Person>().OrderBy(x => x.Id).Build(this.DbProvider);
             var expect =
 @"select
     [Id] as Id,
@@ -103,7 +103,7 @@ order by
         [Fact]
         public void Select_OrderByDescending()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().OrderByDescending(x => x.Id).Build();
+            var actual = QueryBuilder.Select<Person>().OrderByDescending(x => x.Id).Build(this.DbProvider);
             var expect =
 @"select
     [Id] as Id,
@@ -124,13 +124,13 @@ order by
         public void Select_Where_OrderBy_ThenBy_ThenByDescending()
         {
             var actual
-                = this.DbProvider.QueryBuilder
+                = QueryBuilder
                 .Select<Person>()
                 .Where(x => x.Id == 1)
                 .OrderBy(x => x.Id)
                 .ThenBy(x => x.Name)
                 .ThenByDescending(x => x.Age)
-                .Build();
+                .Build(this.DbProvider);
             var expect =
 @"select
     [Id] as Id,

@@ -148,7 +148,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Record count</returns>
         public virtual ulong Count<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Count<T>().Build();
+            var query = QueryBuilder.Count<T>().Build(this.DbProvider);
             return this.Connection.ExecuteScalar<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -161,7 +161,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Record count</returns>
         public virtual ulong Count<T>(Expression<Func<T, bool>> predicate)
         {
-            var query = this.DbProvider.QueryBuilder.Count<T>().Where(predicate).Build();
+            var query = QueryBuilder.Count<T>().Where(predicate).Build(this.DbProvider);
             return this.Connection.ExecuteScalar<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -173,7 +173,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Record count</returns>
         public virtual Task<ulong> CountAsync<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Count<T>().Build();
+            var query = QueryBuilder.Count<T>().Build(this.DbProvider);
             return this.Connection.ExecuteScalarAsync<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -186,7 +186,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Record count</returns>
         public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var query = this.DbProvider.QueryBuilder.Count<T>().Where(predicate).Build();
+            var query = QueryBuilder.Count<T>().Where(predicate).Build(this.DbProvider);
             return this.Connection.ExecuteScalarAsync<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
         #endregion
@@ -201,7 +201,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public virtual List<T> Select<T>(Expression<Func<T, object>> properties)
         {
-            var query = this.DbProvider.QueryBuilder.Select(properties).Build();
+            var query = QueryBuilder.Select(properties).Build(this.DbProvider);
             return this.Connection.Query<T>(query.Statement, query.BindParameter, this.Transaction, true, this.Timeout) as List<T>;
         }
 
@@ -215,7 +215,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public virtual List<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var query = this.DbProvider.QueryBuilder.Select(properties).Where(predicate).Build();
+            var query = QueryBuilder.Select(properties).Where(predicate).Build(this.DbProvider);
             return this.Connection.Query<T>(query.Statement, query.BindParameter, this.Transaction, true, this.Timeout) as List<T>;
         }
 
@@ -228,7 +228,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object>> properties)
         {
-            var query = this.DbProvider.QueryBuilder.Select(properties).Build();
+            var query = QueryBuilder.Select(properties).Build(this.DbProvider);
             var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as List<T>;
         }
@@ -243,7 +243,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties)
         {
-            var query = this.DbProvider.QueryBuilder.Select(properties).Where(predicate).Build();
+            var query = QueryBuilder.Select(properties).Where(predicate).Build(this.DbProvider);
             var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
             return result as List<T>;
         }
@@ -260,7 +260,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int Insert<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
         }
 
@@ -274,7 +274,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> InsertAsync<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
         }
         #endregion
@@ -290,7 +290,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int InsertMulti<T>(IEnumerable<T> data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
         }
 
@@ -304,7 +304,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> InsertMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
         }
         #endregion
@@ -421,7 +421,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int Update<T>(T data, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
-            var query = this.DbProvider.QueryBuilder.Update(properties, modifiedAt).Build();
+            var query = QueryBuilder.Update(properties, modifiedAt).Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
         }
 
@@ -437,7 +437,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
-            var query = this.DbProvider.QueryBuilder.Update(properties, modifiedAt).Build();
+            var query = QueryBuilder.Update(properties, modifiedAt).Build(this.DbProvider);
             if (query.BindParameter == null)
             {
                 return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
@@ -460,7 +460,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
-            var query = this.DbProvider.QueryBuilder.Update(properties, modifiedAt).Build();
+            var query = QueryBuilder.Update(properties, modifiedAt).Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
         }
 
@@ -476,7 +476,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
-            var query = this.DbProvider.QueryBuilder.Update(properties, modifiedAt).Build();
+            var query = QueryBuilder.Update(properties, modifiedAt).Build(this.DbProvider);
             if (query.BindParameter == null)
             {
                 return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
@@ -498,7 +498,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int Delete<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Delete<T>().Build();
+            var query = QueryBuilder.Delete<T>().Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -511,7 +511,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual int Delete<T>(Expression<Func<T, bool>> predicate)
         {
-            var query = this.DbProvider.QueryBuilder.Delete<T>().Where(predicate).Build();
+            var query = QueryBuilder.Delete<T>().Where(predicate).Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -523,7 +523,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> DeleteAsync<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Delete<T>().Build();
+            var query = QueryBuilder.Delete<T>().Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -536,7 +536,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Effected rows count</returns>
         public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
         {
-            var query = this.DbProvider.QueryBuilder.Delete<T>().Where(predicate).Build();
+            var query = QueryBuilder.Delete<T>().Where(predicate).Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
         #endregion
@@ -550,7 +550,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>-1</returns>
         public virtual int Truncate<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Truncate<T>().Build();
+            var query = QueryBuilder.Truncate<T>().Build(this.DbProvider);
             return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
@@ -562,7 +562,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>-1</returns>
         public virtual Task<int> TruncateAsync<T>()
         {
-            var query = this.DbProvider.QueryBuilder.Truncate<T>().Build();
+            var query = QueryBuilder.Truncate<T>().Build(this.DbProvider);
             return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
         #endregion

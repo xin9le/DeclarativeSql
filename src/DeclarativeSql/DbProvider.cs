@@ -34,12 +34,6 @@ namespace DeclarativeSql
         /// Gets the SQL keyword bracket.
         /// </summary>
         public BracketPair KeywordBracket { get; }
-
-
-        /// <summary>
-        /// Gets the query builder.
-        /// </summary>
-        public QueryBuilder QueryBuilder { get; }
         #endregion
 
 
@@ -57,7 +51,6 @@ namespace DeclarativeSql
             this.DefaultSchema = defaultSchema;
             this.BindParameterPrefix = bindParameterPrefix;
             this.KeywordBracket = keywordBracket;
-            this.QueryBuilder = new QueryBuilder(this);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using DeclarativeSql.Tests.Models;
+﻿using DeclarativeSql.Sql;
+using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = this.DbProvider.QueryBuilder.Truncate<Person>().Build();
+            var actual = QueryBuilder.Truncate<Person>().Build(this.DbProvider);
             var expect = "truncate table [dbo].[Person]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();

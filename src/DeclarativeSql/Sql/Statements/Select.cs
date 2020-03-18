@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
+using DeclarativeSql.Mapping;
 
 
 
@@ -26,27 +27,22 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="provider"></param>
         /// <param name="properties">Properties that mapped to the target column. If null, all columns are targeted.</param>
-        public Select(DbProvider provider, Expression<Func<T, object>> properties)
-            : base(provider)
+        public Select(Expression<Func<T, object>> properties)
             => this.Properties = properties;
         #endregion
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract target columns
+            var table = TableInfo.Get<T>(dbProvider.Database);
             var columns
                 = this.Properties == null
-                ? this.Table.Columns
-                : this.Table.Columns.Join
+                ? table.Columns
+                : table.Columns.Join
                 (
                     ExpressionHelper.GetMemberNames(this.Properties),
                     x => x.MemberName,
@@ -55,7 +51,7 @@ namespace DeclarativeSql.Sql.Statements
                 );
             
             //--- Builds SQL
-            var bracket = this.DbProvider.KeywordBracket;
+            var bracket = dbProvider.KeywordBracket;
             builder.Append("select");
             foreach (var x in columns)
             {
@@ -71,7 +67,7 @@ namespace DeclarativeSql.Sql.Statements
             builder.Advance(-1);  //--- remove last colon.
             builder.AppendLine();
             builder.Append("from ");
-            builder.Append(this.Table.FullName);
+            builder.Append(table.FullName);
         }   
         #endregion
     }

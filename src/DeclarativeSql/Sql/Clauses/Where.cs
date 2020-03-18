@@ -32,32 +32,28 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parentStatement"></param>
+        /// <param name="parent"></param>
         /// <param name="predicate"></param>
-        public Where(IStatement<T> parentStatement, Expression<Func<T, bool>> predicate)
-            : base(parentStatement, null)
+        public Where(IStatement<T> parent, Expression<Func<T, bool>> predicate)
+            : base(parent)
             => this.Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
         #endregion
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Build parent
             if (this.ParentStatement != null)
             {
-                this.ParentStatement.Build(ref builder, ref bindParameter);
+                this.ParentStatement.Build(dbProvider, ref builder, ref bindParameter);
                 builder.AppendLine();
             }
 
             //--- Build body
             var tree = Parser.Parse(this.Predicate);
-            tree.Build(this.DbProvider, ref builder, ref bindParameter);
+            tree.Build(dbProvider, ref builder, ref bindParameter);
         }
         #endregion
 

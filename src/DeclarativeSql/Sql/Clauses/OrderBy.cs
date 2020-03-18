@@ -33,25 +33,25 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parentStatement"></param>
+        /// <param name="parent"></param>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public OrderBy(IStatement<T> parentStatement, Expression<Func<T, object>> property, bool isAscending)
-            : base(parentStatement, null)
+        public OrderBy(IStatement<T> parent, Expression<Func<T, object>> property, bool isAscending)
+            : base(parent)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
         }
 
-        
+
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parentClause"></param>
+        /// <param name="parent"></param>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public OrderBy(IClause<T> parentClause, Expression<Func<T, object>> property, bool isAscending)
-            : base(null, parentClause)
+        public OrderBy(IClause<T> parent, Expression<Func<T, object>> property, bool isAscending)
+            : base(parent)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
@@ -60,30 +60,26 @@ namespace DeclarativeSql.Sql.Clauses
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Build parent
             if (this.ParentStatement != null)
             {
-                this.ParentStatement.Build(ref builder, ref bindParameter);
+                this.ParentStatement.Build(dbProvider, ref builder, ref bindParameter);
                 builder.AppendLine();
             }
             if (this.ParentClause != null)
             {
-                this.ParentClause.Build(ref builder, ref bindParameter);
+                this.ParentClause.Build(dbProvider, ref builder, ref bindParameter);
                 builder.AppendLine();
             }
 
             //--- Build body
-            var table = TableInfo.Get<T>(this.DbProvider.Database);
+            var table = TableInfo.Get<T>(dbProvider.Database);
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var columnName = table.ColumnsByMemberName[propertyName].ColumnName;
-            var bracket = this.DbProvider.KeywordBracket;
+            var bracket = dbProvider.KeywordBracket;
 
             builder.AppendLine("order by");
             builder.Append("    ");

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Dapper;
+using DeclarativeSql.Sql;
 
 
 
@@ -38,7 +39,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
             return (long)reader.Read().First().Id;
@@ -54,7 +55,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);

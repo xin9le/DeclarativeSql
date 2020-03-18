@@ -1,6 +1,6 @@
 ﻿namespace DeclarativeSql.Sql.Statements
 {
-    public interface IStatement<T> : ISql<T> { }
+    public interface IStatement<T> : ISql { }
     public interface ICount<T> : IStatement<T> { }
     public interface ISelect<T> : IStatement<T> { }
     public interface IInsert<T> : IStatement<T> { }

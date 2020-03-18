@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
+using DeclarativeSql.Mapping;
 
 
 
@@ -32,11 +33,9 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="provider"></param>
         /// <param name="properties">Update target properties</param>
         /// <param name="modifiedAtPriority"></param>
-        public Update(DbProvider provider, Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
-            : base(provider)
+        public Update(Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
         {
             this.Properties = properties;
             this.ModifiedAtPriority = modifiedAtPriority;
@@ -45,16 +44,13 @@ namespace DeclarativeSql.Sql.Statements
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract update target columns
+            var table = TableInfo.Get<T>(dbProvider.Database);
             var columns
-                = this.Table.Columns
+                = table.Columns
                 .Where(x => !x.IsAutoIncrement)
                 .Where(x => !x.IsCreatedAt)
                 .Where(x => !x.IsModifiedAt);
@@ -63,14 +59,14 @@ namespace DeclarativeSql.Sql.Statements
                 var propertyNames = ExpressionHelper.GetMemberNames(this.Properties);
                 columns = columns.Join(propertyNames, x => x.MemberName, y => y, (x, y) => x);
             }
-            foreach (var x in this.Table.Columns.Where(x => x.IsModifiedAt))
+            foreach (var x in table.Columns.Where(x => x.IsModifiedAt))
                 columns = columns.Append(x);
 
             //--- Build SQL
-            var bracket = this.DbProvider.KeywordBracket;
-            var prefix = this.DbProvider.BindParameterPrefix;
+            var bracket = dbProvider.KeywordBracket;
+            var prefix = dbProvider.BindParameterPrefix;
             builder.Append("update ");
-            builder.AppendLine(this.Table.FullName);
+            builder.AppendLine(table.FullName);
             builder.Append("set");
             foreach (var x in columns)
             {

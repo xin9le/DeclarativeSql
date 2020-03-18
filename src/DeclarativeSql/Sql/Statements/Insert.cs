@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using DeclarativeSql.Mapping;
 
 
 
@@ -22,29 +23,24 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="provider"></param>
         /// <param name="createdAtPriority"></param>
-        public Insert(DbProvider provider, ValuePriority createdAtPriority)
-            : base(provider)
+        public Insert(ValuePriority createdAtPriority)
             => this.CreatedAtPriority = createdAtPriority;
         #endregion
 
 
         #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        /// <inheritdoc/>
+        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
-            var bracket = this.DbProvider.KeywordBracket;
-            var prefix = this.DbProvider.BindParameterPrefix;
+            var bracket = dbProvider.KeywordBracket;
+            var prefix = dbProvider.BindParameterPrefix;
+            var table = TableInfo.Get<T>(dbProvider.Database);
 
             builder.Append("insert into ");
-            builder.AppendLine(this.Table.FullName);
+            builder.AppendLine(table.FullName);
             builder.Append("(");
-            foreach (var x in this.Table.Columns)
+            foreach (var x in table.Columns)
             {
                 if (x.IsAutoIncrement)
                     continue;
@@ -61,7 +57,7 @@ namespace DeclarativeSql.Sql.Statements
             builder.AppendLine(")");
             builder.AppendLine("values");
             builder.Append("(");
-            foreach (var x in this.Table.Columns)
+            foreach (var x in table.Columns)
             {
                 if (x.IsAutoIncrement)
                     continue;

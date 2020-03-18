@@ -16,10 +16,10 @@ namespace DeclarativeSql.Tests.Cases
         public void Ascending()
         {
             var actual
-                = this.DbProvider.QueryBuilder
+                = QueryBuilder
                 .OrderBy<Person>(x => x.Name)
                 .ThenBy(x => x.CreatedAt)
-                .Build();
+                .Build(this.DbProvider);
             var expect =
 @"order by
     [名前],
@@ -33,10 +33,10 @@ namespace DeclarativeSql.Tests.Cases
         public void Descending()
         {
             var actual
-                = this.DbProvider.QueryBuilder
+                = QueryBuilder
                 .OrderByDescending<Person>(x => x.Age)
                 .ThenByDescending(x => x.ModifiedAt)
-                .Build();
+                .Build(this.DbProvider);
             var expect =
 @"order by
     [Age] desc,
