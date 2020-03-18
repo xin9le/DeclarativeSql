@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Dapper;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
@@ -68,14 +70,10 @@ namespace DeclarativeSql.DbOperations
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
+        /// <param name="insert"></param>
         /// <returns></returns>
         private string ToInsertAndGetIdSql(string insert)
-            =>
-$@"{insert};
-select cast(scope_identity() as bigint) as Id;";
+            => ZString.Concat(insert, ';', Environment.NewLine, "select cast(scope_identity() as bigint) as Id;");
         #endregion
 
 
