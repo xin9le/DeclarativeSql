@@ -1,6 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Dapper;
 
 
@@ -65,12 +67,9 @@ namespace DeclarativeSql.DbOperations
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
-        /// <param name="createdAt"></param>
         /// <returns></returns>
         private string ToInsertAndGetIdSql(string insert)
-            =>
-$@"{insert};
-select last_insert_rowid() as Id;";
+            => ZString.Concat(insert, ';', Environment.NewLine, "select last_insert_rowid() as Id;");
         #endregion
     }
 }
