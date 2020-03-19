@@ -44,9 +44,8 @@ namespace DeclarativeSql.Sql.Clauses
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
-            var table = TableInfo.Get<T>(dbProvider.Database);
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var columnName = table.ColumnsByMemberName[propertyName].ColumnName;
             var bracket = dbProvider.KeywordBracket;

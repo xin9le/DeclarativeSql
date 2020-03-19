@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Cysharp.Text;
+using DeclarativeSql.Mapping;
 using DeclarativeSql.Sql.Clauses;
 using DeclarativeSql.Sql.Statements;
 
@@ -15,6 +16,7 @@ namespace DeclarativeSql.Sql
     {
         #region Fields
         private readonly DbProvider dbProvider;
+        private readonly TableInfo table;
         private Utf16ValueStringBuilder stringBuilder;
         private BindParameter bindParameter;
         #endregion
@@ -28,6 +30,7 @@ namespace DeclarativeSql.Sql
         public QueryBuilder(DbProvider provider)
         {
             this.dbProvider = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.table = TableInfo.Get<T>(provider.Database);
             this.stringBuilder = ZString.CreateStringBuilder();
             this.bindParameter = null;
         }
@@ -63,7 +66,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Count<T>();
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -76,7 +79,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Select<T>(properties);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -89,7 +92,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Insert<T>(createdAtPriority);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -103,7 +106,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Update<T>(properties, modifiedAtPriority);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -115,7 +118,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Delete<T>();
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -127,7 +130,7 @@ namespace DeclarativeSql.Sql
         {
             this.AppendLineIfNotEmpty();
             var x = new Truncate<T>();
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
         #endregion
 
@@ -145,7 +148,7 @@ namespace DeclarativeSql.Sql
 
             this.AppendLineIfNotEmpty();
             var x = new Where<T>(predicate);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -161,7 +164,7 @@ namespace DeclarativeSql.Sql
 
             this.AppendLineIfNotEmpty();
             var x = new OrderBy<T>(property, true);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -177,7 +180,7 @@ namespace DeclarativeSql.Sql
 
             this.AppendLineIfNotEmpty();
             var x = new OrderBy<T>(property, false);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -193,7 +196,7 @@ namespace DeclarativeSql.Sql
 
             this.AppendLineIfNotEmpty(',');
             var x = new ThenBy<T>(property, true);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
 
 
@@ -209,7 +212,7 @@ namespace DeclarativeSql.Sql
 
             this.AppendLineIfNotEmpty(',');
             var x = new ThenBy<T>(property, false);
-            x.Build(this.dbProvider, ref this.stringBuilder, ref this.bindParameter);
+            x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
         }
         #endregion
 

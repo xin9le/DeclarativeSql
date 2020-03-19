@@ -35,10 +35,9 @@ namespace DeclarativeSql.Sql.Statements
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract target columns
-            var table = TableInfo.Get<T>(dbProvider.Database);
             var columns
                 = this.Properties == null
                 ? table.Columns

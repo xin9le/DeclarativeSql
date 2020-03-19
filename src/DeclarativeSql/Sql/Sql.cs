@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using DeclarativeSql.Mapping;
 
 
 
@@ -13,8 +14,9 @@ namespace DeclarativeSql.Sql
         /// Builds query.
         /// </summary>
         /// <param name="dbProvider"></param>
+        /// <param name="table"></param>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter);
+        void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter);
     }
 }
