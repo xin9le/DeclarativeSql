@@ -40,7 +40,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
-            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
             return (long)reader.Read().First().Id;
@@ -56,7 +56,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
         {
-            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
@@ -114,7 +114,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         private Query CreateInsertIgnoreQuery<T>(ValuePriority createdAt)
         {
-            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = query.Statement.Replace("insert into", "insert ignore into");
             return new Query(sql, query.BindParameter);
         }

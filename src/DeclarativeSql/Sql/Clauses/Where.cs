@@ -7,7 +7,6 @@ using System.Reflection;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
-using DeclarativeSql.Sql.Statements;
 using FastMember;
 
 
@@ -18,7 +17,7 @@ namespace DeclarativeSql.Sql.Clauses
     /// Represents where clause.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Where<T> : Clause<T>, IWhere<T>, IWhereForSelect<T>
+    internal readonly struct Where<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -34,24 +33,15 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="predicate"></param>
-        public Where(IStatement<T> parent, Expression<Func<T, bool>> predicate)
-            : base(parent)
+        public Where(Expression<Func<T, bool>> predicate)
             => this.Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
         #endregion
 
 
-        #region override
+        #region ISql implementations
         /// <inheritdoc/>
-        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
-            //--- Build parent
-            if (this.ParentStatement != null)
-            {
-                this.ParentStatement.Build(dbProvider, ref builder, ref bindParameter);
-                builder.AppendLine();
-            }
-
-            //--- Build body
             var tree = Parser.Parse(this.Predicate);
             tree.Build(dbProvider, ref builder, ref bindParameter);
         }

@@ -17,7 +17,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Equal()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id == 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id == 1);
             var expect =
 @"where
     [Id] = @p1";
@@ -30,7 +30,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void NotEqual()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id != 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id != 1);
             var expect =
 @"where
     [Id] <> @p1";
@@ -43,7 +43,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void GreaterThan()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1);
             var expect =
 @"where
     [Id] > @p1";
@@ -56,7 +56,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void LessThan()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id < 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id < 1);
             var expect =
 @"where
     [Id] < @p1";
@@ -69,7 +69,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void GreaterThanOrEqual()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id >= 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id >= 1);
             var expect =
 @"where
     [Id] >= @p1";
@@ -81,7 +81,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void LessThanOrEqual()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id <= 1).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id <= 1);
             var expect =
 @"where
     [Id] <= @p1";
@@ -93,7 +93,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Null()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Name == null).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name == null);
             var expect =
 @"where
     [名前] is null";
@@ -105,7 +105,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void NotNull()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Name != null).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name != null);
             var expect =
 @"where
     [名前] is not null";
@@ -117,7 +117,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void And()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1 && x.Name == "xin9le").Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1 && x.Name == "xin9le");
             var expect =
 @"where
     [Id] > @p1 and [名前] = @p2";
@@ -130,7 +130,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Or()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1 || x.Name == "xin9le").Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1 || x.Name == "xin9le");
             var expect =
 @"where
     [Id] > @p1 or [名前] = @p2";
@@ -143,7 +143,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AndOr1()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1 && x.Name == "xin9le" || x.Age <= 30).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1 && x.Name == "xin9le" || x.Age <= 30);
             var expect =
 @"where
     ([Id] > @p1 and [名前] = @p2) or [Age] <= @p3";
@@ -157,7 +157,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AndOr2()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1 && (x.Name == "xin9le" || x.Age <= 30)).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1 && (x.Name == "xin9le" || x.Age <= 30));
             var expect =
 @"where
     [Id] > @p1 and ([名前] = @p2 or [Age] <= @p3)";
@@ -171,7 +171,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AndOr3()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Id > 1 || x.Name == "xin9le" && x.Age <= 30).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id > 1 || x.Name == "xin9le" && x.Age <= 30);
             var expect =
 @"where
     [Id] > @p1 or ([名前] = @p2 and [Age] <= @p3)";
@@ -185,7 +185,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AndOr4()
         {
-            var actual = QueryBuilder.Where<Person>(x => (x.Id > 1 || x.Name == "xin9le") && x.Age <= 30).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => (x.Id > 1 || x.Name == "xin9le") && x.Age <= 30);
             var expect =
 @"where
     ([Id] > @p1 or [名前] = @p2) and [Age] <= @p3";
@@ -200,7 +200,7 @@ namespace DeclarativeSql.Tests.Cases
         public void Contains()
         {
             var value = Enumerable.Range(0, 3).ToArray();
-            var actual = QueryBuilder.Where<Person>(x => value.Contains(x.Id)).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => value.Contains(x.Id));
             var expect =
 @"where
     [Id] in @p1";
@@ -216,7 +216,7 @@ namespace DeclarativeSql.Tests.Cases
             var value1 = Enumerable.Range(0, 1000).ToArray();
             var value2 = Enumerable.Range(1000, 234).ToArray();
             var value = value1.Concat(value2);
-            var actual = QueryBuilder.Where<Person>(x => value.Contains(x.Id)).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => value.Contains(x.Id));
             var expect =
 @"where
     [Id] in @p1 or [Id] in @p2";
@@ -232,7 +232,7 @@ namespace DeclarativeSql.Tests.Cases
         public void Variable()
         {
             var id = 1;
-            var actual = QueryBuilder.Where<Person>(x => x.Id == id).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id == id);
             var expect =
 @"where
     [Id] = @p1";
@@ -244,7 +244,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Constructor()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Name == new string('a', 3)).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name == new string('a', 3));
             var expect =
 @"where
     [名前] = @p1";
@@ -264,7 +264,7 @@ namespace DeclarativeSql.Tests.Cases
         public void InstanceMethod()
         {
             var some = new AccessorProvider();
-            var actual = QueryBuilder.Where<Person>(x => x.Name == some.InstanceMethod()).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name == some.InstanceMethod());
             var expect =
 @"where
     [名前] = @p1";
@@ -277,7 +277,7 @@ namespace DeclarativeSql.Tests.Cases
         public void Lambda()
         {
             Func<int, string> getName = x => x.ToString();
-            var actual = QueryBuilder.Where<Person>(x => x.Name == getName(123)).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name == getName(123));
             var expect =
 @"where
     [名前] = @p1";
@@ -290,7 +290,7 @@ namespace DeclarativeSql.Tests.Cases
         public void InstanceProperty()
         {
             var some = new AccessorProvider();
-            var actual = QueryBuilder.Where<Person>(x => x.Age == some.InstanceProperty).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Age == some.InstanceProperty);
             var expect =
 @"where
     [Age] = @p1";
@@ -303,7 +303,7 @@ namespace DeclarativeSql.Tests.Cases
         public void Indexer()
         {
             var ids = new[] { 1, 2, 3 };
-            var actual = QueryBuilder.Where<Person>(x => x.Id == ids[0]).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Id == ids[0]);
             var expect =
 @"where
     [Id] = @p1";
@@ -315,7 +315,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void StaticMethod()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Name == AccessorProvider.StaticMethod()).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Name == AccessorProvider.StaticMethod());
             var expect =
 @"where
     [名前] = @p1";
@@ -327,7 +327,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void StaticProperty()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.Age == AccessorProvider.StaticProperty).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.Age == AccessorProvider.StaticProperty);
             var expect =
 @"where
     [Age] = @p1";
@@ -339,7 +339,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Boolean()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.HasChildren).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.HasChildren);
             var expect =
 @"where
     [HasChildren] = @p1";
@@ -351,7 +351,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void InverseBoolean()
         {
-            var actual = QueryBuilder.Where<Person>(x => !x.HasChildren).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => !x.HasChildren);
             var expect =
 @"where
     [HasChildren] <> @p1";
@@ -363,7 +363,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void BooleanAndOr()
         {
-            var actual = QueryBuilder.Where<Person>(x => x.HasChildren == true || x.Id != 0 || x.Name == "xin9le" && !x.HasChildren).Build(this.DbProvider);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => x.HasChildren == true || x.Id != 0 || x.Name == "xin9le" && !x.HasChildren);
             var expect =
 @"where
     [HasChildren] = @p1 or [Id] <> @p2 or ([名前] = @p3 and [HasChildren] <> @p4)";

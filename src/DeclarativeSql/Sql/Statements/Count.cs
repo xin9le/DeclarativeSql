@@ -9,18 +9,11 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents count statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Count<T> : Statement<T>, ICount<T>
+    internal readonly struct Count<T> : ISql
     {
-        #region Constructors
+        #region ISql implementations
         /// <inheritdoc/>
-        public Count()
-        { }
-        #endregion
-
-
-        #region override
-        /// <inheritdoc/>
-        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             var table = TableInfo.Get<T>(dbProvider.Database);
             builder.Append("select count(*) as Count from ");

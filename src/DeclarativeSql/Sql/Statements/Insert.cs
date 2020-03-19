@@ -9,7 +9,7 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents insert statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Insert<T> : Statement<T>, IInsert<T>
+    internal readonly struct Insert<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -29,9 +29,9 @@ namespace DeclarativeSql.Sql.Statements
         #endregion
 
 
-        #region override
+        #region ISql implementations
         /// <inheritdoc/>
-        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             var bracket = dbProvider.KeywordBracket;
             var prefix = dbProvider.BindParameterPrefix;

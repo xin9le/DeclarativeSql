@@ -9,18 +9,11 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents truncate statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Truncate<T> : Statement<T>, ITruncate<T>
+    internal readonly struct Truncate<T> : ISql
     {
-        #region Constructors
+        #region ISql implementations
         /// <inheritdoc/>
-        public Truncate()
-        { }
-        #endregion
-
-
-        #region override
-        /// <inheritdoc/>
-        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             var table = TableInfo.Get<T>(dbProvider.Database);
             builder.Append("truncate table ");

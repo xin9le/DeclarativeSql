@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AllColumns()
         {
-            var actual = QueryBuilder.Select<Person>().Build(this.DbProvider);
+            var actual = QueryBuilder.Select<Person>(this.DbProvider);
             var expect =
 @"select
     [Id] as Id,
@@ -33,7 +33,7 @@ from [dbo].[Person]";
         [Fact]
         public void OneColumn()
         {
-            var actual = QueryBuilder.Select<Person>(x => x.Name).Build(this.DbProvider);
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => x.Name);
             var expect =
 @"select
     [名前] as Name
@@ -46,7 +46,7 @@ from [dbo].[Person]";
         [Fact]
         public void OneColumn_AnonymousType()
         {
-            var actual = QueryBuilder.Select<Person>(x => new { x.Name }).Build(this.DbProvider);
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => new { x.Name });
             var expect =
 @"select
     [名前] as Name
@@ -59,7 +59,7 @@ from [dbo].[Person]";
         [Fact]
         public void TwoColumns()
         {
-            var actual = QueryBuilder.Select<Person>(x => new { x.Name, x.Age }).Build(this.DbProvider);
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => new { x.Name, x.Age });
             var expect =
 @"select
     [名前] as Name,

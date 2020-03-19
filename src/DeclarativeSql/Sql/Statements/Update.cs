@@ -13,7 +13,7 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents update statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Update<T> : Statement<T>, IUpdate<T>
+    internal readonly struct Update<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -43,9 +43,9 @@ namespace DeclarativeSql.Sql.Statements
         #endregion
 
 
-        #region override
+        #region ISql implementations
         /// <inheritdoc/>
-        internal override void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract update target columns
             var table = TableInfo.Get<T>(dbProvider.Database);

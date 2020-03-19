@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void AllColumns()
         {
-            var actual = QueryBuilder.Update<Person>().Build(this.DbProvider);
+            var actual = QueryBuilder.Update<Person>(this.DbProvider);
             var expect =
 @"update [dbo].[Person]
 set
@@ -31,7 +31,7 @@ set
         [Fact]
         public void OneColumn()
         {
-            var actual = QueryBuilder.Update<Person>(x => x.Name).Build(this.DbProvider);
+            var actual = QueryBuilder.Update<Person>(this.DbProvider, x => x.Name);
             var expect =
 @"update [dbo].[Person]
 set
@@ -45,7 +45,7 @@ set
         [Fact]
         public void OneColumn_AnonymousType()
         {
-            var actual = QueryBuilder.Update<Person>(x => new { x.Name }).Build(this.DbProvider);
+            var actual = QueryBuilder.Update<Person>(this.DbProvider, x => new { x.Name });
             var expect =
 @"update [dbo].[Person]
 set
@@ -59,7 +59,7 @@ set
         [Fact]
         public void TwoColumns()
         {
-            var actual = QueryBuilder.Update<Person>(x => new { x.Name, x.CreatedAt }).Build(this.DbProvider);
+            var actual = QueryBuilder.Update<Person>(this.DbProvider, x => new { x.Name, x.CreatedAt });
             var expect =
 @"update [dbo].[Person]
 set

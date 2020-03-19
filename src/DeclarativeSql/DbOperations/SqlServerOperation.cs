@@ -43,7 +43,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
-            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
             return (long)reader.Read().First().Id;
@@ -59,7 +59,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
         {
-            var query = QueryBuilder.Insert<T>(createdAt).Build(this.DbProvider);
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = ToInsertAndGetIdSql(query.Statement);
             var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
@@ -128,7 +128,7 @@ namespace DeclarativeSql.DbOperations
             //--- 自動採番列以外に一意制約がない場合は通常の insert 文で OK
             var table = TableInfo.Get<T>(this.DbProvider.Database);
             if (!table.Columns.Any(x => !x.IsAutoIncrement && x.IsUnique))
-                return QueryBuilder.Insert<T>(createdAtPriority).Build(this.DbProvider);
+                return QueryBuilder.Insert<T>(this.DbProvider, createdAtPriority);
 
             //--- 対象となる列
             var selectColumns

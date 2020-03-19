@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void CreatedAt_PreferAttribute()
         {
-            var actual = QueryBuilder.Insert<Person>().Build(this.DbProvider);
+            var actual = QueryBuilder.Insert<Person>(this.DbProvider);
             var expect =
 @"insert into [dbo].[Person]
 (
@@ -41,7 +41,7 @@ values
         [Fact]
         public void CreatedAt_PreferProperty()
         {
-            var actual = QueryBuilder.Insert<Person>(ValuePriority.Property).Build(this.DbProvider);
+            var actual = QueryBuilder.Insert<Person>(this.DbProvider, ValuePriority.Property);
             var expect =
 @"insert into [dbo].[Person]
 (

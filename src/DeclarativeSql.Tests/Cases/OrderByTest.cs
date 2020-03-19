@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Ascending()
         {
-            var actual = QueryBuilder.OrderBy<Person>(x => x.Name).Build(this.DbProvider);
+            var actual = QueryBuilder.OrderBy<Person>(this.DbProvider, x => x.Name);
             var expect =
 @"order by
     [名前]";
@@ -27,7 +27,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Descending()
         {
-            var actual = QueryBuilder.OrderByDescending<Person>(x => x.Age).Build(this.DbProvider);
+            var actual = QueryBuilder.OrderByDescending<Person>(this.DbProvider, x => x.Age);
             var expect =
 @"order by
     [Age] desc";

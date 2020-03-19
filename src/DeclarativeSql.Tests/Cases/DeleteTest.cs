@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Create()
         {
-            var actual = QueryBuilder.Delete<Person>().Build(this.DbProvider);
+            var actual = QueryBuilder.Delete<Person>(this.DbProvider);
             var expect = "delete from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
