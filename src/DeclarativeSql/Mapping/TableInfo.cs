@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Cysharp.Text;
 using DeclarativeSql.Annotations;
 using DeclarativeSql.Internals;
@@ -75,6 +75,7 @@ namespace DeclarativeSql.Mapping
         /// <typeparam name="T"></typeparam>
         /// <param name="database"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TableInfo Get<T>(DbKind database)
             => Cache<T>.Instances.TryGetValue(database, out var value)
             ? value
@@ -92,7 +93,7 @@ namespace DeclarativeSql.Mapping
             /// <summary>
             /// Gets the instances by <see cref="DbKind"/>.
             /// </summary>
-            public static IReadOnlyDictionary<DbKind, TableInfo> Instances { get; }
+            public static FrozenDictionary<DbKind, TableInfo> Instances { get; }
 
 
             /// <summary>
@@ -105,34 +106,36 @@ namespace DeclarativeSql.Mapping
                 var attributes = type.GetCustomAttributes<TableAttribute>(true).ToDictionary(x => x.Database);
                 var properties = type.GetProperties(flags);
                 var fields = type.GetFields(flags);
-                var dbs = Enum.GetValues(typeof(DbKind)) as DbKind[];
-                var result = new Dictionary<DbKind, TableInfo>(dbs.Length);
-                foreach (var db in dbs)
-                {
-                    attributes.TryGetValue(db, out var table);
-                    var provider = DbProvider.ByDatabase[db];
-                    var b = provider.KeywordBracket;
-                    var schema = table?.Schema ?? provider.DefaultSchema;
-                    var name = table?.Name ?? type.Name;
-                    var columns
-                        = properties.Select(x => new ColumnInfo(db, x))
-                        .Concat(fields.Select(x => new ColumnInfo(db, x)))
-                        .ToReadOnlyArray();
-                    result[db] = new TableInfo
+                Instances
+                    = Enum.GetValues(typeof(DbKind))
+                    .Cast<DbKind>()
+                    .Select(db =>
                     {
-                        Database = db,
-                        Type = type,
-                        Schema = schema,
-                        Name = name,
-                        FullName
-                            = string.IsNullOrEmpty(schema)
-                            ? ZString.Concat(b.Begin, name, b.End)
-                            : ZString.Concat(b.Begin, schema, b.End, '.', b.Begin, name, b.End),
-                        Columns = columns,
-                        ColumnsByMemberName = columns.ToFrozenStringKeyDictionary(x => x.MemberName),
-                    };
-                }
-                Instances = result;
+                        attributes.TryGetValue(db, out var tableAttr);
+                        var provider = DbProvider.ByDatabase[db];
+                        var b = provider.KeywordBracket;
+                        var schema = tableAttr?.Schema ?? provider.DefaultSchema;
+                        var name = tableAttr?.Name ?? type.Name;
+                        var columns
+                            = properties.Select(x => new ColumnInfo(db, x))
+                            .Concat(fields.Select(x => new ColumnInfo(db, x)))
+                            .ToReadOnlyArray();
+                        var table = new TableInfo
+                        {
+                            Database = db,
+                            Type = type,
+                            Schema = schema,
+                            Name = name,
+                            FullName
+                                = string.IsNullOrEmpty(schema)
+                                ? ZString.Concat(b.Begin, name, b.End)
+                                : ZString.Concat(b.Begin, schema, b.End, '.', b.Begin, name, b.End),
+                            Columns = columns,
+                            ColumnsByMemberName = columns.ToFrozenStringKeyDictionary(x => x.MemberName),
+                        };
+                        return (db, table);
+                    })
+                    .ToFrozenDictionary(x => x.db, x => x.table);
             }
         }
         #endregion
