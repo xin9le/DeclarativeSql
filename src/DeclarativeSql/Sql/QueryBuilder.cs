@@ -219,6 +219,32 @@ namespace DeclarativeSql.Sql
 
         #region Helpers
         /// <summary>
+        /// Appends the string representation of a specified value to this instance.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="value"></param>
+        internal void Append<U>(U value)
+            => this.stringBuilder.Append(value);
+
+
+        /// <summary>
+        /// Append default line terminator to the end.
+        /// </summary>
+        /// <param name="value"></param>
+        internal void AppendLine()
+            => this.stringBuilder.AppendLine();
+
+
+        /// <summary>
+        /// Appends the string representation of a specified value followed by the default line terminator to the end of this instance.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="value"></param>
+        internal void AppendLine<U>(U value)
+            => this.stringBuilder.AppendLine(value);
+
+
+        /// <summary>
         /// Append default line terminator to the end, if statement isn't empty.
         /// </summary>
         private void AppendLineIfNotEmpty()
