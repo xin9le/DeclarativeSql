@@ -293,7 +293,7 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Builds count statement.
+        /// Builds count + where statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dbProvider"></param>
@@ -336,7 +336,7 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Builds select statement.
+        /// Builds select + where statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dbProvider"></param>
@@ -403,7 +403,7 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Builds update statement.
+        /// Builds update + where statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dbProvider"></param>
@@ -447,7 +447,7 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Builds delete statement.
+        /// Builds delete + where statement.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dbProvider"></param>
