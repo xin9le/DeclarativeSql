@@ -251,6 +251,19 @@ namespace DeclarativeSql.Tests.Cases
 
 
         [Fact]
+        public void Contains_NoElements()
+        {
+            var values = System.Array.Empty<int>();
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => values.Contains(x.Id));
+            var expect =
+@"where
+    1 = 0";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
+        }
+
+
+        [Fact]
         public void Variable()
         {
             var id = 1;
