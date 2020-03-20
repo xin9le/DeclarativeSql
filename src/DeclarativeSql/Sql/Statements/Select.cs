@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
@@ -38,22 +38,18 @@ namespace DeclarativeSql.Sql.Statements
         public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract target columns
-            var columns
-                = this.Properties == null
-                ? table.Columns
-                : table.Columns.Join
-                (
-                    ExpressionHelper.GetMemberNames(this.Properties),
-                    x => x.MemberName,
-                    y => y,
-                    (x, y) => x
-                );
-            
+            HashSet<string> targetMemberNames = null;
+            if (this.Properties != null)
+                targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
+
             //--- Builds SQL
             var bracket = dbProvider.KeywordBracket;
             builder.Append("select");
-            foreach (var x in columns)
+            foreach (var x in table.Columns)
             {
+                if (targetMemberNames?.Contains(x.MemberName) == false)
+                    continue;
+
                 builder.AppendLine();
                 builder.Append("    ");
                 builder.Append(bracket.Begin);
