@@ -219,6 +219,57 @@ namespace DeclarativeSql.Tests.Cases
 
 
         [Fact]
+        public void AndOr6()
+        {
+            var value1 = Enumerable.Range(0, 1000).ToArray();
+            var value2 = Enumerable.Range(1000, 234).ToArray();
+            var value = value1.Concat(value2);
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => (x.Id > 1 || x.Name == "xin9le") && x.Age <= 30 || value.Contains(x.Id));
+            var expect =
+@"where
+    (([Id] > @p1 or [名前] = @p2) and [Age] <= @p3) or ([Id] in @p4 or [Id] in @p5)";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().Contain("p1", 1);
+            actual.BindParameter.Should().Contain("p2", "xin9le");
+            actual.BindParameter.Should().Contain("p3", 30);
+            actual.BindParameter.Should().ContainKey("p4");
+            actual.BindParameter["p4"].Should().BeEquivalentTo(value1);
+            actual.BindParameter.Should().ContainKey("p5");
+            actual.BindParameter["p5"].Should().BeEquivalentTo(value2);
+        }
+
+
+        [Fact]
+        public void AndOr7()
+        {
+            var values = System.Array.Empty<int>();
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => (x.Id > 1 || x.Name == "xin9le") && x.Age <= 30 || values.Contains(x.Id));
+            var expect =
+@"where
+    (([Id] > @p1 or [名前] = @p2) and [Age] <= @p3) or 1 = 0";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().Contain("p1", 1);
+            actual.BindParameter.Should().Contain("p2", "xin9le");
+            actual.BindParameter.Should().Contain("p3", 30);
+        }
+
+
+        [Fact]
+        public void AndOr8()
+        {
+            var values = System.Array.Empty<int>();
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => (x.Id > 1 || x.Name == "xin9le") && (x.Age <= 30 || values.Contains(x.Id)));
+            var expect =
+@"where
+    ([Id] > @p1 or [名前] = @p2) and ([Age] <= @p3 or 1 = 0)";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().Contain("p1", 1);
+            actual.BindParameter.Should().Contain("p2", "xin9le");
+            actual.BindParameter.Should().Contain("p3", 30);
+        }
+
+
+        [Fact]
         public void Contains()
         {
             var value = Enumerable.Range(0, 3).ToArray();
@@ -241,7 +292,7 @@ namespace DeclarativeSql.Tests.Cases
             var actual = QueryBuilder.Where<Person>(this.DbProvider, x => value.Contains(x.Id));
             var expect =
 @"where
-    [Id] in @p1 or [Id] in @p2";
+    ([Id] in @p1 or [Id] in @p2)";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().ContainKey("p1");
             actual.BindParameter["p1"].Should().BeEquivalentTo(value1);
