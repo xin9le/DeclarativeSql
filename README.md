@@ -13,13 +13,13 @@ This library provides attribute-based table mapping and simple database access. 
 
 
 
-# Support Platform
+## Support Platform
 
 - .NET Standard 2.0+
 
 
 
-# Attribute-based O/R mapping information
+## Attribute-based O/R mapping information
 
 DeclarativeSql that is also inspired by Entity Framework provides attribute-based database mapping. Following code is its sample. Generates SQL and performs O/R mapping that based on these attributes and types.
 
@@ -59,21 +59,42 @@ namespace SampleApp
 
 
 
-# SQL generation
+## SQL generation
 
 This library also provides automatic sql generation feature using above meta data. You can get very simple and typical sql using `QueryBuilder` class. Of course it's completely type-safe.
-
 
 ```cs
 //--- Query records with specified columns that matched specified condition
 var sql
-    = DbProvider.SqlServer.QueryBuilder
-    .Select<Person>(x => new { x.Id, x.Name })
-    .Where(x => x.Name == "xin9le")
-    .OrderByDescending(x => x.Name)
-    .ThenBy(x => x.CreatedOn)
-    .Build()
+    = QueryBuilder.Select<Person>
+    (
+        this.DbProvider,
+        x => x.Age >= 30,
+        x => new { x.Name, x.Age }
+    )
     .Statement;
+
+/*
+select
+    [名前] as Name,
+    [Age] as Age
+from [dbo].[T_Person]
+where
+    [Age] >= @p1
+*/
+```
+
+
+```cs
+//--- If wants OrderBy / ThenBy, allows you to write like following
+using (var builder = new QueryBuilder<Person>(DbProvider.SqlServer))
+{
+    builder.Select(x => new { x.Id, x.Name });
+    builder.Where(x => x.Name == "xin9le");
+    builder.OrderByDescending(x => x.Name);
+    builder.ThenBy(x => x.CreatedOn);
+    var sql = builder.Build().Statement;
+}
 
 /*
 select
@@ -90,11 +111,7 @@ order by
 
 ```cs
 //--- Insert record to SQL Server
-var sql
-    = DbProvider.SqlServer.QueryBuilder
-    .Insert<Person>()
-    .Build()
-    .Statement;
+var sql = QueryBuilder.Insert<Person>(DbProvider.SqlServer).Statement;
 
 /*
 insert into [dbo].[T_Person]
@@ -119,10 +136,12 @@ values
 ```cs
 //--- Update records with specified columns that matched specified condition
 var sql
-    = DbProvider.SqlServer.QueryBuilder
-    .Update<Person>(x => new { x.Name, x.Age })
-    .Where(x => x.Age < 35 || x.Name == "xin9le")
-    .Build()
+    = QueryBuilder.Update<Person>
+    (
+        DbProvider.SqlServer,
+        x => x.Age < 35 || x.Name == "xin9le",
+        x => new { x.Name, x.Age }
+    )
     .Statement;
 
 /*
@@ -142,7 +161,7 @@ where
 
 
 
-# Dapper integration
+## Dapper integration
 
 This library automates typical CRUD operations completely using above sql generation feature and Dapper. By using expression tree, you can specify target column and filter records. Provided method names are directly described the CRUD operations, so you can understand and use them easily.
 
@@ -220,11 +239,22 @@ var p14 = connection.Count<Person>(x => x.Name == "xin9le");
 ```
 
 
-These CRUD methods are provided not only synchronous but also asynchronous.
+These CRUD methods are provided not only synchronous but also asynchronous. 
+
+
+### Enable environment specific feature
+
+`BulkInsert` / `InsertAndGetId` (etc.) methods are environment specific feature. If you want to use them, please call follows once.
+
+
+```cs
+MicrosoftSqlClientInitializer.Initialize();
+SystemSqlClientInitializer.Initialize();
+```
 
 
 
-# High availability connection
+## High availability connection
 
 If you want to create a highly available database configuration, you can use `HighAvailabilityConnection`. This provides the simple
 master/slave pattern. High availability can be achieved simply by writing to the master database and reading from the slave database.
@@ -258,7 +288,7 @@ Of course, by using the same connection string for the master database and for t
 
 
 
-# Installation
+## Installation
 
 Getting started from downloading [NuGet](https://www.nuget.org/packages/DeclarativeSql) package.
 
@@ -270,11 +300,11 @@ PM> Install-Package DeclarativeSql.SystemSqlClient
 
 
 
-# License
+## License
 
 This library is provided under [MIT License](http://opensource.org/licenses/MIT).
 
 
-# Author
+## Author
 
 Takaaki Suzuki (a.k.a [@xin9le](https://twitter.com/xin9le)) is software developer in Japan who awarded Microsoft MVP for Developer Technologies (C#) since July 2012.
