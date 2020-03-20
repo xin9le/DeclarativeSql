@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
@@ -48,18 +48,9 @@ namespace DeclarativeSql.Sql.Statements
         public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract update target columns
-            var columns
-                = table.Columns
-                .Where(x => !x.IsAutoIncrement)
-                .Where(x => !x.IsCreatedAt)
-                .Where(x => !x.IsModifiedAt);
-            if (this.Properties != null)  // Pick up only specified columns
-            {
-                var propertyNames = ExpressionHelper.GetMemberNames(this.Properties);
-                columns = columns.Join(propertyNames, x => x.MemberName, y => y, (x, y) => x);
-            }
-            foreach (var x in table.Columns.Where(x => x.IsModifiedAt))
-                columns = columns.Append(x);
+            HashSet<string> targetMemberNames = null;
+            if (this.Properties != null)
+                targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
             //--- Build SQL
             var bracket = dbProvider.KeywordBracket;
@@ -67,8 +58,12 @@ namespace DeclarativeSql.Sql.Statements
             builder.Append("update ");
             builder.AppendLine(table.FullName);
             builder.Append("set");
-            foreach (var x in columns)
+            foreach (var x in table.Columns)
             {
+                if (x.IsAutoIncrement) continue;
+                if (x.IsCreatedAt) continue;
+                if (!x.IsModifiedAt && targetMemberNames?.Contains(x.MemberName) == false) continue;
+
                 builder.AppendLine();
                 builder.Append("    ");
                 builder.Append(bracket.Begin);
