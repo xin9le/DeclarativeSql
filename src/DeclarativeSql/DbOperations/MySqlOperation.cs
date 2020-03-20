@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Text;
 using Dapper;
 using DeclarativeSql.Sql;
 
@@ -40,8 +38,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
-            var sql = ToInsertAndGetIdSql(query.Statement);
+            var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
             var reader = this.Connection.QueryMultiple(sql, data, this.Transaction, this.Timeout);
             return (long)reader.Read().First().Id;
         }
@@ -56,8 +53,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Auto incremented ID</returns>
         public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
-            var sql = ToInsertAndGetIdSql(query.Statement);
+            var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
             var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
             return (long)results.First().Id;
@@ -68,11 +64,19 @@ namespace DeclarativeSql.DbOperations
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
+        /// <param name="createdAtPriority"></param>
         /// <returns></returns>
-        private string ToInsertAndGetIdSql(string insert)
-            => ZString.Concat(insert, ';', Environment.NewLine, "select last_insert_id() as Id;");
+        private string CreateInsertAndGetIdSql<T>(ValuePriority createdAtPriority)
+        {
+            using (var builder = new QueryBuilder<T>(this.DbProvider))
+            {
+                builder.Insert(createdAtPriority);
+                builder.AppendLine(';');
+                builder.Append("select last_insert_id() as Id;");
+                var query = builder.Build();
+                return query.Statement;
+            }
+        }
         #endregion
 
 
@@ -114,7 +118,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         private Query CreateInsertIgnoreQuery<T>(ValuePriority createdAt)
         {
-            var query = this.DbProvider.QueryBuilder.Insert<T>(createdAt).Build();
+            var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
             var sql = query.Statement.Replace("insert into", "insert ignore into");
             return new Query(sql, query.BindParameter);
         }

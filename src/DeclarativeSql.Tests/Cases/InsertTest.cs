@@ -1,4 +1,5 @@
-﻿using DeclarativeSql.Tests.Models;
+﻿using DeclarativeSql.Sql;
+using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void CreatedAt_PreferAttribute()
         {
-            var actual = this.DbProvider.QueryBuilder.Insert<Person>().Build();
+            var actual = QueryBuilder.Insert<Person>(this.DbProvider);
             var expect =
 @"insert into [dbo].[Person]
 (
@@ -40,7 +41,7 @@ values
         [Fact]
         public void CreatedAt_PreferProperty()
         {
-            var actual = this.DbProvider.QueryBuilder.Insert<Person>(ValuePriority.Property).Build();
+            var actual = QueryBuilder.Insert<Person>(this.DbProvider, ValuePriority.Property);
             var expect =
 @"insert into [dbo].[Person]
 (

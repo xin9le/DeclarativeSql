@@ -4,6 +4,7 @@
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>8.0</LangVersion>
         <Nullable>disable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <!-- NuGet -->
         <IsPackable>true</IsPackable>
         <PackageId>DeclarativeSql</PackageId>

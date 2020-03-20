@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using DeclarativeSql.Mapping;
 
 
 
@@ -8,29 +9,14 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents delete statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Delete<T> : Statement<T>, IDelete<T>
+    internal readonly struct Delete<T> : ISql
     {
-        #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="provider"></param>
-        public Delete(DbProvider provider)
-            : base(provider)
-        {}
-        #endregion
-
-
-        #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        #region ISql implementations
+        /// <inheritdoc/>
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             builder.Append("delete from ");
-            builder.Append(this.Table.FullName);
+            builder.Append(table.FullName);
         }
         #endregion
     }

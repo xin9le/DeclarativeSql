@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
+using DeclarativeSql.Mapping;
 
 
 
@@ -12,7 +13,7 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents update statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Update<T> : Statement<T>, IUpdate<T>
+    internal readonly struct Update<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -32,11 +33,9 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="provider"></param>
         /// <param name="properties">Update target properties</param>
         /// <param name="modifiedAtPriority"></param>
-        public Update(DbProvider provider, Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
-            : base(provider)
+        public Update(Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
         {
             this.Properties = properties;
             this.ModifiedAtPriority = modifiedAtPriority;
@@ -44,36 +43,27 @@ namespace DeclarativeSql.Sql.Statements
         #endregion
 
 
-        #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        #region ISql implementations
+        /// <inheritdoc/>
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             //--- Extract update target columns
-            var columns
-                = this.Table.Columns
-                .Where(x => !x.IsAutoIncrement)
-                .Where(x => !x.IsCreatedAt)
-                .Where(x => !x.IsModifiedAt);
-            if (this.Properties != null)  // Pick up only specified columns
-            {
-                var propertyNames = ExpressionHelper.GetMemberNames(this.Properties);
-                columns = columns.Join(propertyNames, x => x.MemberName, y => y, (x, y) => x);
-            }
-            foreach (var x in this.Table.Columns.Where(x => x.IsModifiedAt))
-                columns = columns.Append(x);
+            HashSet<string> targetMemberNames = null;
+            if (this.Properties != null)
+                targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
             //--- Build SQL
-            var bracket = this.DbProvider.KeywordBracket;
-            var prefix = this.DbProvider.BindParameterPrefix;
+            var bracket = dbProvider.KeywordBracket;
+            var prefix = dbProvider.BindParameterPrefix;
             builder.Append("update ");
-            builder.AppendLine(this.Table.FullName);
+            builder.AppendLine(table.FullName);
             builder.Append("set");
-            foreach (var x in columns)
+            foreach (var x in table.Columns)
             {
+                if (x.IsAutoIncrement) continue;
+                if (x.IsCreatedAt) continue;
+                if (!x.IsModifiedAt && targetMemberNames?.Contains(x.MemberName) == false) continue;
+
                 builder.AppendLine();
                 builder.Append("    ");
                 builder.Append(bracket.Begin);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 
@@ -34,17 +33,29 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static IEnumerable<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
+        public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
-            //--- ctor
-            var body = expression.Body as NewExpression;
-            if (body != null)
-                return body.Members.Select(x => x.Name);
-
-            return new [] { GetMemberName(expression) };
+            var result = new HashSet<string>();
+            var body = expression.Body as NewExpression;  // ctor or not
+            if (body == null)
+            {
+                var name = GetMemberName(expression);
+                result.Add(name);
+            }
+            else
+            {
+                var members = body.Members;
+                var count = members.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    var name = members[i].Name;
+                    result.Add(name);
+                }
+            }
+            return result;
         }
 
 

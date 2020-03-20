@@ -15,7 +15,7 @@ namespace DeclarativeSql.Tests.Cases
         [Fact]
         public void Count_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Count<Person>().Where(x => x.Id == 1).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"select count(*) as Count from [dbo].[Person]
 where
@@ -23,13 +23,23 @@ where
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Count();
+                    builder.Where(x => x.Id == 1);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Select_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().Where(x => x.Id == 1).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"select
     [Id] as Id,
@@ -44,13 +54,23 @@ where
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Select();
+                    builder.Where(x => x.Id == 1);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Update_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Update<Person>().Where(x => x.Id == 1).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"update [dbo].[Person]
 set
@@ -63,13 +83,23 @@ where
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Update();
+                    builder.Where(x => x.Id == 1);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Delete_Where()
         {
-            var actual = this.DbProvider.QueryBuilder.Delete<Person>().Where(x => x.Id == 1).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"delete from [dbo].[Person]
 where
@@ -77,13 +107,23 @@ where
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Delete();
+                    builder.Where(x => x.Id == 1);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Select_OrderBy()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().OrderBy(x => x.Id).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"select
     [Id] as Id,
@@ -97,13 +137,23 @@ order by
     [Id]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Select();
+                    builder.OrderBy(x => x.Id);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Select_OrderByDescending()
         {
-            var actual = this.DbProvider.QueryBuilder.Select<Person>().OrderByDescending(x => x.Id).Build();
+            var actual = CreateActualQuery();
             var expect =
 @"select
     [Id] as Id,
@@ -117,20 +167,23 @@ order by
     [Id] desc";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Select();
+                    builder.OrderByDescending(x => x.Id);
+                    return builder.Build();
+                }
+            }
         }
 
 
         [Fact]
         public void Select_Where_OrderBy_ThenBy_ThenByDescending()
         {
-            var actual
-                = this.DbProvider.QueryBuilder
-                .Select<Person>()
-                .Where(x => x.Id == 1)
-                .OrderBy(x => x.Id)
-                .ThenBy(x => x.Name)
-                .ThenByDescending(x => x.Age)
-                .Build();
+            var actual = CreateActualQuery();
             var expect =
 @"select
     [Id] as Id,
@@ -149,6 +202,19 @@ order by
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
+
+            Query CreateActualQuery()
+            {
+                using (var builder = new QueryBuilder<Person>(this.DbProvider))
+                {
+                    builder.Select();
+                    builder.Where(x => x.Id == 1);
+                    builder.OrderBy(x => x.Id);
+                    builder.ThenBy(x => x.Name);
+                    builder.ThenByDescending(x => x.Age);
+                    return builder.Build();
+                }
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a query statement and parameter pair.
     /// </summary>
-    public sealed class Query
+    public readonly struct Query
     {
         #region Properties
         /// <summary>

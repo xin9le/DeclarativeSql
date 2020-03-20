@@ -1,4 +1,5 @@
 ﻿using Cysharp.Text;
+using DeclarativeSql.Mapping;
 
 
 
@@ -8,29 +9,14 @@ namespace DeclarativeSql.Sql.Statements
     /// Represents truncate statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class Truncate<T> : Statement<T>, ITruncate<T>
+    internal readonly struct Truncate<T> : ISql
     {
-        #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="provider"></param>
-        public Truncate(DbProvider provider)
-            : base(provider)
-        {}
-        #endregion
-
-
-        #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        #region ISql implementations
+        /// <inheritdoc/>
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
             builder.Append("truncate table ");
-            builder.Append(this.Table.FullName);
+            builder.Append(table.FullName);
         }
         #endregion
     }

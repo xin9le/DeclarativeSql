@@ -12,7 +12,7 @@ namespace DeclarativeSql.Sql.Clauses
     /// Represents then by clause.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class ThenBy<T> : Clause<T>, IThenBy<T>
+    internal readonly struct ThenBy<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -32,25 +32,9 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="orderBy"></param>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public ThenBy(IOrderBy<T> orderBy, Expression<Func<T, object>> property, bool isAscending)
-            : base(null, orderBy)
-        {
-            this.Property = property ?? throw new ArgumentNullException(nameof(property));
-            this.IsAscending = isAscending;
-        }
-
-
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="thenBy"></param>
-        /// <param name="property"></param>
-        /// <param name="isAscending"></param>
-        public ThenBy(IThenBy<T> thenBy, Expression<Func<T, object>> property, bool isAscending)
-            : base(null, thenBy)
+        public ThenBy(Expression<Func<T, object>> property, bool isAscending)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
@@ -58,26 +42,13 @@ namespace DeclarativeSql.Sql.Clauses
         #endregion
 
 
-        #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        #region ISql implementations
+        /// <inheritdoc/>
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
-            //--- Build parent
-            if (this.ParentClause != null)
-            {
-                this.ParentClause.Build(ref builder, ref bindParameter);
-                builder.AppendLine(",");
-            }
-
-            //--- Build body
-            var table = TableInfo.Get<T>(this.DbProvider.Database);
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var columnName = table.ColumnsByMemberName[propertyName].ColumnName;
-            var bracket = this.DbProvider.KeywordBracket;
+            var bracket = dbProvider.KeywordBracket;
 
             builder.Append("    ");
             builder.Append(bracket.Begin);

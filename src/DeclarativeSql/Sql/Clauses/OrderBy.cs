@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using Cysharp.Text;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
-using DeclarativeSql.Sql.Statements;
 
 
 
@@ -13,7 +12,7 @@ namespace DeclarativeSql.Sql.Clauses
     /// Represents order by clause.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class OrderBy<T> : Clause<T>, IOrderBy<T>
+    internal readonly struct OrderBy<T> : ISql
     {
         #region Properties
         /// <summary>
@@ -33,25 +32,9 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parentStatement"></param>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public OrderBy(IStatement<T> parentStatement, Expression<Func<T, object>> property, bool isAscending)
-            : base(parentStatement, null)
-        {
-            this.Property = property ?? throw new ArgumentNullException(nameof(property));
-            this.IsAscending = isAscending;
-        }
-
-        
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="parentClause"></param>
-        /// <param name="property"></param>
-        /// <param name="isAscending"></param>
-        public OrderBy(IClause<T> parentClause, Expression<Func<T, object>> property, bool isAscending)
-            : base(null, parentClause)
+        public OrderBy(Expression<Func<T, object>> property, bool isAscending)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
@@ -59,31 +42,13 @@ namespace DeclarativeSql.Sql.Clauses
         #endregion
 
 
-        #region override
-        /// <summary>
-        /// Builds query.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="bindParameter"></param>
-        internal override void Build(ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        #region ISql implementations
+        /// <inheritdoc/>
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
         {
-            //--- Build parent
-            if (this.ParentStatement != null)
-            {
-                this.ParentStatement.Build(ref builder, ref bindParameter);
-                builder.AppendLine();
-            }
-            if (this.ParentClause != null)
-            {
-                this.ParentClause.Build(ref builder, ref bindParameter);
-                builder.AppendLine();
-            }
-
-            //--- Build body
-            var table = TableInfo.Get<T>(this.DbProvider.Database);
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var columnName = table.ColumnsByMemberName[propertyName].ColumnName;
-            var bracket = this.DbProvider.KeywordBracket;
+            var bracket = dbProvider.KeywordBracket;
 
             builder.AppendLine("order by");
             builder.Append("    ");
