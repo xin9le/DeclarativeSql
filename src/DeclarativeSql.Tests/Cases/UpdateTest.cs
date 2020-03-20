@@ -68,5 +68,22 @@ set
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
         }
+
+
+        [Fact]
+        public void TwoColumns_WithCondition()
+        {
+            var actual = QueryBuilder.Update<Person>(this.DbProvider, x => x.Age >= 30, x => new { x.Name, x.CreatedAt });
+            var expect =
+@"update [dbo].[Person]
+set
+    [名前] = @Name,
+    [ModifiedAt] = @ModifiedAt
+where
+    [Age] >= @p1";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Count.Should().Be(1);
+            actual.BindParameter.Should().Contain("p1", 30);
+        }
     }
 }

@@ -68,5 +68,22 @@ from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
         }
+
+
+        [Fact]
+        public void WithCondition()
+        {
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => x.Age >= 30, x => new { x.Name, x.Age });
+            var expect =
+@"select
+    [名前] as Name,
+    [Age] as Age
+from [dbo].[Person]
+where
+    [Age] >= @p1";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Count.Should().Be(1);
+            actual.BindParameter.Should().Contain("p1", 30);
+        }
     }
 }
