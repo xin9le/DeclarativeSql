@@ -270,7 +270,7 @@ namespace DeclarativeSql.Tests.Cases
 
 
         [Fact]
-        public void Contains()
+        public void Contains_IEnumerable()
         {
             var value = Enumerable.Range(0, 3).ToArray();
             var actual = QueryBuilder.Where<Person>(this.DbProvider, x => value.Contains(x.Id));
@@ -284,7 +284,7 @@ namespace DeclarativeSql.Tests.Cases
 
 
         [Fact]
-        public void Contains_Over1000()
+        public void Contains_IEnumerable_Over1000()
         {
             var value1 = Enumerable.Range(0, 1000).ToArray();
             var value2 = Enumerable.Range(1000, 234).ToArray();
@@ -302,7 +302,7 @@ namespace DeclarativeSql.Tests.Cases
 
 
         [Fact]
-        public void Contains_NoElements()
+        public void Contains_IEnumerable_NoElements()
         {
             var values = System.Array.Empty<int>();
             var actual = QueryBuilder.Where<Person>(this.DbProvider, x => values.Contains(x.Id));
@@ -311,6 +311,24 @@ namespace DeclarativeSql.Tests.Cases
     1 = 0";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
+        }
+
+
+        [Fact]
+        public void Contains_ConcreteType()
+        {
+            var value1 = Enumerable.Range(0, 1000).ToArray();
+            var value2 = Enumerable.Range(1000, 234).ToArray();
+            var value = value1.Concat(value2).ToHashSet();
+            var actual = QueryBuilder.Where<Person>(this.DbProvider, x => value.Contains(x.Id));
+            var expect =
+@"where
+    ([Id] in @p1 or [Id] in @p2)";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().ContainKey("p1");
+            actual.BindParameter["p1"].Should().BeEquivalentTo(value1);
+            actual.BindParameter.Should().ContainKey("p2");
+            actual.BindParameter["p2"].Should().BeEquivalentTo(value2);
         }
 
 

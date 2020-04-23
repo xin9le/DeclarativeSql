@@ -159,11 +159,18 @@ namespace DeclarativeSql.Sql.Clauses
             /// <returns></returns>
             protected override Expression VisitMethodCall(MethodCallExpression expression)
             {
-                //--- Enumerable.Contains
-                if (expression.Method.DeclaringType == typeof(Enumerable)
-                && expression.Method.Name == nameof(Enumerable.Contains))
+                //--- bool Contains(T value)
+                if (expression.Method.Name == nameof(Enumerable.Contains))
                 {
-                    this.BuildInClause(expression);
+                    var t = expression.Method.DeclaringType;
+                    if (t == typeof(Enumerable))
+                    {
+                        this.BuildInClause(expression, true);
+                    }
+                    else if (t.Namespace.StartsWith("System.Collections"))
+                    {
+                        this.BuildInClause(expression, false);
+                    }
                 }
 
                 //--- default
@@ -294,17 +301,19 @@ namespace DeclarativeSql.Sql.Clauses
             /// Build in clause.
             /// </summary>
             /// <param name="expression"></param>
-            private void BuildInClause(MethodCallExpression expression)
+            private void BuildInClause(MethodCallExpression expression, bool isExtensionMethod)
             {
                 //--- Gets property name
-                var propertyName = this.ExtractMemberName(expression.Arguments[1]);
+                var argExpression = isExtensionMethod ? expression.Arguments[1] : expression.Arguments[0];
+                var propertyName = this.ExtractMemberName(argExpression);
                 if (propertyName == null)
                     throw new InvalidOperationException();
 
                 //--- Generates element
                 //--- If there are more than 1000 in clauses, error will occur.
+                var objExpression = isExtensionMethod ? expression.Arguments[0] : expression.Object;
                 var source
-                    = (this.ExtractValue(expression.Arguments[0]) as IEnumerable)
+                    = (this.ExtractValue(objExpression) as IEnumerable)
                     .Cast<object>()
                     .Buffer(SqlConstants.InClauseUpperLimitCount)
                     .ToArray();
