@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using DeclarativeSql.Internals;
 using FastMember;
 
 
@@ -265,7 +267,7 @@ namespace DeclarativeSql.Sql
         /// <summary>
         /// Merges the specified values.
         /// </summary>
-        /// <param name="kvs"></param>
+        /// <param name="obj"></param>
         public void Merge<T>(T obj)
         {
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
@@ -275,6 +277,26 @@ namespace DeclarativeSql.Sql
                 var member = members[i];
                 if (member.CanRead)
                     this.Add(member.Name, accessor[member.Name]);
+            }
+        }
+
+
+        /// <summary>
+        /// Merges the specified values.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="targetProperties"></param>
+        public void Merge<T>(T obj, Expression<Func<T, object>> targetProperties)
+        {
+            var memberNames = ExpressionHelper.GetMemberNames(targetProperties);
+            var members = TypeAccessor.Create(typeof(T)).GetMembers();
+            var accessor = ObjectAccessor.Create(obj);
+            for (var i = 0; i < members.Count; i++)
+            {
+                var member = members[i];
+                if (!member.CanRead) continue;
+                if (!memberNames.Contains(member.Name)) continue;
+                this.Add(member.Name, accessor[member.Name]);
             }
         }
         #endregion
