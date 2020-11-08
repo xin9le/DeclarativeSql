@@ -39,23 +39,48 @@ namespace DeclarativeSql.Internals
                 throw new ArgumentNullException(nameof(expression));
 
             var result = new HashSet<string>();
-            var body = expression.Body as NewExpression;  // ctor or not
-            if (body == null)
+            if (expression.Body is UnaryExpression)  // for VB.NET
+            {
+                var unary = (UnaryExpression)expression.Body;
+                if (unary.NodeType == ExpressionType.Convert)  // wrapped by convert expression
+                {
+                    if (unary.Operand is NewExpression)  // x => new { x.Id, x.Name }
+                    {
+                        var operand = (NewExpression)unary.Operand;
+                        addMembers(result, operand);
+                    }
+                    else if (unary.Operand is MemberExpression)  // x => x.Id
+                    {
+                        var operand = (MemberExpression)unary.Operand;
+                        result.Add(operand.Member.Name);
+                    }
+                }
+            }
+            else if (expression.Body is NewExpression)  // x => new { x.Id, x.Name }
+            {
+                var @new = (NewExpression)expression.Body;
+                addMembers(result, @new);
+            }
+            else  // x => x.Id
             {
                 var name = GetMemberName(expression);
                 result.Add(name);
             }
-            else
+            return result;
+
+
+            #region Local Functions
+            static void addMembers(HashSet<string> buffer, NewExpression expression)
             {
-                var members = body.Members;
+                var members = expression.Members;
                 var count = members.Count;
                 for (var i = 0; i < count; i++)
                 {
                     var name = members[i].Name;
-                    result.Add(name);
+                    buffer.Add(name);
                 }
             }
-            return result;
+            #endregion
         }
 
 
