@@ -71,6 +71,46 @@ from [dbo].[Person]";
 
 
         [Fact]
+        public void OneColumn_Cast()
+        {
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => (object)x.Name);
+            var expect =
+@"select
+    [名前] as Name
+from [dbo].[Person]";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
+        }
+
+
+        [Fact]
+        public void OneColumn_AnonymousType_Cast()
+        {
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => (object)new { x.Name });
+            var expect =
+@"select
+    [名前] as Name
+from [dbo].[Person]";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
+        }
+
+
+        [Fact]
+        public void TwoColumns_Cast()
+        {
+            var actual = QueryBuilder.Select<Person>(this.DbProvider, x => (object)new { x.Name, x.Age });
+            var expect =
+@"select
+    [名前] as Name,
+    [Age] as Age
+from [dbo].[Person]";
+            actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().BeNull();
+        }
+
+
+        [Fact]
         public void WithCondition()
         {
             var actual = QueryBuilder.Select<Person>(this.DbProvider, x => x.Age >= 30, x => new { x.Name, x.Age });
