@@ -379,33 +379,30 @@ namespace DeclarativeSql.Sql.Clauses
             private object ExtractValue(Expression expression)
             {
                 //--- Constant
-                if (expression is ConstantExpression)
-                    return ((ConstantExpression)expression).Value;
+                if (expression is ConstantExpression constant)
+                    return constant.Value;
 
                 //--- Creates instance
-                if (expression is NewExpression)
+                if (expression is NewExpression @new)
                 {
-                    var expr = (NewExpression)expression;
-                    var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                    return expr.Constructor.Invoke(parameters);
+                    var parameters = @new.Arguments.Select(this.ExtractValue).ToArray();
+                    return @new.Constructor.Invoke(parameters);
                 }
 
                 //--- new T[]
-                if (expression is NewArrayExpression)
+                if (expression is NewArrayExpression newArray)
                 {
-                    var expr = (NewArrayExpression)expression;
-                    return expr.Expressions.Select(this.ExtractValue).ToArray();
+                    return newArray.Expressions.Select(this.ExtractValue).ToArray();
                 }
 
                 //--- Method call
-                if (expression is MethodCallExpression)
+                if (expression is MethodCallExpression methodCall)
                 {
-                    var expr = (MethodCallExpression)expression;
-                    var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                    var obj = expr.Object is null
+                    var parameters = methodCall.Arguments.Select(this.ExtractValue).ToArray();
+                    var obj = methodCall.Object is null
                             ? null                             // static
-                            : this.ExtractValue(expr.Object);  // instance
-                    return expr.Method.Invoke(obj, parameters);
+                            : this.ExtractValue(methodCall.Object);  // instance
+                    return methodCall.Method.Invoke(obj, parameters);
                 }
 
                 //--- Delegate / Lambda
@@ -419,12 +416,11 @@ namespace DeclarativeSql.Sql.Clauses
                 }
 
                 //--- Indexer
-                if (expression is BinaryExpression)
+                if (expression is BinaryExpression binary)
                 if (expression.NodeType == ExpressionType.ArrayIndex)
                 {
-                    var expr = (BinaryExpression)expression;
-                    var array = (Array)this.ExtractValue(expr.Left);
-                    var index = (int)this.ExtractValue(expr.Right);
+                    var array = (Array)this.ExtractValue(binary.Left);
+                    var index = (int)this.ExtractValue(binary.Right);
                     return array.GetValue(index);
                 }
 
@@ -434,15 +430,15 @@ namespace DeclarativeSql.Sql.Clauses
                 while (!(temp is ConstantExpression))
                 {
                     //--- cast
-                    if (temp is UnaryExpression)
+                    if (temp is UnaryExpression unary)
                     if (temp.NodeType == ExpressionType.Convert)
                     {
-                        temp = ((UnaryExpression)temp).Operand;
+                        temp = unary.Operand;
                         continue;
                     }
 
                     //--- not member
-                    if (!(temp is MemberExpression member))
+                    if (temp is not MemberExpression member)
                         return this.ExtractValue(temp);
 
                     //--- static
