@@ -132,7 +132,7 @@ namespace DeclarativeSql
             if (this.IsDisposed)
                 throw new ObjectDisposedException(target.ToString());
 
-            if (connection == null)
+            if (connection is null)
             {
                 this.OnOpen(AvailabilityTarget.Master);
                 connection = this.CreateConnection(connectionString, target);
@@ -149,7 +149,7 @@ namespace DeclarativeSql
         /// <param name="target"></param>
         private void DisposeConnection(ref IDbConnection connection, AvailabilityTarget target)
         {
-            if (connection == null)
+            if (connection is null)
                 return;
 
             connection.Dispose();

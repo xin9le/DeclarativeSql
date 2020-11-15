@@ -247,7 +247,7 @@ namespace DeclarativeSql.Sql.Clauses
                 switch (@operator)
                 {
                     case Operator.Equal:
-                        if (value == null)
+                        if (value is null)
                         {
                             builder.Append(" is null");
                             return;
@@ -256,7 +256,7 @@ namespace DeclarativeSql.Sql.Clauses
                         break;
 
                     case Operator.NotEqual:
-                        if (value == null)
+                        if (value is null)
                         {
                             builder.Append(" is not null");
                             return;
@@ -306,7 +306,7 @@ namespace DeclarativeSql.Sql.Clauses
                 //--- Gets property name
                 var argExpression = isExtensionMethod ? expression.Arguments[1] : expression.Arguments[0];
                 var propertyName = this.ExtractMemberName(argExpression);
-                if (propertyName == null)
+                if (propertyName is null)
                     throw new InvalidOperationException();
 
                 //--- Generates element
@@ -402,7 +402,7 @@ namespace DeclarativeSql.Sql.Clauses
                 {
                     var expr = (MethodCallExpression)expression;
                     var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                    var obj = expr.Object == null
+                    var obj = expr.Object is null
                             ? null                             // static
                             : this.ExtractValue(expr.Object);  // instance
                     return expr.Method.Invoke(obj, parameters);
@@ -446,7 +446,7 @@ namespace DeclarativeSql.Sql.Clauses
                         return this.ExtractValue(temp);
 
                     //--- static
-                    if (member.Expression == null)
+                    if (member.Expression is null)
                     {
                         if (member.Member is PropertyInfo pi) return pi.GetValue(null);
                         if (member.Member is FieldInfo fi)    return fi.GetValue(null);

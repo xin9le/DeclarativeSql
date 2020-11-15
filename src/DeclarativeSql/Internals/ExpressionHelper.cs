@@ -19,7 +19,7 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static string GetMemberName<T>(Expression<Func<T, object>> expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
             var member = ExtractMemberExpression(expression);
@@ -35,7 +35,7 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
             var result = new HashSet<string>();
@@ -91,7 +91,7 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static MemberExpression ExtractMemberExpression(LambdaExpression expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
             return ExtractMemberExpression(expression.Body);
         }
@@ -104,7 +104,7 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static MemberExpression ExtractMemberExpression(Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
             if (expression is MemberExpression)

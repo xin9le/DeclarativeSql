@@ -78,7 +78,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public static DbOperation Create(IDbConnection connection, int? timeout)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return Create(connection, null, timeout);
         }
@@ -92,7 +92,7 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public static DbOperation Create(IDbTransaction transaction, int? timeout)
         {
-            if (transaction == null)
+            if (transaction is null)
                 throw new ArgumentNullException(nameof(transaction));
             return Create(transaction.Connection, transaction, timeout);
         }
@@ -437,7 +437,7 @@ namespace DeclarativeSql.DbOperations
         public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
-            if (query.BindParameter == null)
+            if (query.BindParameter is null)
             {
                 return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
             }
@@ -476,7 +476,7 @@ namespace DeclarativeSql.DbOperations
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
-            if (query.BindParameter == null)
+            if (query.BindParameter is null)
             {
                 return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
             }

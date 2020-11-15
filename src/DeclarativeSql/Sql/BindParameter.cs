@@ -256,7 +256,7 @@ namespace DeclarativeSql.Sql
         /// <param name="kvs"></param>
         public void Merge(IEnumerable<KeyValuePair<string, object>> kvs)
         {
-            if (kvs == null)
+            if (kvs is null)
                 throw new ArgumentNullException(nameof(kvs));
 
             foreach (var x in kvs)
