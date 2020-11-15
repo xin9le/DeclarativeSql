@@ -75,6 +75,13 @@ namespace DeclarativeSql
             this.SlaveConnectionString = slaveConnectionString ?? throw new ArgumentNullException(nameof(slaveConnectionString));
             this.ForceMaster = forceMaster;
         }
+
+
+        /// <summary>
+        /// Destroy instance.
+        /// </summary>
+        ~HighAvailabilityConnection()
+            => this.Dispose(false);
         #endregion
 
 
@@ -83,6 +90,17 @@ namespace DeclarativeSql
         /// Release used resources.
         /// </summary>
         public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        /// <summary>
+        /// Release used resources.
+        /// </summary>
+        /// <param name="disposing"></param>
+        private void Dispose(bool disposing)
         {
             if (this.IsDisposed)
                 return;
