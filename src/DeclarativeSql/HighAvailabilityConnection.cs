@@ -100,7 +100,7 @@ namespace DeclarativeSql
         /// Release used resources.
         /// </summary>
         /// <param name="disposing"></param>
-        private void Dispose(bool disposing)
+        private void Dispose(bool _)
         {
             if (this.IsDisposed)
                 return;
