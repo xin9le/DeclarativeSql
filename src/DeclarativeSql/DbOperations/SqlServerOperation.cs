@@ -170,7 +170,7 @@ namespace DeclarativeSql.DbOperations
             foreach (var xs in uniqueColumnGroups.WithIndex())
             {
                 builder.Append(xs.index == 0 ? "    on " : " or ");
-                builder.Append("(");
+                builder.Append('(');
                 foreach (var x in xs.element.WithIndex())
                 {
                     if (x.index > 0)
@@ -185,7 +185,7 @@ namespace DeclarativeSql.DbOperations
                     builder.Append(x.element.ColumnName);
                     builder.Append(bracket.End);
                 }
-                builder.Append(")");
+                builder.Append(')');
             }
             builder.AppendLine();
             builder.AppendLine("when not matched then");
