@@ -121,7 +121,7 @@ namespace DeclarativeSql.DbOperations
                     {
                         ColumnName = x.ColumnName,
                         AllowDBNull = isNullable || x.AllowNull,
-                        DataType = isNullable ? Nullable.GetUnderlyingType(x.MemberType) : x.MemberType,
+                        DataType = isNullable ? Nullable.GetUnderlyingType(x.MemberType)! : x.MemberType,
                     };
                 });
             var table = new DataTable();
