@@ -103,8 +103,8 @@ namespace DeclarativeSql.DbOperations
                 {
                     if (createdAt == ValuePriority.Default)
                     {
-                        if ((x.IsCreatedAt && x.DefaultValue != null)
-                        || (x.IsModifiedAt && x.DefaultValue != null))
+                        if ((x.IsCreatedAt && x.DefaultValue is not null)
+                        || (x.IsModifiedAt && x.DefaultValue is not null))
                             return false;
                     }
                     return true;

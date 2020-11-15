@@ -120,7 +120,7 @@ namespace DeclarativeSql.Sql.Clauses
                                 //--- 'x.Hoge == value'
                                 {
                                     var propertyName = this.ExtractMemberName(expression.Left);
-                                    if (propertyName != null)
+                                    if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
                                         var value = this.ExtractValue(expression.Right);
@@ -130,7 +130,7 @@ namespace DeclarativeSql.Sql.Clauses
                                 //--- 'value == x.Hoge'
                                 {
                                     var propertyName = this.ExtractMemberName(expression.Right);
-                                    if (propertyName != null)
+                                    if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
                                         @operator = OperatorExtensions.Flip(@operator);

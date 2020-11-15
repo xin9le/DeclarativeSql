@@ -204,13 +204,13 @@ namespace DeclarativeSql.DbOperations
             {
                 if (createdAtPriority == ValuePriority.Default)
                 {
-                    if (x.IsCreatedAt && x.DefaultValue != null)
+                    if (x.IsCreatedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(", ");
                         continue;
                     }
-                    if (x.IsModifiedAt && x.DefaultValue != null)
+                    if (x.IsModifiedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(", ");

@@ -49,7 +49,7 @@ namespace DeclarativeSql.Sql.Statements
         {
             //--- Extract update target columns
             HashSet<string> targetMemberNames = null;
-            if (this.Properties != null)
+            if (this.Properties is not null)
                 targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
             //--- Build SQL
@@ -72,7 +72,7 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append(" = ");
                 if (x.IsModifiedAt
                     && this.ModifiedAtPriority == ValuePriority.Default
-                    && x.DefaultValue != null)
+                    && x.DefaultValue is not null)
                 {
                     builder.Append(x.DefaultValue);
                     builder.Append(',');

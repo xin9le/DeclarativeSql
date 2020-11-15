@@ -39,7 +39,7 @@ namespace DeclarativeSql.Sql.Statements
         {
             //--- Extract target columns
             HashSet<string> targetMemberNames = null;
-            if (this.Properties != null)
+            if (this.Properties is not null)
                 targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
             //--- Builds SQL

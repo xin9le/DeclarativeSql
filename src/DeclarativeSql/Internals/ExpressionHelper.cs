@@ -112,7 +112,7 @@ namespace DeclarativeSql.Internals
 
             //--- for boxing
             var unary = expression as UnaryExpression;
-            if (unary != null)
+            if (unary is not null)
             if (unary.NodeType == ExpressionType.Convert)
             if (unary.Operand is MemberExpression)
                 return (MemberExpression)unary.Operand;
