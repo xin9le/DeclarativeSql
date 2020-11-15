@@ -8,6 +8,7 @@ namespace DeclarativeSql.Tests.Models
     [Table(DbKind.SqlServer, "Person", Schema = "dbo")]
     public class Person
     {
+#pragma warning disable CS8618
         [PrimaryKey]
         [AutoIncrement]
         public int Id { get; set; }
@@ -32,5 +33,6 @@ namespace DeclarativeSql.Tests.Models
         [Column(DbKind.MySql, "UpdatedOn")]
         [DefaultValue(DbKind.MySql, "SYSDATETIME()")]
         public DateTimeOffset ModifiedAt { get; set; }
+#pragma warning restore CS8618
     }
 }
