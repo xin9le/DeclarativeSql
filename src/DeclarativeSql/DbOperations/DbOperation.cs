@@ -447,7 +447,7 @@ namespace DeclarativeSql.DbOperations
             }
             else
             {
-                query.BindParameter.Merge(data, properties!);  // todo: bug fix
+                query.BindParameter.Merge(data);
                 return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
             }
         }
@@ -486,7 +486,7 @@ namespace DeclarativeSql.DbOperations
             }
             else
             {
-                query.BindParameter.Merge(data, properties!);  // todo: bug fix
+                query.BindParameter.Merge(data);
                 return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
             }
         }
