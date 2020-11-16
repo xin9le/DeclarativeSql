@@ -17,6 +17,6 @@ namespace DeclarativeSql.Sql
         /// <param name="table"></param>
         /// <param name="builder"></param>
         /// <param name="bindParameter"></param>
-        void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter);
+        void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter);
     }
 }

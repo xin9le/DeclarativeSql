@@ -13,7 +13,7 @@ namespace DeclarativeSql.Sql.Statements
     {
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             builder.Append("delete from ");
             builder.Append(table.FullName);

@@ -41,7 +41,7 @@ namespace DeclarativeSql.Sql.Clauses
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             builder.AppendLine("where");
             builder.Append("    ");
@@ -77,7 +77,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="table"></param>
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
-            public Parser(ParameterExpression parameter, DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+            public Parser(ParameterExpression parameter, DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
             {
                 this.parameter = parameter;
                 this.dbProvider = dbProvider;
@@ -115,12 +115,12 @@ namespace DeclarativeSql.Sql.Clauses
                     case ExpressionType.NotEqual:
                         {
                             #region Local Functions
-                            (Operator @operator, string propertyName, object value) GetParameter()
+                            (Operator @operator, string propertyName, object? value) GetParameter()
                             {
                                 //--- 'x.Hoge == value'
                                 {
                                     var propertyName = this.ExtractMemberName(expression.Left);
-                                    if (propertyName != null)
+                                    if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
                                         var value = this.ExtractValue(expression.Right);
@@ -130,7 +130,7 @@ namespace DeclarativeSql.Sql.Clauses
                                 //--- 'value == x.Hoge'
                                 {
                                     var propertyName = this.ExtractMemberName(expression.Right);
-                                    if (propertyName != null)
+                                    if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
                                         @operator = OperatorExtensions.Flip(@operator);
@@ -167,7 +167,7 @@ namespace DeclarativeSql.Sql.Clauses
                     {
                         this.BuildInClause(expression, true);
                     }
-                    else if (t.Namespace.StartsWith("System.Collections"))
+                    else if (t?.Namespace?.StartsWith("System.Collections") ?? false)
                     {
                         this.BuildInClause(expression, false);
                     }
@@ -232,7 +232,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="operator"></param>
             /// <param name="propertyName"></param>
             /// <param name="value"></param>
-            private void BuildBinary(Operator @operator, string propertyName, object value)
+            private void BuildBinary(Operator @operator, string propertyName, object? value)
             {
                 ref var builder = ref Unsafe.AsRef<Utf16ValueStringBuilder>(this.stringBuilderPointer);
                 ref var bindParameter = ref Unsafe.AsRef<BindParameter>(this.bindParameterPointer);
@@ -247,7 +247,7 @@ namespace DeclarativeSql.Sql.Clauses
                 switch (@operator)
                 {
                     case Operator.Equal:
-                        if (value == null)
+                        if (value is null)
                         {
                             builder.Append(" is null");
                             return;
@@ -256,7 +256,7 @@ namespace DeclarativeSql.Sql.Clauses
                         break;
 
                     case Operator.NotEqual:
-                        if (value == null)
+                        if (value is null)
                         {
                             builder.Append(" is not null");
                             return;
@@ -306,14 +306,21 @@ namespace DeclarativeSql.Sql.Clauses
                 //--- Gets property name
                 var argExpression = isExtensionMethod ? expression.Arguments[1] : expression.Arguments[0];
                 var propertyName = this.ExtractMemberName(argExpression);
-                if (propertyName == null)
+                if (propertyName is null)
                     throw new InvalidOperationException();
 
                 //--- Generates element
                 //--- If there are more than 1000 in clauses, error will occur.
                 var objExpression = isExtensionMethod ? expression.Arguments[0] : expression.Object;
+                if (objExpression is null)
+                    throw new InvalidOperationException();
+
+                var elements = this.ExtractValue(objExpression) as IEnumerable;
+                if (elements is null)
+                    throw new InvalidOperationException();
+
                 var source
-                    = (this.ExtractValue(objExpression) as IEnumerable)
+                    = elements
                     .Cast<object>()
                     .Buffer(SqlConstants.InClauseUpperLimitCount)
                     .ToArray();
@@ -361,7 +368,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// </summary>
             /// <param name="expression"></param>
             /// <returns></returns>
-            private string ExtractMemberName(Expression expression)
+            private string? ExtractMemberName(Expression expression)
             {
                 var member = ExpressionHelper.ExtractMemberExpression(expression);
                 return member?.Expression == this.parameter
@@ -376,36 +383,33 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="expression"></param>
             /// <returns></returns>
             /// <remarks>Please use only for right node.</remarks>
-            private object ExtractValue(Expression expression)
+            private object? ExtractValue(Expression expression)
             {
                 //--- Constant
-                if (expression is ConstantExpression)
-                    return ((ConstantExpression)expression).Value;
+                if (expression is ConstantExpression constant)
+                    return constant.Value;
 
                 //--- Creates instance
-                if (expression is NewExpression)
+                if (expression is NewExpression @new)
                 {
-                    var expr = (NewExpression)expression;
-                    var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                    return expr.Constructor.Invoke(parameters);
+                    var parameters = @new.Arguments.Select(this.ExtractValue).ToArray();
+                    return @new.Constructor?.Invoke(parameters);
                 }
 
                 //--- new T[]
-                if (expression is NewArrayExpression)
+                if (expression is NewArrayExpression newArray)
                 {
-                    var expr = (NewArrayExpression)expression;
-                    return expr.Expressions.Select(this.ExtractValue).ToArray();
+                    return newArray.Expressions.Select(this.ExtractValue).ToArray();
                 }
 
                 //--- Method call
-                if (expression is MethodCallExpression)
+                if (expression is MethodCallExpression methodCall)
                 {
-                    var expr = (MethodCallExpression)expression;
-                    var parameters = expr.Arguments.Select(this.ExtractValue).ToArray();
-                    var obj = expr.Object == null
-                            ? null                             // static
-                            : this.ExtractValue(expr.Object);  // instance
-                    return expr.Method.Invoke(obj, parameters);
+                    var parameters = methodCall.Arguments.Select(this.ExtractValue).ToArray();
+                    var obj = methodCall.Object is null
+                            ? null  // static
+                            : this.ExtractValue(methodCall.Object);  // instance
+                    return methodCall.Method.Invoke(obj, parameters);
                 }
 
                 //--- Delegate / Lambda
@@ -419,12 +423,11 @@ namespace DeclarativeSql.Sql.Clauses
                 }
 
                 //--- Indexer
-                if (expression is BinaryExpression)
+                if (expression is BinaryExpression binary)
                 if (expression.NodeType == ExpressionType.ArrayIndex)
                 {
-                    var expr = (BinaryExpression)expression;
-                    var array = (Array)this.ExtractValue(expr.Left);
-                    var index = (int)this.ExtractValue(expr.Right);
+                    var array = (Array)this.ExtractValue(binary.Left)!;
+                    var index = (int)this.ExtractValue(binary.Right)!;
                     return array.GetValue(index);
                 }
 
@@ -434,19 +437,19 @@ namespace DeclarativeSql.Sql.Clauses
                 while (!(temp is ConstantExpression))
                 {
                     //--- cast
-                    if (temp is UnaryExpression)
+                    if (temp is UnaryExpression unary)
                     if (temp.NodeType == ExpressionType.Convert)
                     {
-                        temp = ((UnaryExpression)temp).Operand;
+                        temp = unary.Operand;
                         continue;
                     }
 
                     //--- not member
-                    if (!(temp is MemberExpression member))
+                    if (temp is not MemberExpression member)
                         return this.ExtractValue(temp);
 
                     //--- static
-                    if (member.Expression == null)
+                    if (member.Expression is null)
                     {
                         if (member.Member is PropertyInfo pi) return pi.GetValue(null);
                         if (member.Member is FieldInfo fi)    return fi.GetValue(null);

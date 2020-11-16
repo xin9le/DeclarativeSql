@@ -18,7 +18,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Gets the expression for the property mapped to the column.
         /// </summary>
-        private Expression<Func<T, object>> Property { get; }
+        private Expression<Func<T, object?>> Property { get; }
 
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public OrderBy(Expression<Func<T, object>> property, bool isAscending)
+        public OrderBy(Expression<Func<T, object?>> property, bool isAscending)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;
@@ -44,7 +44,7 @@ namespace DeclarativeSql.Sql.Clauses
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             var propertyName = ExpressionHelper.GetMemberName(this.Property);
             var columnName = table.ColumnsByMemberName[propertyName].ColumnName;

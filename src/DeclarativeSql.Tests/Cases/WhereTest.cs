@@ -23,6 +23,7 @@ namespace DeclarativeSql.Tests.Cases
     [Id] = @p1";
 
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -36,6 +37,7 @@ namespace DeclarativeSql.Tests.Cases
     [Id] <> @p1";
 
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -49,6 +51,7 @@ namespace DeclarativeSql.Tests.Cases
     [Id] > @p1";
 
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -62,6 +65,7 @@ namespace DeclarativeSql.Tests.Cases
     [Id] < @p1";
 
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -74,6 +78,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] >= @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -86,6 +91,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] <= @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
         }
 
@@ -122,6 +128,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] > @p1 and [名前] = @p2";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
         }
@@ -135,6 +142,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] > @p1 or [名前] = @p2";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
         }
@@ -148,6 +156,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] > @p1 and [名前] = @p2) or [Age] <= @p3";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -162,6 +171,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] > @p1 and ([名前] = @p2 or [Age] <= @p3)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -176,6 +186,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] > @p1 or ([名前] = @p2 and [Age] <= @p3)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -190,6 +201,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] > @p1 or [名前] = @p2) and [Age] <= @p3";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -207,13 +219,14 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] > @p1 or [名前] = @p2) and [Age] <= @p3 and ([Id] in @p4 or [Id] in @p5)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
             actual.BindParameter.Should().ContainKey("p4");
-            actual.BindParameter["p4"].Should().BeEquivalentTo(value1);
+            actual.BindParameter!["p4"].Should().BeEquivalentTo(value1);
             actual.BindParameter.Should().ContainKey("p5");
-            actual.BindParameter["p5"].Should().BeEquivalentTo(value2);
+            actual.BindParameter!["p5"].Should().BeEquivalentTo(value2);
 
         }
 
@@ -229,13 +242,14 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     (([Id] > @p1 or [名前] = @p2) and [Age] <= @p3) or ([Id] in @p4 or [Id] in @p5)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
             actual.BindParameter.Should().ContainKey("p4");
-            actual.BindParameter["p4"].Should().BeEquivalentTo(value1);
+            actual.BindParameter!["p4"].Should().BeEquivalentTo(value1);
             actual.BindParameter.Should().ContainKey("p5");
-            actual.BindParameter["p5"].Should().BeEquivalentTo(value2);
+            actual.BindParameter!["p5"].Should().BeEquivalentTo(value2);
         }
 
 
@@ -248,6 +262,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     (([Id] > @p1 or [名前] = @p2) and [Age] <= @p3) or 1 = 0";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -263,6 +278,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] > @p1 or [名前] = @p2) and ([Age] <= @p3 or 1 = 0)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", 1);
             actual.BindParameter.Should().Contain("p2", "xin9le");
             actual.BindParameter.Should().Contain("p3", 30);
@@ -278,8 +294,9 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] in @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().ContainKey("p1");
-            actual.BindParameter["p1"].Should().BeEquivalentTo(value);
+            actual.BindParameter!["p1"].Should().BeEquivalentTo(value);
         }
 
 
@@ -294,10 +311,11 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] in @p1 or [Id] in @p2)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().ContainKey("p1");
-            actual.BindParameter["p1"].Should().BeEquivalentTo(value1);
+            actual.BindParameter!["p1"].Should().BeEquivalentTo(value1);
             actual.BindParameter.Should().ContainKey("p2");
-            actual.BindParameter["p2"].Should().BeEquivalentTo(value2);
+            actual.BindParameter!["p2"].Should().BeEquivalentTo(value2);
         }
 
 
@@ -325,10 +343,11 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     ([Id] in @p1 or [Id] in @p2)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().ContainKey("p1");
-            actual.BindParameter["p1"].Should().BeEquivalentTo(value1);
+            actual.BindParameter!["p1"].Should().BeEquivalentTo(value1);
             actual.BindParameter.Should().ContainKey("p2");
-            actual.BindParameter["p2"].Should().BeEquivalentTo(value2);
+            actual.BindParameter!["p2"].Should().BeEquivalentTo(value2);
         }
 
 
@@ -341,6 +360,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", id);
         }
 
@@ -353,6 +373,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", "aaa");
         }
 
@@ -373,6 +394,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", some.InstanceMethod());
         }
 
@@ -386,6 +408,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", "123");
         }
 
@@ -399,6 +422,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Age] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", some.InstanceProperty);
         }
 
@@ -412,6 +436,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", ids[0]);
         }
 
@@ -424,6 +449,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [名前] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", AccessorProvider.StaticMethod());
         }
 
@@ -436,6 +462,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [Age] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", AccessorProvider.StaticProperty);
         }
 
@@ -448,6 +475,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [HasChildren] = @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", true);
         }
 
@@ -460,6 +488,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [HasChildren] <> @p1";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", true);
         }
 
@@ -472,6 +501,7 @@ namespace DeclarativeSql.Tests.Cases
 @"where
     [HasChildren] = @p1 or [Id] <> @p2 or ([名前] = @p3 and [HasChildren] <> @p4)";
             actual.Statement.Should().Be(expect);
+            actual.BindParameter.Should().NotBeNull();
             actual.BindParameter.Should().Contain("p1", true);
             actual.BindParameter.Should().Contain("p2", 0);
             actual.BindParameter.Should().Contain("p3", "xin9le");

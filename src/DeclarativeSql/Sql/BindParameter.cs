@@ -12,13 +12,13 @@ namespace DeclarativeSql.Sql
     /// <summary>
     /// Represents bind parameters.
     /// </summary>
-    public sealed class BindParameter : IDictionary<string, object>, IReadOnlyDictionary<string, object>
+    public sealed class BindParameter : IDictionary<string, object?>, IReadOnlyDictionary<string, object?>
     {
         #region Properties
         /// <summary>
         /// Gets the key/value store that held inside.
         /// </summary>
-        private IDictionary<string, object> Inner { get; }
+        private IDictionary<string, object?> Inner { get; }
         #endregion
 
 
@@ -27,7 +27,7 @@ namespace DeclarativeSql.Sql
         /// Creates instance.
         /// </summary>
         public BindParameter()
-            : this(new Dictionary<string, object>())
+            : this(new Dictionary<string, object?>())
         {}
 
 
@@ -35,7 +35,7 @@ namespace DeclarativeSql.Sql
         /// Creates instance.
         /// </summary>
         /// <param name="source"></param>
-        public BindParameter(IDictionary<string, object> source)
+        public BindParameter(IDictionary<string, object?> source)
             => this.Inner = source ?? throw new ArgumentNullException(nameof(source));
         #endregion
 
@@ -46,7 +46,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public object this[string key]
+        public object? this[string key]
         {
             get => this.Inner[key];
             set => this.Inner[key] = value;
@@ -56,14 +56,14 @@ namespace DeclarativeSql.Sql
         /// <summary>
         /// Gets an <see cref="ICollection{T}"/> containing the keys of the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        ICollection<string> IDictionary<string, object>.Keys
+        ICollection<string> IDictionary<string, object?>.Keys
             => this.Inner.Keys;
 
 
         /// <summary>
         /// Gets an <see cref="ICollection{T}"/> containing the values of the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        ICollection<object> IDictionary<string, object>.Values
+        ICollection<object?> IDictionary<string, object?>.Values
             => this.Inner.Values;
 
 
@@ -77,7 +77,7 @@ namespace DeclarativeSql.Sql
         /// <summary>
         /// Gets a value indicating whether the <see cref="ICollection{T}"/> is read-only.
         /// </summary>
-        bool ICollection<KeyValuePair<string, object>>.IsReadOnly
+        bool ICollection<KeyValuePair<string, object?>>.IsReadOnly
             => this.Inner.IsReadOnly;
 
 
@@ -86,7 +86,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void Add(string key, object value)
+        public void Add(string key, object? value)
             => this.Inner.Add(key, value);
 
 
@@ -94,7 +94,7 @@ namespace DeclarativeSql.Sql
         /// Adds an item to the <see cref="ICollection{T}"/>.
         /// </summary>
         /// <param name="item"></param>
-        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
+        void ICollection<KeyValuePair<string, object?>>.Add(KeyValuePair<string, object?> item)
             => this.Inner.Add(item);
 
 
@@ -110,7 +110,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
+        bool ICollection<KeyValuePair<string, object?>>.Contains(KeyValuePair<string, object?> item)
             => this.Inner.Contains(item);
 
 
@@ -128,7 +128,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="array"></param>
         /// <param name="arrayIndex"></param>
-        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<string, object?>>.CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
             => this.Inner.CopyTo(array, arrayIndex);
 
 
@@ -136,7 +136,7 @@ namespace DeclarativeSql.Sql
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
             => this.Inner.GetEnumerator();
 
 
@@ -162,7 +162,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
+        bool ICollection<KeyValuePair<string, object?>>.Remove(KeyValuePair<string, object?> item)
             => this.Inner.Remove(item);
 
 
@@ -172,7 +172,7 @@ namespace DeclarativeSql.Sql
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool TryGetValue(string key, out object value)
+        public bool TryGetValue(string key, out object? value)
             => this.Inner.TryGetValue(key, out value);
         #endregion
 
@@ -188,7 +188,7 @@ namespace DeclarativeSql.Sql
         /// <summary>
         /// Gets an enumerable collection that contains the values in the read-only dictionary.
         /// </summary>
-        public IEnumerable<object> Values
+        public IEnumerable<object?> Values
             => this.Inner.Values;
         #endregion
 
@@ -221,7 +221,7 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public BindParameter Clone()
         {
-            IDictionary<string, object> result = new BindParameter();
+            IDictionary<string, object?> result = new BindParameter();
             foreach (var x in this)
                 result.Add(x);
             return (BindParameter)result;
@@ -254,9 +254,9 @@ namespace DeclarativeSql.Sql
         /// Merges the specified values.
         /// </summary>
         /// <param name="kvs"></param>
-        public void Merge(IEnumerable<KeyValuePair<string, object>> kvs)
+        public void Merge(IEnumerable<KeyValuePair<string, object?>> kvs)
         {
-            if (kvs == null)
+            if (kvs is null)
                 throw new ArgumentNullException(nameof(kvs));
 
             foreach (var x in kvs)
@@ -286,7 +286,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="targetProperties"></param>
-        public void Merge<T>(T obj, Expression<Func<T, object>> targetProperties)
+        public void Merge<T>(T obj, Expression<Func<T, object?>> targetProperties)
         {
             var memberNames = ExpressionHelper.GetMemberNames(targetProperties);
             var members = TypeAccessor.Create(typeof(T)).GetMembers();

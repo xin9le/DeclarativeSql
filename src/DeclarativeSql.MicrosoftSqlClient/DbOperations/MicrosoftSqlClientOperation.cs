@@ -25,7 +25,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="provider"></param>
         /// <param name="timeout"></param>
-        private MicrosoftSqlClientOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        private MicrosoftSqlClientOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
 
@@ -37,7 +37,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static DbOperation Create(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        public static DbOperation Create(IDbConnection connection, IDbTransaction? transaction, int? timeout)
             => new MicrosoftSqlClientOperation(connection, transaction, DbProvider.SqlServer, timeout);
         #endregion
 
@@ -103,8 +103,8 @@ namespace DeclarativeSql.DbOperations
                 {
                     if (createdAt == ValuePriority.Default)
                     {
-                        if ((x.IsCreatedAt && x.DefaultValue != null)
-                        || (x.IsModifiedAt && x.DefaultValue != null))
+                        if ((x.IsCreatedAt && x.DefaultValue is not null)
+                        || (x.IsModifiedAt && x.DefaultValue is not null))
                             return false;
                     }
                     return true;
@@ -121,7 +121,7 @@ namespace DeclarativeSql.DbOperations
                     {
                         ColumnName = x.ColumnName,
                         AllowDBNull = isNullable || x.AllowNull,
-                        DataType = isNullable ? Nullable.GetUnderlyingType(x.MemberType) : x.MemberType,
+                        DataType = isNullable ? Nullable.GetUnderlyingType(x.MemberType)! : x.MemberType,
                     };
                 });
             var table = new DataTable();

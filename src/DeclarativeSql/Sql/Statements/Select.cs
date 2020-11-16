@@ -19,7 +19,7 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Gets the properties mapped to the column.
         /// </summary>
-        private Expression<Func<T, object>> Properties { get; }
+        private Expression<Func<T, object?>>? Properties { get; }
         #endregion
 
 
@@ -28,18 +28,18 @@ namespace DeclarativeSql.Sql.Statements
         /// Creates instance.
         /// </summary>
         /// <param name="properties">Properties that mapped to the target column. If null, all columns are targeted.</param>
-        public Select(Expression<Func<T, object>> properties)
+        public Select(Expression<Func<T, object?>>? properties)
             => this.Properties = properties;
         #endregion
 
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             //--- Extract target columns
-            HashSet<string> targetMemberNames = null;
-            if (this.Properties != null)
+            HashSet<string>? targetMemberNames = null;
+            if (this.Properties is not null)
                 targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
             //--- Builds SQL
@@ -47,17 +47,17 @@ namespace DeclarativeSql.Sql.Statements
             builder.Append("select");
             foreach (var x in table.Columns)
             {
-                if (targetMemberNames?.Contains(x.MemberName) == false)
-                    continue;
-
-                builder.AppendLine();
-                builder.Append("    ");
-                builder.Append(bracket.Begin);
-                builder.Append(x.ColumnName);
-                builder.Append(bracket.End);
-                builder.Append(" as ");
-                builder.Append(x.MemberName);
-                builder.Append(',');
+                if (targetMemberNames is null || targetMemberNames.Contains(x.MemberName))
+                {
+                    builder.AppendLine();
+                    builder.Append("    ");
+                    builder.Append(bracket.Begin);
+                    builder.Append(x.ColumnName);
+                    builder.Append(bracket.End);
+                    builder.Append(" as ");
+                    builder.Append(x.MemberName);
+                    builder.Append(',');
+                }
             }
             builder.Advance(-1);  //--- remove last colon.
             builder.AppendLine();

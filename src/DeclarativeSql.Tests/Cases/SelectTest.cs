@@ -122,7 +122,8 @@ from [dbo].[Person]
 where
     [Age] >= @p1";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Count.Should().Be(1);
+            actual.BindParameter.Should().NotBeNull();
+            actual.BindParameter!.Count.Should().Be(1);
             actual.BindParameter.Should().Contain("p1", 30);
         }
     }

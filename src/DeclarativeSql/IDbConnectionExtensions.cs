@@ -24,7 +24,7 @@ namespace DeclarativeSql
         /// <returns>Record count</returns>
         public static ulong Count<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).Count<T>();
         }
@@ -40,8 +40,8 @@ namespace DeclarativeSql
         /// <returns>Record count</returns>
         public static ulong Count<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).Count(predicate);
         }
 
@@ -55,7 +55,7 @@ namespace DeclarativeSql
         /// <returns>Record count</returns>
         public static Task<ulong> CountAsync<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).CountAsync<T>();
         }
@@ -71,8 +71,8 @@ namespace DeclarativeSql
         /// <returns>Record count</returns>
         public static Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).CountAsync(predicate);
         }
         #endregion
@@ -87,9 +87,9 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null, int? timeout = null)
+        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).Select(properties);
         }
@@ -104,10 +104,10 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
+        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).Select(predicate, properties);
         }
 
@@ -120,9 +120,9 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object>> properties = null, int? timeout = null)
+        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).SelectAsync(properties);
         }
@@ -137,10 +137,10 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, int? timeout = null)
+        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).SelectAsync(predicate, properties);
         }
         #endregion
@@ -158,8 +158,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static int Insert<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).Insert(data, createdAt);
         }
 
@@ -175,8 +175,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static Task<int> InsertAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertAsync(data, createdAt);
         }
         #endregion
@@ -194,8 +194,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static int InsertMulti<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertMulti(data, createdAt);
         }
 
@@ -211,8 +211,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static Task<int> InsertMultiAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertMultiAsync(data, createdAt);
         }
         #endregion
@@ -230,8 +230,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).BulkInsert(data, createdAt);
         }
 
@@ -247,8 +247,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static Task<int> BulkInsertAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).BulkInsertAsync(data, createdAt);
         }
         #endregion
@@ -265,8 +265,8 @@ namespace DeclarativeSql
         /// <returns>Auto incremented ID</returns>
         public static long InsertAndGetId<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertAndGetId(data, createdAt);
         }
 
@@ -280,8 +280,8 @@ namespace DeclarativeSql
         /// <returns>Auto incremented ID</returns>
         public static Task<long> InsertAndGetIdAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertAndGetIdAsync(data, createdAt);
         }
         #endregion
@@ -300,8 +300,8 @@ namespace DeclarativeSql
         /// <returns>Effected row count</returns>
         public static int InsertIgnore<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertIgnore(data, createdAt);
         }
 
@@ -318,8 +318,8 @@ namespace DeclarativeSql
         /// <returns>Effected row count</returns>
         public static Task<int> InsertIgnoreAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertIgnoreAsync(data, createdAt);
         }
         #endregion
@@ -338,8 +338,8 @@ namespace DeclarativeSql
         /// <returns>Effected row count</returns>
         public static int InsertIgnoreMulti<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertIgnoreMulti(data, createdAt);
         }
 
@@ -356,8 +356,8 @@ namespace DeclarativeSql
         /// <returns>Effected row count</returns>
         public static Task<int> InsertIgnoreMultiAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).InsertIgnoreMultiAsync(data, createdAt);
         }
         #endregion
@@ -374,10 +374,10 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).Update(data, properties, modifiedAt);
         }
 
@@ -393,11 +393,11 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).Update(data, predicate, properties, modifiedAt);
         }
 
@@ -412,10 +412,10 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>> properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
             return DbOperation.Create(connection, timeout).UpdateAsync(data, properties, modifiedAt);
         }
 
@@ -431,11 +431,11 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (data == null) throw new ArgumentNullException(nameof(data));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (data is null) throw new ArgumentNullException(nameof(data));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).UpdateAsync(data, predicate, properties, modifiedAt);
         }
         #endregion
@@ -451,7 +451,7 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static int Delete<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).Delete<T>();
         }
@@ -467,8 +467,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static int Delete<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).Delete(predicate);
         }
 
@@ -482,7 +482,7 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static Task<int> DeleteAsync<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).DeleteAsync<T>();
         }
@@ -498,8 +498,8 @@ namespace DeclarativeSql
         /// <returns>Effected rows count</returns>
         public static Task<int> DeleteAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            if (connection is null) throw new ArgumentNullException(nameof(connection));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             return DbOperation.Create(connection, timeout).DeleteAsync(predicate);
         }
         #endregion
@@ -515,7 +515,7 @@ namespace DeclarativeSql
         /// <returns>-1</returns>
         public static int Truncate<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).Truncate<T>();
         }
@@ -530,7 +530,7 @@ namespace DeclarativeSql
         /// <returns>-1</returns>
         public static Task<int> TruncateAsync<T>(this IDbConnection connection, int? timeout = null)
         {
-            if (connection == null)
+            if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
             return DbOperation.Create(connection, timeout).TruncateAsync<T>();
         }

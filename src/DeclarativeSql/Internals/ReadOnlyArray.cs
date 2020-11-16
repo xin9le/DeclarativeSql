@@ -98,7 +98,7 @@ namespace DeclarativeSql.Internals
                 => this.source[this.index];
 
 
-            object IEnumerator.Current
+            object? IEnumerator.Current
                 => this.Current;
 
 
@@ -144,7 +144,7 @@ namespace DeclarativeSql.Internals
                 => this.source[this.index];
 
 
-            object IEnumerator.Current
+            object? IEnumerator.Current
                 => this.Current;
 
 
@@ -181,7 +181,7 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static ReadOnlyArray<T> ToReadOnlyArray<T>(this IEnumerable<T> source)
         {
-            if (source == null)
+            if (source is null)
                 throw new ArgumentNullException(nameof(source));
 
             return source is T[] array

@@ -17,9 +17,9 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetMemberName<T>(Expression<Func<T, object>> expression)
+        public static string? GetMemberName<T>(Expression<Func<T, object?>> expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
             var member = ExtractMemberExpression(expression);
@@ -33,38 +33,35 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
+        public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object?>> expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
             var result = new HashSet<string>();
-            if (expression.Body is UnaryExpression)  // for VB.NET
+            if (expression.Body is UnaryExpression unary)  // for VB.NET
             {
-                var unary = (UnaryExpression)expression.Body;
                 if (unary.NodeType == ExpressionType.Convert)  // wrapped by convert expression
                 {
-                    if (unary.Operand is NewExpression)  // x => new { x.Id, x.Name }
+                    if (unary.Operand is NewExpression @new)  // x => new { x.Id, x.Name }
                     {
-                        var operand = (NewExpression)unary.Operand;
-                        addMembers(result, operand);
+                        addMembers(result, @new);
                     }
-                    else if (unary.Operand is MemberExpression)  // x => x.Id
+                    else if (unary.Operand is MemberExpression member)  // x => x.Id
                     {
-                        var operand = (MemberExpression)unary.Operand;
-                        result.Add(operand.Member.Name);
+                        result.Add(member.Member.Name);
                     }
                 }
             }
-            else if (expression.Body is NewExpression)  // x => new { x.Id, x.Name }
+            else if (expression.Body is NewExpression @new)  // x => new { x.Id, x.Name }
             {
-                var @new = (NewExpression)expression.Body;
                 addMembers(result, @new);
             }
             else  // x => x.Id
             {
                 var name = GetMemberName(expression);
-                result.Add(name);
+                if (name is not null)
+                    result.Add(name);
             }
             return result;
 
@@ -73,8 +70,10 @@ namespace DeclarativeSql.Internals
             static void addMembers(HashSet<string> buffer, NewExpression expression)
             {
                 var members = expression.Members;
-                var count = members.Count;
-                for (var i = 0; i < count; i++)
+                if (members is null)
+                    return;
+
+                for (var i = 0; i < members.Count; i++)
                 {
                     var name = members[i].Name;
                     buffer.Add(name);
@@ -89,9 +88,9 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static MemberExpression ExtractMemberExpression(LambdaExpression expression)
+        public static MemberExpression? ExtractMemberExpression(LambdaExpression expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
             return ExtractMemberExpression(expression.Body);
         }
@@ -102,20 +101,20 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static MemberExpression ExtractMemberExpression(Expression expression)
+        public static MemberExpression? ExtractMemberExpression(Expression expression)
         {
-            if (expression == null)
+            if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
 
-            if (expression is MemberExpression)
-                return (MemberExpression)expression;
+            if (expression is MemberExpression member1)
+                return member1;
 
             //--- for boxing
             var unary = expression as UnaryExpression;
-            if (unary != null)
+            if (unary is not null)
             if (unary.NodeType == ExpressionType.Convert)
-            if (unary.Operand is MemberExpression)
-                return (MemberExpression)unary.Operand;
+            if (unary.Operand is MemberExpression member2)
+                return member2;
 
             return null;
         }

@@ -21,7 +21,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="provider"></param>
         /// <param name="timeout"></param>
-        public SqliteOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        public SqliteOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
         #endregion

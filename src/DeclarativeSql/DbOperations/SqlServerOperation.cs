@@ -25,7 +25,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="provider"></param>
         /// <param name="timeout"></param>
-        public SqlServerOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        public SqlServerOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
         #endregion
@@ -142,7 +142,7 @@ namespace DeclarativeSql.DbOperations
                 .Where(x => !x.IsCreatedAt)
                 .Where(x => !x.IsModifiedAt)
                 .ToArray();  // システム定義 (CreatedAt / ModifiedAt) は特別扱いで外す
-            var uniqueColumnGroups = selectColumns.ToLookup(x => x.UniqueIndex.Value);
+            var uniqueColumnGroups = selectColumns.ToLookup(x => x.UniqueIndex);
             var insertColumns = table.Columns.Where(x => !x.IsAutoIncrement).ToArray();  // 自動採番列は外す
 
             //--- 変数ショートカット
@@ -170,7 +170,7 @@ namespace DeclarativeSql.DbOperations
             foreach (var xs in uniqueColumnGroups.WithIndex())
             {
                 builder.Append(xs.index == 0 ? "    on " : " or ");
-                builder.Append("(");
+                builder.Append('(');
                 foreach (var x in xs.element.WithIndex())
                 {
                     if (x.index > 0)
@@ -185,7 +185,7 @@ namespace DeclarativeSql.DbOperations
                     builder.Append(x.element.ColumnName);
                     builder.Append(bracket.End);
                 }
-                builder.Append(")");
+                builder.Append(')');
             }
             builder.AppendLine();
             builder.AppendLine("when not matched then");
@@ -204,13 +204,13 @@ namespace DeclarativeSql.DbOperations
             {
                 if (createdAtPriority == ValuePriority.Default)
                 {
-                    if (x.IsCreatedAt && x.DefaultValue != null)
+                    if (x.IsCreatedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(", ");
                         continue;
                     }
-                    if (x.IsModifiedAt && x.DefaultValue != null)
+                    if (x.IsModifiedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(", ");

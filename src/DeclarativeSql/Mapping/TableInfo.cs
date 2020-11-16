@@ -31,7 +31,7 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets the schema name.
         /// </summary>
-        public string Schema { get; private set; }
+        public string? Schema { get; private set; }
 
 
         /// <summary>
@@ -60,11 +60,13 @@ namespace DeclarativeSql.Mapping
 
 
         #region Constructors
+#pragma warning disable CS8618
         /// <summary>
         /// Creates instance.
         /// </summary>
         private TableInfo()
         {}
+#pragma warning restore CS8618
         #endregion
 
 

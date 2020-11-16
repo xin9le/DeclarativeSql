@@ -22,7 +22,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="provider"></param>
         /// <param name="timeout"></param>
-        public MySqlOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        public MySqlOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
         #endregion

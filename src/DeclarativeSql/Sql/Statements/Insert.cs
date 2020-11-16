@@ -31,7 +31,7 @@ namespace DeclarativeSql.Sql.Statements
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             var bracket = dbProvider.KeywordBracket;
             var prefix = dbProvider.BindParameterPrefix;
@@ -65,13 +65,13 @@ namespace DeclarativeSql.Sql.Statements
                 builder.Append("    ");
                 if (this.CreatedAtPriority == ValuePriority.Default)
                 {
-                    if (x.IsCreatedAt && x.DefaultValue != null)
+                    if (x.IsCreatedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(',');
                         continue;
                     }
-                    if (x.IsModifiedAt && x.DefaultValue != null)
+                    if (x.IsModifiedAt && x.DefaultValue is not null)
                     {
                         builder.Append(x.DefaultValue);
                         builder.Append(',');
