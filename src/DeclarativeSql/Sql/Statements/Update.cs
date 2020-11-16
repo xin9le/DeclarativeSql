@@ -19,7 +19,7 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Gets update target properties.
         /// </summary>
-        private Expression<Func<T, object>>? Properties { get; }
+        private Expression<Func<T, object?>>? Properties { get; }
 
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="properties">Update target properties</param>
         /// <param name="modifiedAtPriority"></param>
-        public Update(Expression<Func<T, object>>? properties, ValuePriority modifiedAtPriority)
+        public Update(Expression<Func<T, object?>>? properties, ValuePriority modifiedAtPriority)
         {
             this.Properties = properties;
             this.ModifiedAtPriority = modifiedAtPriority;

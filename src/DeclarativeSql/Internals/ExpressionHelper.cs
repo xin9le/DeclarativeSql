@@ -17,7 +17,7 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string? GetMemberName<T>(Expression<Func<T, object>> expression)
+        public static string? GetMemberName<T>(Expression<Func<T, object?>> expression)
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
@@ -33,7 +33,7 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object>> expression)
+        public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object?>> expression)
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));

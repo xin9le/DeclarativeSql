@@ -87,7 +87,7 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, object>>? properties = null, int? timeout = null)
+        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
             if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
@@ -104,7 +104,7 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null, int? timeout = null)
+        public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
@@ -120,7 +120,7 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object>>? properties = null, int? timeout = null)
+        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
             if (connection is null)
                 throw new ArgumentNullException(nameof(connection));
@@ -137,7 +137,7 @@ namespace DeclarativeSql
         /// <param name="properties"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null, int? timeout = null)
+        public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
@@ -374,7 +374,7 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (data is null) throw new ArgumentNullException(nameof(data));
@@ -393,7 +393,7 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (data is null) throw new ArgumentNullException(nameof(data));
@@ -412,7 +412,7 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (data is null) throw new ArgumentNullException(nameof(data));
@@ -431,7 +431,7 @@ namespace DeclarativeSql
         /// <param name="modifiedAt"></param>
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
-        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
         {
             if (connection is null) throw new ArgumentNullException(nameof(connection));
             if (data is null) throw new ArgumentNullException(nameof(data));

@@ -19,7 +19,7 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Gets the properties mapped to the column.
         /// </summary>
-        private Expression<Func<T, object>>? Properties { get; }
+        private Expression<Func<T, object?>>? Properties { get; }
         #endregion
 
 
@@ -28,7 +28,7 @@ namespace DeclarativeSql.Sql.Statements
         /// Creates instance.
         /// </summary>
         /// <param name="properties">Properties that mapped to the target column. If null, all columns are targeted.</param>
-        public Select(Expression<Func<T, object>>? properties)
+        public Select(Expression<Func<T, object?>>? properties)
             => this.Properties = properties;
         #endregion
 

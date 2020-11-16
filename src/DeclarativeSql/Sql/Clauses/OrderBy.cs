@@ -18,7 +18,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Gets the expression for the property mapped to the column.
         /// </summary>
-        private Expression<Func<T, object>> Property { get; }
+        private Expression<Func<T, object?>> Property { get; }
 
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// </summary>
         /// <param name="property"></param>
         /// <param name="isAscending"></param>
-        public OrderBy(Expression<Func<T, object>> property, bool isAscending)
+        public OrderBy(Expression<Func<T, object?>> property, bool isAscending)
         {
             this.Property = property ?? throw new ArgumentNullException(nameof(property));
             this.IsAscending = isAscending;

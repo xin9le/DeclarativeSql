@@ -202,7 +202,7 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual List<T> Select<T>(Expression<Func<T, object>>? properties)
+        public virtual List<T> Select<T>(Expression<Func<T, object?>>? properties)
         {
             var query = QueryBuilder.Select(this.DbProvider, properties);
             return (List<T>)this.Connection.Query<T>(query.Statement, query.BindParameter, this.Transaction, true, this.Timeout);
@@ -216,7 +216,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual List<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties)
+        public virtual List<T> Select<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties)
         {
             var query = QueryBuilder.Select(this.DbProvider, predicate, properties);
             return (List<T>)this.Connection.Query<T>(query.Statement, query.BindParameter, this.Transaction, true, this.Timeout);
@@ -229,7 +229,7 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object>>? properties)
+        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object?>>? properties)
         {
             var query = QueryBuilder.Select(this.DbProvider, properties);
             var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
@@ -244,7 +244,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties)
+        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties)
         {
             var query = QueryBuilder.Select(this.DbProvider, predicate, properties);
             var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
@@ -422,7 +422,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns>Effected rows count</returns>
-        public virtual int Update<T>(T data, Expression<Func<T, object>>? properties, ValuePriority modifiedAt)
+        public virtual int Update<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, properties, modifiedAt);
             return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
@@ -438,7 +438,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns>Effected rows count</returns>
-        public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties, ValuePriority modifiedAt)
+        public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
             if (query.BindParameter is null)
@@ -461,7 +461,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object>>? properties, ValuePriority modifiedAt)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, properties, modifiedAt);
             return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
@@ -477,7 +477,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties, ValuePriority modifiedAt)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
             if (query.BindParameter is null)

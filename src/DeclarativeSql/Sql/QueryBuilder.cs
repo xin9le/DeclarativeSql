@@ -75,7 +75,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public void Select(Expression<Func<T, object>>? properties = null)
+        public void Select(Expression<Func<T, object?>>? properties = null)
         {
             this.AppendLineIfNotEmpty();
             var x = new Select<T>(properties);
@@ -102,7 +102,7 @@ namespace DeclarativeSql.Sql
         /// <param name="properties"></param>
         /// <param name="modifiedAtPriority"></param>
         /// <returns></returns>
-        public void Update(Expression<Func<T, object>>? properties = null, ValuePriority modifiedAtPriority = default)
+        public void Update(Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAtPriority = default)
         {
             this.AppendLineIfNotEmpty();
             var x = new Update<T>(properties, modifiedAtPriority);
@@ -157,7 +157,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public void OrderBy(Expression<Func<T, object>> property)
+        public void OrderBy(Expression<Func<T, object?>> property)
         {
             if (property is null)
                 throw new ArgumentNullException(nameof(property));
@@ -173,7 +173,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public void OrderByDescending(Expression<Func<T, object>> property)
+        public void OrderByDescending(Expression<Func<T, object?>> property)
         {
             if (property is null)
                 throw new ArgumentNullException(nameof(property));
@@ -189,7 +189,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public void ThenBy(Expression<Func<T, object>> property)
+        public void ThenBy(Expression<Func<T, object?>> property)
         {
             if (property is null)
                 throw new ArgumentNullException(nameof(property));
@@ -205,7 +205,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public void ThenByDescending(Expression<Func<T, object>> property)
+        public void ThenByDescending(Expression<Func<T, object?>> property)
         {
             if (property is null)
                 throw new ArgumentNullException(nameof(property));
@@ -322,7 +322,7 @@ namespace DeclarativeSql.Sql
         /// <param name="dbProvider"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, object>>? properties = null)
+        public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, object?>>? properties = null)
         {
             if (dbProvider is null)
                 throw new ArgumentNullException(nameof(dbProvider));
@@ -343,7 +343,7 @@ namespace DeclarativeSql.Sql
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null)
+        public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null)
         {
             if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
@@ -389,7 +389,7 @@ namespace DeclarativeSql.Sql
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns></returns>
-        public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default)
+        public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default)
         {
             if (dbProvider is null)
                 throw new ArgumentNullException(nameof(dbProvider));
@@ -411,7 +411,7 @@ namespace DeclarativeSql.Sql
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
         /// <returns></returns>
-        public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object>>? properties = null, ValuePriority modifiedAt = default)
+        public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default)
         {
             if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
@@ -519,7 +519,7 @@ namespace DeclarativeSql.Sql
         /// <param name="dbProvider"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static Query OrderBy<T>(DbProvider dbProvider, Expression<Func<T, object>> property)
+        public static Query OrderBy<T>(DbProvider dbProvider, Expression<Func<T, object?>> property)
         {
             if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
             if (property is null) throw new ArgumentNullException(nameof(property));
@@ -539,7 +539,7 @@ namespace DeclarativeSql.Sql
         /// <param name="dbProvider"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static Query OrderByDescending<T>(DbProvider dbProvider, Expression<Func<T, object>> property)
+        public static Query OrderByDescending<T>(DbProvider dbProvider, Expression<Func<T, object?>> property)
         {
             if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
             if (property is null) throw new ArgumentNullException(nameof(property));
