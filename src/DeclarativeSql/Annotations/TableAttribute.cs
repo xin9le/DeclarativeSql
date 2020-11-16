@@ -26,7 +26,7 @@ namespace DeclarativeSql.Annotations
         /// <summary>
         /// Gets or sets the schema name.
         /// </summary>
-        public string Schema { get; set; }
+        public string? Schema { get; set; }
         #endregion
 
 

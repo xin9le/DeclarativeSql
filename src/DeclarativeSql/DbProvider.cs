@@ -21,7 +21,7 @@ namespace DeclarativeSql
         /// <summary>
         /// Gets the default schema.
         /// </summary>
-        public string DefaultSchema { get; }
+        public string? DefaultSchema { get; }
 
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace DeclarativeSql
         /// <param name="defaultSchema"></param>
         /// <param name="bindParameterPrefix"></param>
         /// <param name="keywordBracket"></param>
-        private DbProvider(DbKind database, string defaultSchema, char bindParameterPrefix, in BracketPair keywordBracket)
+        private DbProvider(DbKind database, string? defaultSchema, char bindParameterPrefix, in BracketPair keywordBracket)
         {
             this.Database = database;
             this.DefaultSchema = defaultSchema;
@@ -83,12 +83,6 @@ namespace DeclarativeSql
         /// Gets all database providers by DbKind.
         /// </summary>
         public static IReadOnlyDictionary<DbKind, DbProvider> ByDatabase { get; }
-
-
-        /// <summary>
-        /// Gets all database providers by ConnectionTypeName.
-        /// </summary>
-        internal static IReadOnlyDictionary<string, DbProvider> ByConnectionTypeName { get; }
 
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="provider"></param>
         /// <param name="timeout"></param>
-        private SystemSqlClientOperation(IDbConnection connection, IDbTransaction transaction, DbProvider provider, int? timeout)
+        private SystemSqlClientOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
 
@@ -37,7 +37,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="transaction"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static DbOperation Create(IDbConnection connection, IDbTransaction transaction, int? timeout)
+        public static DbOperation Create(IDbConnection connection, IDbTransaction? transaction, int? timeout)
             => new SystemSqlClientOperation(connection, transaction, DbProvider.SqlServer, timeout);
         #endregion
 

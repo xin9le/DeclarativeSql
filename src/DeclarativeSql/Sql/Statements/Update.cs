@@ -19,7 +19,7 @@ namespace DeclarativeSql.Sql.Statements
         /// <summary>
         /// Gets update target properties.
         /// </summary>
-        private Expression<Func<T, object>> Properties { get; }
+        private Expression<Func<T, object>>? Properties { get; }
 
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace DeclarativeSql.Sql.Statements
         /// </summary>
         /// <param name="properties">Update target properties</param>
         /// <param name="modifiedAtPriority"></param>
-        public Update(Expression<Func<T, object>> properties, ValuePriority modifiedAtPriority)
+        public Update(Expression<Func<T, object>>? properties, ValuePriority modifiedAtPriority)
         {
             this.Properties = properties;
             this.ModifiedAtPriority = modifiedAtPriority;
@@ -45,10 +45,10 @@ namespace DeclarativeSql.Sql.Statements
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             //--- Extract update target columns
-            HashSet<string> targetMemberNames = null;
+            HashSet<string>? targetMemberNames = null;
             if (this.Properties is not null)
                 targetMemberNames = ExpressionHelper.GetMemberNames(this.Properties);
 
@@ -62,27 +62,29 @@ namespace DeclarativeSql.Sql.Statements
             {
                 if (x.IsAutoIncrement) continue;
                 if (x.IsCreatedAt) continue;
-                if (!x.IsModifiedAt && targetMemberNames?.Contains(x.MemberName) == false) continue;
 
-                builder.AppendLine();
-                builder.Append("    ");
-                builder.Append(bracket.Begin);
-                builder.Append(x.ColumnName);
-                builder.Append(bracket.End);
-                builder.Append(" = ");
-                if (x.IsModifiedAt
-                    && this.ModifiedAtPriority == ValuePriority.Default
-                    && x.DefaultValue is not null)
+                if (x.IsModifiedAt || targetMemberNames is null || targetMemberNames.Contains(x.MemberName))
                 {
-                    builder.Append(x.DefaultValue);
-                    builder.Append(',');
-                }
-                else
-                {
-                    builder.Append(prefix);
-                    builder.Append(x.MemberName);
-                    builder.Append(',');
-                    //bindParameter.Add(x.MemberName, null);
+                    builder.AppendLine();
+                    builder.Append("    ");
+                    builder.Append(bracket.Begin);
+                    builder.Append(x.ColumnName);
+                    builder.Append(bracket.End);
+                    builder.Append(" = ");
+                    if (x.IsModifiedAt
+                        && this.ModifiedAtPriority == ValuePriority.Default
+                        && x.DefaultValue is not null)
+                    {
+                        builder.Append(x.DefaultValue);
+                        builder.Append(',');
+                    }
+                    else
+                    {
+                        builder.Append(prefix);
+                        builder.Append(x.MemberName);
+                        builder.Append(',');
+                        //bindParameter.Add(x.MemberName, null);
+                    }
                 }
             }
             builder.Advance(-1);  // remove last colon

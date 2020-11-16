@@ -17,7 +17,7 @@ namespace DeclarativeSql.Internals
         /// <typeparam name="T"></typeparam>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static string GetMemberName<T>(Expression<Func<T, object>> expression)
+        public static string? GetMemberName<T>(Expression<Func<T, object>> expression)
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
@@ -60,7 +60,8 @@ namespace DeclarativeSql.Internals
             else  // x => x.Id
             {
                 var name = GetMemberName(expression);
-                result.Add(name);
+                if (name is not null)
+                    result.Add(name);
             }
             return result;
 
@@ -69,8 +70,10 @@ namespace DeclarativeSql.Internals
             static void addMembers(HashSet<string> buffer, NewExpression expression)
             {
                 var members = expression.Members;
-                var count = members.Count;
-                for (var i = 0; i < count; i++)
+                if (members is null)
+                    return;
+
+                for (var i = 0; i < members.Count; i++)
                 {
                     var name = members[i].Name;
                     buffer.Add(name);
@@ -85,7 +88,7 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static MemberExpression ExtractMemberExpression(LambdaExpression expression)
+        public static MemberExpression? ExtractMemberExpression(LambdaExpression expression)
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
@@ -98,7 +101,7 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public static MemberExpression ExtractMemberExpression(Expression expression)
+        public static MemberExpression? ExtractMemberExpression(Expression expression)
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));

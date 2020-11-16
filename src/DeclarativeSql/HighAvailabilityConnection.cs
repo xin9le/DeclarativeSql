@@ -27,7 +27,7 @@ namespace DeclarativeSql
         /// Gets the connection to the master DB.
         /// </summary>
         public IDbConnection Master => this.GetConnection(ref this.master, this.MasterConnectionString, AvailabilityTarget.Master);
-        private IDbConnection master = null;
+        private IDbConnection? master = null;
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace DeclarativeSql
                 return this.GetConnection(ref this.slave, this.SlaveConnectionString, AvailabilityTarget.Slave);
             }
         }
-        private IDbConnection slave = null;
+        private IDbConnection? slave = null;
 
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace DeclarativeSql
         /// <param name="connectionString"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        private ref IDbConnection GetConnection(ref IDbConnection connection, string connectionString, AvailabilityTarget target)
+        private ref IDbConnection GetConnection(ref IDbConnection? connection, string connectionString, AvailabilityTarget target)
         {
             if (this.IsDisposed)
                 throw new ObjectDisposedException(target.ToString());
@@ -156,7 +156,7 @@ namespace DeclarativeSql
                 connection = this.CreateConnection(connectionString, target);
                 connection.Open();
             }
-            return ref connection;
+            return ref connection!;
         }
 
 
@@ -165,7 +165,7 @@ namespace DeclarativeSql
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="target"></param>
-        private void DisposeConnection(ref IDbConnection connection, AvailabilityTarget target)
+        private void DisposeConnection(ref IDbConnection? connection, AvailabilityTarget target)
         {
             if (connection is null)
                 return;

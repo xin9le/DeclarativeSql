@@ -41,7 +41,7 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets the default value.
         /// </summary>
-        public object DefaultValue { get; }
+        public object? DefaultValue { get; }
 
 
         /// <summary>

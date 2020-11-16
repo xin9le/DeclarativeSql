@@ -41,7 +41,7 @@ namespace DeclarativeSql.Sql.Clauses
 
         #region ISql implementations
         /// <inheritdoc/>
-        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+        public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
             builder.AppendLine("where");
             builder.Append("    ");
@@ -77,7 +77,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="table"></param>
             /// <param name="builder"></param>
             /// <param name="bindParameter"></param>
-            public Parser(ParameterExpression parameter, DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter bindParameter)
+            public Parser(ParameterExpression parameter, DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
             {
                 this.parameter = parameter;
                 this.dbProvider = dbProvider;
@@ -115,7 +115,7 @@ namespace DeclarativeSql.Sql.Clauses
                     case ExpressionType.NotEqual:
                         {
                             #region Local Functions
-                            (Operator @operator, string propertyName, object value) GetParameter()
+                            (Operator @operator, string propertyName, object? value) GetParameter()
                             {
                                 //--- 'x.Hoge == value'
                                 {
@@ -167,7 +167,7 @@ namespace DeclarativeSql.Sql.Clauses
                     {
                         this.BuildInClause(expression, true);
                     }
-                    else if (t.Namespace.StartsWith("System.Collections"))
+                    else if (t?.Namespace?.StartsWith("System.Collections") ?? false)
                     {
                         this.BuildInClause(expression, false);
                     }
@@ -232,7 +232,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="operator"></param>
             /// <param name="propertyName"></param>
             /// <param name="value"></param>
-            private void BuildBinary(Operator @operator, string propertyName, object value)
+            private void BuildBinary(Operator @operator, string propertyName, object? value)
             {
                 ref var builder = ref Unsafe.AsRef<Utf16ValueStringBuilder>(this.stringBuilderPointer);
                 ref var bindParameter = ref Unsafe.AsRef<BindParameter>(this.bindParameterPointer);
@@ -312,8 +312,15 @@ namespace DeclarativeSql.Sql.Clauses
                 //--- Generates element
                 //--- If there are more than 1000 in clauses, error will occur.
                 var objExpression = isExtensionMethod ? expression.Arguments[0] : expression.Object;
+                if (objExpression is null)
+                    throw new InvalidOperationException();
+
+                var elements = this.ExtractValue(objExpression) as IEnumerable;
+                if (elements is null)
+                    throw new InvalidOperationException();
+
                 var source
-                    = (this.ExtractValue(objExpression) as IEnumerable)
+                    = elements
                     .Cast<object>()
                     .Buffer(SqlConstants.InClauseUpperLimitCount)
                     .ToArray();
@@ -361,7 +368,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// </summary>
             /// <param name="expression"></param>
             /// <returns></returns>
-            private string ExtractMemberName(Expression expression)
+            private string? ExtractMemberName(Expression expression)
             {
                 var member = ExpressionHelper.ExtractMemberExpression(expression);
                 return member?.Expression == this.parameter
@@ -376,7 +383,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <param name="expression"></param>
             /// <returns></returns>
             /// <remarks>Please use only for right node.</remarks>
-            private object ExtractValue(Expression expression)
+            private object? ExtractValue(Expression expression)
             {
                 //--- Constant
                 if (expression is ConstantExpression constant)
@@ -386,7 +393,7 @@ namespace DeclarativeSql.Sql.Clauses
                 if (expression is NewExpression @new)
                 {
                     var parameters = @new.Arguments.Select(this.ExtractValue).ToArray();
-                    return @new.Constructor.Invoke(parameters);
+                    return @new.Constructor?.Invoke(parameters);
                 }
 
                 //--- new T[]
@@ -400,7 +407,7 @@ namespace DeclarativeSql.Sql.Clauses
                 {
                     var parameters = methodCall.Arguments.Select(this.ExtractValue).ToArray();
                     var obj = methodCall.Object is null
-                            ? null                             // static
+                            ? null  // static
                             : this.ExtractValue(methodCall.Object);  // instance
                     return methodCall.Method.Invoke(obj, parameters);
                 }
@@ -419,8 +426,8 @@ namespace DeclarativeSql.Sql.Clauses
                 if (expression is BinaryExpression binary)
                 if (expression.NodeType == ExpressionType.ArrayIndex)
                 {
-                    var array = (Array)this.ExtractValue(binary.Left);
-                    var index = (int)this.ExtractValue(binary.Right);
+                    var array = (Array)this.ExtractValue(binary.Left)!;
+                    var index = (int)this.ExtractValue(binary.Right)!;
                     return array.GetValue(index);
                 }
 
