@@ -15,7 +15,9 @@ This library provides attribute-based table mapping and simple database access. 
 
 ## Support Platform
 
+- .NET Framework 4.6.1+
 - .NET Standard 2.0+
+- .NET 5.0+
 
 
 
