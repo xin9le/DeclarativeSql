@@ -249,12 +249,12 @@ namespace DeclarativeSql.Sql
         #endregion
 
 
-        #region Merge
+        #region Append
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="kvs"></param>
-        public void Merge(IEnumerable<KeyValuePair<string, object?>> kvs)
+        public void Append(IEnumerable<KeyValuePair<string, object?>> kvs)
         {
             if (kvs is null)
                 throw new ArgumentNullException(nameof(kvs));
@@ -265,10 +265,10 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="obj"></param>
-        public void Merge<T>(T obj)
+        public void Append<T>(T obj)
         {
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
             var accessor = ObjectAccessor.Create(obj);
@@ -282,11 +282,11 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="targetProperties"></param>
-        public void Merge<T>(T obj, Expression<Func<T, object?>> targetProperties)
+        public void Append<T>(T obj, Expression<Func<T, object?>> targetProperties)
         {
             var memberNames = ExpressionHelper.GetMemberNames(targetProperties);
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
