@@ -300,5 +300,30 @@ namespace DeclarativeSql.Sql
             }
         }
         #endregion
+
+
+        #region Overwrite
+        /// <summary>
+        /// Overwrites by the specified values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        internal void Overwrite<T>(T obj)
+        {
+            var members = TypeAccessor.Create(typeof(T)).GetMembers();
+            var accessor = ObjectAccessor.Create(obj);
+            for (var i = 0; i < members.Count; i++)
+            {
+                var member = members[i];
+                if (!member.CanRead)
+                    continue;
+
+                if (!this.Inner.ContainsKey(member.Name))
+                    continue;
+
+                this.Inner[member.Name] = accessor[member.Name];
+            }
+        }
+        #endregion
     }
 }

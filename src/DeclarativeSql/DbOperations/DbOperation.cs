@@ -425,7 +425,9 @@ namespace DeclarativeSql.DbOperations
         public virtual int Update<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, properties, modifiedAt);
-            return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
+            if (query.BindParameter is not null)
+                query.BindParameter.Overwrite(data);
+            return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
 
@@ -441,15 +443,9 @@ namespace DeclarativeSql.DbOperations
         public virtual int Update<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
-            if (query.BindParameter is null)
-            {
-                return this.Connection.Execute(query.Statement, data, this.Transaction, this.Timeout);
-            }
-            else
-            {
-                query.BindParameter.Append(data);
-                return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
-            }
+            if (query.BindParameter is not null)
+                query.BindParameter.Overwrite(data);
+            return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
 
@@ -464,7 +460,9 @@ namespace DeclarativeSql.DbOperations
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, properties, modifiedAt);
-            return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
+            if (query.BindParameter is not null)
+                query.BindParameter.Overwrite(data);
+            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
 
 
@@ -480,15 +478,9 @@ namespace DeclarativeSql.DbOperations
         public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
-            if (query.BindParameter is null)
-            {
-                return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
-            }
-            else
-            {
-                query.BindParameter.Append(data);
-                return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
-            }
+            if (query.BindParameter is not null)
+                query.BindParameter.Overwrite(data);
+            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
         }
         #endregion
 
