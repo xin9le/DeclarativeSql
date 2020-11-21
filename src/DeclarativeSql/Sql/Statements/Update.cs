@@ -83,7 +83,8 @@ namespace DeclarativeSql.Sql.Statements
                         builder.Append(prefix);
                         builder.Append(x.MemberName);
                         builder.Append(',');
-                        //bindParameter.Add(x.MemberName, null);
+                        bindParameter ??= new BindParameter();
+                        bindParameter.Add(x.MemberName, null);
                     }
                 }
             }

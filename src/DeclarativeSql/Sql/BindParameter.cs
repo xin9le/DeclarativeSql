@@ -249,12 +249,12 @@ namespace DeclarativeSql.Sql
         #endregion
 
 
-        #region Merge
+        #region Append
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="kvs"></param>
-        public void Merge(IEnumerable<KeyValuePair<string, object?>> kvs)
+        public void Append(IEnumerable<KeyValuePair<string, object?>> kvs)
         {
             if (kvs is null)
                 throw new ArgumentNullException(nameof(kvs));
@@ -265,10 +265,10 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="obj"></param>
-        public void Merge<T>(T obj)
+        public void Append<T>(T obj)
         {
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
             var accessor = ObjectAccessor.Create(obj);
@@ -282,11 +282,11 @@ namespace DeclarativeSql.Sql
 
 
         /// <summary>
-        /// Merges the specified values.
+        /// Appends the specified values.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="targetProperties"></param>
-        public void Merge<T>(T obj, Expression<Func<T, object?>> targetProperties)
+        public void Append<T>(T obj, Expression<Func<T, object?>> targetProperties)
         {
             var memberNames = ExpressionHelper.GetMemberNames(targetProperties);
             var members = TypeAccessor.Create(typeof(T)).GetMembers();
@@ -297,6 +297,31 @@ namespace DeclarativeSql.Sql
                 if (!member.CanRead) continue;
                 if (!memberNames.Contains(member.Name)) continue;
                 this.Add(member.Name, accessor[member.Name]);
+            }
+        }
+        #endregion
+
+
+        #region Overwrite
+        /// <summary>
+        /// Overwrites by the specified values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        internal void Overwrite<T>(T obj)
+        {
+            var members = TypeAccessor.Create(typeof(T)).GetMembers();
+            var accessor = ObjectAccessor.Create(obj);
+            for (var i = 0; i < members.Count; i++)
+            {
+                var member = members[i];
+                if (!member.CanRead)
+                    continue;
+
+                if (!this.Inner.ContainsKey(member.Name))
+                    continue;
+
+                this.Inner[member.Name] = accessor[member.Name];
             }
         }
         #endregion
