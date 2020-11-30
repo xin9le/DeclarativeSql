@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using DeclarativeSql.Internals;
 using DeclarativeSql.Mapping;
 using FastMember;
@@ -87,9 +88,8 @@ namespace DeclarativeSql.DbOperations
         /// <returns>Data reader</returns>
         private DataTable SetupBulkInsert<T>(SqlBulkCopy executor, IEnumerable<T> data, ValuePriority createdAt)
         {
-            //--- Timeout
-            if (this.Timeout.HasValue)
-                executor.BulkCopyTimeout = this.Timeout.Value;
+            //--- Timeout -> CommandTimeout -> BulkCopyTimeout
+            executor.BulkCopyTimeout = this.Timeout ?? SqlMapper.Settings.CommandTimeout ?? executor.BulkCopyTimeout;
 
             //--- Target table
             var tableMappings = TableInfo.Get<T>(this.DbProvider.Database);
