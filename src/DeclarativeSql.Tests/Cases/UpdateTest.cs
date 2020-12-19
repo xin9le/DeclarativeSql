@@ -24,7 +24,8 @@ set
     [HasChildren] = @HasChildren,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+            actual.BindParameter.Should().NotBeNull();
+            actual.BindParameter!.Count.Should().Be(4);
         }
 
 
@@ -38,7 +39,8 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+            actual.BindParameter.Should().NotBeNull();
+            actual.BindParameter!.Count.Should().Be(2);
         }
 
 
@@ -52,7 +54,8 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+            actual.BindParameter.Should().NotBeNull();
+            actual.BindParameter!.Count.Should().Be(2);
         }
 
 
@@ -66,7 +69,8 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt";
             actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+            actual.BindParameter.Should().NotBeNull();
+            actual.BindParameter!.Count.Should().Be(2);
         }
 
 
@@ -80,11 +84,11 @@ set
     [名前] = @Name,
     [ModifiedAt] = @ModifiedAt
 where
-    [Age] >= @p1";
+    [Age] >= @p3";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
-            actual.BindParameter!.Count.Should().Be(1);
-            actual.BindParameter.Should().Contain("p1", 30);
+            actual.BindParameter!.Count.Should().Be(3);
+            actual.BindParameter.Should().Contain("p3", 30);
         }
     }
 }

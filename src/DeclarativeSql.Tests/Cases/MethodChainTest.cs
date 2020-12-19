@@ -79,10 +79,10 @@ set
     [HasChildren] = @HasChildren,
     [ModifiedAt] = @ModifiedAt
 where
-    [Id] = @p1";
+    [Id] = @p5";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().NotBeNull();
-            actual.BindParameter.Should().Contain("p1", 1);
+            actual.BindParameter.Should().Contain("p5", 1);
 
             Query CreateActualQuery()
             {
