@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Internals;
@@ -18,13 +19,7 @@ namespace DeclarativeSql.DbOperations
     internal class SqlServerOperation : DbOperation
     {
         #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="transaction"></param>
-        /// <param name="provider"></param>
-        /// <param name="timeout"></param>
+        /// <inheritdoc/>
         public SqlServerOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
@@ -32,13 +27,7 @@ namespace DeclarativeSql.DbOperations
 
 
         #region InsertAndGetId
-        /// <summary>
-        /// Inserts the specified data into the table and returns the automatically incremented ID.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Auto incremented ID</returns>
+        /// <inheritdoc/>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
             var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
@@ -47,17 +36,12 @@ namespace DeclarativeSql.DbOperations
         }
 
 
-        /// <summary>
-        /// Inserts the specified data into the table and returns the automatically incremented ID.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Auto incremented ID</returns>
-        public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
+        /// <inheritdoc/>
+        public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
             var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
-            var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var command = new CommandDefinition(sql, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            var reader = await this.Connection.QueryMultipleAsync(command).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
             return (long)results.First().Id;
         }
@@ -84,33 +68,20 @@ namespace DeclarativeSql.DbOperations
 
 
         #region InsertIgnore
-        /// <summary>
-        /// Inserts the specified data into the table.
-        /// Insertion processing is not performed when there is a collision with a unique constraint.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Effected row count</returns>
+        /// <inheritdoc/>
         public override int InsertIgnore<T>(T data, ValuePriority createdAt)
         {
-            var query = this.CreateInsertIgnoreQuery<T>(createdAt);
-            return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var sql = this.CreateInsertIgnoreSql<T>(createdAt);
+            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
 
-        /// <summary>
-        /// Inserts the specified data into the table.
-        /// Insertion processing is not performed when there is a collision with a unique constraint.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Effected row count</returns>
-        public override Task<int> InsertIgnoreAsync<T>(T data, ValuePriority createdAt)
+        /// <inheritdoc/>
+        public override Task<int> InsertIgnoreAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
-            var query = this.CreateInsertIgnoreQuery<T>(createdAt);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var sql = this.CreateInsertIgnoreSql<T>(createdAt);
+            var command = new CommandDefinition(sql, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
 
 
@@ -129,12 +100,12 @@ namespace DeclarativeSql.DbOperations
         ///     insert ([Age], [Id], [Name], [CreatedAt], [ModifiedAt])
         ///     values (@Age, @Id, @Name, @CreatedAt, @CreatedAt);
         /// </remarks>
-        private Query CreateInsertIgnoreQuery<T>(ValuePriority createdAtPriority)
+        private string CreateInsertIgnoreSql<T>(ValuePriority createdAtPriority)
         {
             //--- 自動採番列以外に一意制約がない場合は通常の insert 文で OK
             var table = TableInfo.Get<T>(this.DbProvider.Database);
             if (!table.Columns.Any(x => !x.IsAutoIncrement && x.IsUnique))
-                return QueryBuilder.Insert<T>(this.DbProvider, createdAtPriority);
+                return QueryBuilder.Insert<T>(this.DbProvider, createdAtPriority).Statement;
 
             //--- 対象となる列
             var selectColumns
@@ -224,39 +195,26 @@ namespace DeclarativeSql.DbOperations
             builder.Append(");");
 
             //--- ok
-            return new Query(builder.ToString(), null);
+            return builder.ToString();
         }
         #endregion
 
 
         #region InsertIgnoreMulti
-        /// <summary>
-        /// Inserts the specified data into the table.
-        /// Insertion processing is not performed when there is a collision with a unique constraint.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Effected row count</returns>
+        /// <inheritdoc/>
         public override int InsertIgnoreMulti<T>(IEnumerable<T> data, ValuePriority createdAt)
         {
-            var query = this.CreateInsertIgnoreQuery<T>(createdAt);
-            return this.Connection.Execute(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var sql = this.CreateInsertIgnoreSql<T>(createdAt);
+            return this.Connection.Execute(sql, data, this.Transaction, this.Timeout);
         }
 
 
-        /// <summary>
-        /// Inserts the specified data into the table.
-        /// Insertion processing is not performed when there is a collision with a unique constraint.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Effected row count</returns>
-        public override Task<int> InsertIgnoreMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
+        /// <inheritdoc/>
+        public override Task<int> InsertIgnoreMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
-            var query = this.CreateInsertIgnoreQuery<T>(createdAt);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var sql = this.CreateInsertIgnoreSql<T>(createdAt);
+            var command = new CommandDefinition(sql, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
     }

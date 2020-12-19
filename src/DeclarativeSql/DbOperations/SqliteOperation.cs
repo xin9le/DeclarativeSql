@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Sql;
@@ -14,13 +15,7 @@ namespace DeclarativeSql.DbOperations
     internal class SqliteOperation : DbOperation
     {
         #region Constructors
-        /// <summary>
-        /// Creates instance.
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="transaction"></param>
-        /// <param name="provider"></param>
-        /// <param name="timeout"></param>
+        /// <inheritdoc/>
         public SqliteOperation(IDbConnection connection, IDbTransaction? transaction, DbProvider provider, int? timeout)
             : base(connection, transaction, provider, timeout)
         { }
@@ -28,13 +23,7 @@ namespace DeclarativeSql.DbOperations
 
 
         #region InsertAndGetId
-        /// <summary>
-        /// Inserts the specified data into the table and returns the automatically incremented ID.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Auto incremented ID</returns>
+        /// <inheritdoc/>
         public override long InsertAndGetId<T>(T data, ValuePriority createdAt)
         {
             var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
@@ -43,17 +32,12 @@ namespace DeclarativeSql.DbOperations
         }
 
 
-        /// <summary>
-        /// Inserts the specified data into the table and returns the automatically incremented ID.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="createdAt"></param>
-        /// <returns>Auto incremented ID</returns>
-        public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
+        /// <inheritdoc/>
+        public override async Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
             var sql = this.CreateInsertAndGetIdSql<T>(createdAt);
-            var reader = await this.Connection.QueryMultipleAsync(sql, data, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var command = new CommandDefinition(sql, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            var reader = await this.Connection.QueryMultipleAsync(command).ConfigureAwait(false);
             var results = await reader.ReadAsync().ConfigureAwait(false);
             return (long)results.First().Id;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Internals;
@@ -67,13 +68,14 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
+        public override async Task<int> BulkInsertAsync<T>(IEnumerable<T> data, ValuePriority createdAt, CancellationToken cancellationToken = default)
         {
             using var executor = new SqlBulkCopy(this.Connection as SqlConnection, SqlBulkCopyOptions.Default, this.Transaction as SqlTransaction);
             data = data.Materialize();
             var param = this.SetupBulkInsert(executor, data, createdAt);
-            await executor.WriteToServerAsync(param).ConfigureAwait(false);
+            await executor.WriteToServerAsync(param, cancellationToken).ConfigureAwait(false);
             return data.Count();
         }
 

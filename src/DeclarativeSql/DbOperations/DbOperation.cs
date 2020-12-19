@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using DeclarativeSql.Sql;
@@ -173,11 +174,13 @@ namespace DeclarativeSql.DbOperations
         /// Gets the number of records in the specified table.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="cancellationToken"></param>
         /// <returns>Record count</returns>
-        public virtual Task<ulong> CountAsync<T>()
+        public virtual Task<ulong> CountAsync<T>(CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Count<T>(this.DbProvider);
-            return this.Connection.ExecuteScalarAsync<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteScalarAsync<ulong>(command);
         }
 
 
@@ -186,11 +189,13 @@ namespace DeclarativeSql.DbOperations
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="predicate"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Record count</returns>
-        public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate)
+        public virtual Task<ulong> CountAsync<T>(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Count(this.DbProvider, predicate);
-            return this.Connection.ExecuteScalarAsync<ulong>(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteScalarAsync<ulong>(command);
         }
         #endregion
 
@@ -229,10 +234,11 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object?>>? properties)
+        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object?>>? properties, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Select(this.DbProvider, properties);
-            var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            var result = await this.Connection.QueryAsync<T>(command).ConfigureAwait(false);
             return (List<T>)result;
         }
 
@@ -244,10 +250,11 @@ namespace DeclarativeSql.DbOperations
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties)
+        public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Select(this.DbProvider, predicate, properties);
-            var result = await this.Connection.QueryAsync<T>(query.Statement, query.BindParameter, this.Transaction, this.Timeout).ConfigureAwait(false);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            var result = await this.Connection.QueryAsync<T>(command).ConfigureAwait(false);
             return (List<T>)result;
         }
         #endregion
@@ -274,11 +281,13 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> InsertAsync<T>(T data, ValuePriority createdAt)
+        public virtual Task<int> InsertAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
-            return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
 
@@ -304,11 +313,13 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> InsertMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
+        public virtual Task<int> InsertMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Insert<T>(this.DbProvider, createdAt);
-            return this.Connection.ExecuteAsync(query.Statement, data, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, data, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
 
@@ -331,8 +342,9 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
+        public virtual Task<int> BulkInsertAsync<T>(IEnumerable<T> data, ValuePriority createdAt, CancellationToken cancellationToken)
             => throw new NotSupportedException();
         #endregion
 
@@ -355,8 +367,9 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Auto incremented ID</returns>
-        public virtual Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt)
+        public virtual Task<long> InsertAndGetIdAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
             => throw new NotSupportedException();
         #endregion
 
@@ -381,8 +394,9 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected row count</returns>
-        public virtual Task<int> InsertIgnoreAsync<T>(T data, ValuePriority createdAt)
+        public virtual Task<int> InsertIgnoreAsync<T>(T data, ValuePriority createdAt, CancellationToken cancellationToken)
             => throw new NotSupportedException();
         #endregion
 
@@ -407,8 +421,9 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected row count</returns>
-        public virtual Task<int> InsertIgnoreMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt)
+        public virtual Task<int> InsertIgnoreMultiAsync<T>(IEnumerable<T> data, ValuePriority createdAt, CancellationToken cancellationToken)
             => throw new NotSupportedException();
         #endregion
 
@@ -456,13 +471,16 @@ namespace DeclarativeSql.DbOperations
         /// <param name="data"></param>
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Update(this.DbProvider, properties, modifiedAt);
             if (query.BindParameter is not null)
                 query.BindParameter.Overwrite(data);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
 
 
@@ -474,13 +492,16 @@ namespace DeclarativeSql.DbOperations
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
         /// <param name="modifiedAt"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt)
+        public virtual Task<int> UpdateAsync<T>(T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, ValuePriority modifiedAt, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Update(this.DbProvider, predicate, properties, modifiedAt);
             if (query.BindParameter is not null)
                 query.BindParameter.Overwrite(data);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
 
@@ -515,11 +536,13 @@ namespace DeclarativeSql.DbOperations
         /// Deletes all records from the specified table.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> DeleteAsync<T>()
+        public virtual Task<int> DeleteAsync<T>(CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Delete<T>(this.DbProvider);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
 
 
@@ -528,11 +551,13 @@ namespace DeclarativeSql.DbOperations
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="predicate"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
-        public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate)
+        public virtual Task<int> DeleteAsync<T>(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Delete(this.DbProvider, predicate);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
 
@@ -554,11 +579,13 @@ namespace DeclarativeSql.DbOperations
         /// Truncates the specified table.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="cancellationToken"></param>
         /// <returns>-1</returns>
-        public virtual Task<int> TruncateAsync<T>()
+        public virtual Task<int> TruncateAsync<T>(CancellationToken cancellationToken)
         {
             var query = QueryBuilder.Truncate<T>(this.DbProvider);
-            return this.Connection.ExecuteAsync(query.Statement, query.BindParameter, this.Transaction, this.Timeout);
+            var command = new CommandDefinition(query.Statement, query.BindParameter, this.Transaction, this.Timeout, null, CommandFlags.Buffered, cancellationToken);
+            return this.Connection.ExecuteAsync(command);
         }
         #endregion
     }
