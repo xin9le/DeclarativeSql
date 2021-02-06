@@ -12,7 +12,7 @@ namespace DeclarativeSql.Sql
     /// <summary>
     /// Provides query builder.
     /// </summary>
-    public struct QueryBuilder<T> : IDisposable
+    public ref struct QueryBuilder<T> //: IDisposable
     {
         #region Fields
         private readonly DbProvider dbProvider;
@@ -27,6 +27,7 @@ namespace DeclarativeSql.Sql
         /// Creates instance.
         /// </summary>
         /// <param name="provider"></param>
+        /// <remarks>This instance must be call <see cref="Dispose"/> method after <see cref="Build"/>.</remarks>
         public QueryBuilder(DbProvider provider)
         {
             this.dbProvider = provider ?? throw new ArgumentNullException(nameof(provider));
