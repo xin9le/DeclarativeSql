@@ -32,9 +32,6 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static int? CountIfMaterialized<T>(this IEnumerable<T> source)
         {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-
             if (source == Enumerable.Empty<T>()) return 0;
             if (source == Array.Empty<T>()) return 0;
             if (source is ICollection<T> a) return a.Count;
@@ -75,9 +72,8 @@ namespace DeclarativeSql.Internals
         /// <returns>Sequence of buffers containing source sequence elements.</returns>
         public static IEnumerable<IList<TSource>> Buffer<TSource>(this IEnumerable<TSource> source, int count)
         {
-            if (source is null) throw new ArgumentNullException(nameof(source));
-            if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
-
+            if (count <= 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
             return BufferCore(source, count, count);
         }
 
@@ -92,10 +88,8 @@ namespace DeclarativeSql.Internals
         /// <returns>Sequence of buffers containing source sequence elements.</returns>
         public static IEnumerable<IList<TSource>> Buffer<TSource>(this IEnumerable<TSource> source, int count, int skip)
         {
-            if (source is null) throw new ArgumentNullException(nameof(source));
             if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count));
             if (skip <= 0) throw new ArgumentOutOfRangeException(nameof(skip));
-
             return BufferCore(source, count, skip);
         }
 

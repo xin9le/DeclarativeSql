@@ -19,9 +19,6 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static string? GetMemberName<T>(Expression<Func<T, object?>> expression)
         {
-            if (expression is null)
-                throw new ArgumentNullException(nameof(expression));
-
             var member = ExtractMemberExpression(expression);
             return member?.Member.Name;
         }
@@ -35,9 +32,6 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static HashSet<string> GetMemberNames<T>(Expression<Func<T, object?>> expression)
         {
-            if (expression is null)
-                throw new ArgumentNullException(nameof(expression));
-
             var result = new HashSet<string>();
             if (expression.Body is UnaryExpression unary)  // for VB.NET
             {
@@ -89,11 +83,7 @@ namespace DeclarativeSql.Internals
         /// <param name="expression"></param>
         /// <returns></returns>
         public static MemberExpression? ExtractMemberExpression(LambdaExpression expression)
-        {
-            if (expression is null)
-                throw new ArgumentNullException(nameof(expression));
-            return ExtractMemberExpression(expression.Body);
-        }
+            => ExtractMemberExpression(expression.Body);
 
 
         /// <summary>
@@ -103,9 +93,6 @@ namespace DeclarativeSql.Internals
         /// <returns></returns>
         public static MemberExpression? ExtractMemberExpression(Expression expression)
         {
-            if (expression is null)
-                throw new ArgumentNullException(nameof(expression));
-
             if (expression is MemberExpression member1)
                 return member1;
 

@@ -30,7 +30,7 @@ namespace DeclarativeSql.Sql
         /// <remarks>This instance must be call <see cref="Dispose"/> method after <see cref="Build"/>.</remarks>
         public QueryBuilder(DbProvider provider)
         {
-            this.dbProvider = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.dbProvider = provider;
             this.table = TableInfo.Get<T>(provider.Database);
             this.stringBuilder = ZString.CreateStringBuilder();
             this.bindParameter = null;
@@ -144,9 +144,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public void Where(Expression<Func<T, bool>> predicate)
         {
-            if (predicate is null)
-                throw new ArgumentNullException(nameof(predicate));
-
             this.AppendLineIfNotEmpty();
             var x = new Where<T>(predicate);
             x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
@@ -160,9 +157,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public void OrderBy(Expression<Func<T, object?>> property)
         {
-            if (property is null)
-                throw new ArgumentNullException(nameof(property));
-
             this.AppendLineIfNotEmpty();
             var x = new OrderBy<T>(property, true);
             x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
@@ -176,9 +170,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public void OrderByDescending(Expression<Func<T, object?>> property)
         {
-            if (property is null)
-                throw new ArgumentNullException(nameof(property));
-
             this.AppendLineIfNotEmpty();
             var x = new OrderBy<T>(property, false);
             x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
@@ -192,9 +183,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public void ThenBy(Expression<Func<T, object?>> property)
         {
-            if (property is null)
-                throw new ArgumentNullException(nameof(property));
-
             this.AppendLineIfNotEmpty(',');
             var x = new ThenBy<T>(property, true);
             x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
@@ -208,9 +196,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public void ThenByDescending(Expression<Func<T, object?>> property)
         {
-            if (property is null)
-                throw new ArgumentNullException(nameof(property));
-
             this.AppendLineIfNotEmpty(',');
             var x = new ThenBy<T>(property, false);
             x.Build(this.dbProvider, this.table, ref this.stringBuilder, ref this.bindParameter);
@@ -282,9 +267,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Count<T>(DbProvider dbProvider)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Count();
@@ -302,9 +284,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Count<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Count();
@@ -325,9 +304,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, object?>>? properties = null)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Select(properties);
@@ -346,9 +322,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Select<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Select(properties);
@@ -369,9 +342,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Insert<T>(DbProvider dbProvider, ValuePriority createdAtPriority = default)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Insert(createdAtPriority);
@@ -392,9 +362,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Update(properties, modifiedAt);
@@ -414,9 +381,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Update<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Update(properties, modifiedAt);
@@ -436,9 +400,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Delete<T>(DbProvider dbProvider)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Delete();
@@ -456,9 +417,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Delete<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Delete();
@@ -478,9 +436,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Truncate<T>(DbProvider dbProvider)
         {
-            if (dbProvider is null)
-                throw new ArgumentNullException(nameof(dbProvider));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Truncate();
@@ -500,9 +455,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query Where<T>(DbProvider dbProvider, Expression<Func<T, bool>> predicate)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.Where(predicate);
@@ -522,9 +474,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query OrderBy<T>(DbProvider dbProvider, Expression<Func<T, object?>> property)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (property is null) throw new ArgumentNullException(nameof(property));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.OrderBy(property);
@@ -542,9 +491,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query OrderByDescending<T>(DbProvider dbProvider, Expression<Func<T, object?>> property)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (property is null) throw new ArgumentNullException(nameof(property));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.OrderByDescending(property);
@@ -565,9 +511,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query ThenBy<T>(DbProvider dbProvider, Expression<Func<T, object>> property)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (property is null) throw new ArgumentNullException(nameof(property));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.ThenBy(property);
@@ -585,9 +528,6 @@ namespace DeclarativeSql.Sql
         /// <returns></returns>
         public static Query ThenByDescending<T>(DbProvider dbProvider, Expression<Func<T, object>> property)
         {
-            if (dbProvider is null) throw new ArgumentNullException(nameof(dbProvider));
-            if (property is null) throw new ArgumentNullException(nameof(property));
-
             using (var builder = new QueryBuilder<T>(dbProvider))
             {
                 builder.TheThenByDescendingnBy(property);

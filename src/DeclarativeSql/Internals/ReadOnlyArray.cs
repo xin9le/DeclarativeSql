@@ -24,7 +24,7 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <param name="source"></param>
         public ReadOnlyArray(T[] source)
-            => this.source = source ?? throw new ArgumentNullException(nameof(source));
+            => this.source = source;
         #endregion
 
 
@@ -34,7 +34,7 @@ namespace DeclarativeSql.Internals
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public Enumerator GetEnumerator()
-            => new Enumerator(this.source);
+            => new(this.source);
         #endregion
 
 
@@ -180,14 +180,9 @@ namespace DeclarativeSql.Internals
         /// <param name="source"></param>
         /// <returns></returns>
         public static ReadOnlyArray<T> ToReadOnlyArray<T>(this IEnumerable<T> source)
-        {
-            if (source is null)
-                throw new ArgumentNullException(nameof(source));
-
-            return source is T[] array
-                ? new ReadOnlyArray<T>(array)
-                : new ReadOnlyArray<T>(source.ToArray());
-        }
+            => source is T[] array
+            ? new(array)
+            : new(source.ToArray());
 
 
         /// <summary>
@@ -197,6 +192,6 @@ namespace DeclarativeSql.Internals
         /// <param name="source"></param>
         /// <returns></returns>
         public static ReadOnlyArray<T> AsReadOnly<T>(this T[] source)
-            => new ReadOnlyArray<T>(source);
+            => new(source);
     }
 }

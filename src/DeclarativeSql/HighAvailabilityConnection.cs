@@ -71,8 +71,8 @@ namespace DeclarativeSql
         /// <param name="forceMaster">Use the master DB forcibly.</param>
         public HighAvailabilityConnection(string masterConnectionString, string slaveConnectionString, bool forceMaster = false)
         {
-            this.MasterConnectionString = masterConnectionString ?? throw new ArgumentNullException(nameof(masterConnectionString));
-            this.SlaveConnectionString = slaveConnectionString ?? throw new ArgumentNullException(nameof(slaveConnectionString));
+            this.MasterConnectionString = masterConnectionString;
+            this.SlaveConnectionString = slaveConnectionString;
             this.ForceMaster = forceMaster;
         }
 

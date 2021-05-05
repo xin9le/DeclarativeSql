@@ -36,7 +36,7 @@ namespace DeclarativeSql.Sql
         /// </summary>
         /// <param name="source"></param>
         public BindParameter(IDictionary<string, object?> source)
-            => this.Inner = source ?? throw new ArgumentNullException(nameof(source));
+            => this.Inner = source;
         #endregion
 
 
@@ -256,9 +256,6 @@ namespace DeclarativeSql.Sql
         /// <param name="kvs"></param>
         public void Append(IEnumerable<KeyValuePair<string, object?>> kvs)
         {
-            if (kvs is null)
-                throw new ArgumentNullException(nameof(kvs));
-
             foreach (var x in kvs)
                 this.Add(x.Key, x.Value);
         }

@@ -15,12 +15,7 @@ namespace DeclarativeSql.Internals
         /// <param name="type"></param>
         /// <returns></returns>
         public static bool IsNullable(this Type type)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
-
-            return type.IsGenericType
-                && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
+            => type.IsGenericType
+            && type.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 }

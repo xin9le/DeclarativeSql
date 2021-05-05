@@ -35,7 +35,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// <param name="parent"></param>
         /// <param name="predicate"></param>
         public Where(Expression<Func<T, bool>> predicate)
-            => this.Predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+            => this.Predicate = predicate;
         #endregion
 
 

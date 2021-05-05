@@ -78,11 +78,7 @@ namespace DeclarativeSql.DbOperations
         /// <param name="timeout"></param>
         /// <returns></returns>
         public static DbOperation Create(IDbConnection connection, int? timeout)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return Create(connection, null, timeout);
-        }
+            => Create(connection, null, timeout);
 
 
         /// <summary>
@@ -93,12 +89,8 @@ namespace DeclarativeSql.DbOperations
         /// <returns></returns>
         public static DbOperation Create(IDbTransaction transaction, int? timeout)
         {
-            if (transaction is null)
-                throw new ArgumentNullException(nameof(transaction));
-
             if (transaction.Connection is null)
                 throw new ArgumentException("IDbTransaction.Connection is null.");
-
             return Create(transaction.Connection, transaction, timeout);
         }
 

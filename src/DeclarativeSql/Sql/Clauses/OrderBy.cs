@@ -36,7 +36,7 @@ namespace DeclarativeSql.Sql.Clauses
         /// <param name="isAscending"></param>
         public OrderBy(Expression<Func<T, object?>> property, bool isAscending)
         {
-            this.Property = property ?? throw new ArgumentNullException(nameof(property));
+            this.Property = property;
             this.IsAscending = isAscending;
         }
         #endregion

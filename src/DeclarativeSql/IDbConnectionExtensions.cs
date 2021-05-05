@@ -24,11 +24,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Record count</returns>
         public static ulong Count<T>(this IDbConnection connection, int? timeout = null)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).Count<T>();
-        }
+            => DbOperation.Create(connection, timeout).Count<T>();
 
 
         /// <summary>
@@ -40,11 +36,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Record count</returns>
         public static ulong Count<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).Count(predicate);
-        }
+            => DbOperation.Create(connection, timeout).Count(predicate);
 
 
         /// <summary>
@@ -56,11 +48,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Record count</returns>
         public static Task<ulong> CountAsync<T>(this IDbConnection connection, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).CountAsync<T>(cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).CountAsync<T>(cancellationToken);
 
 
         /// <summary>
@@ -73,11 +61,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Record count</returns>
         public static Task<ulong> CountAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).CountAsync(predicate, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).CountAsync(predicate, cancellationToken);
         #endregion
 
 
@@ -91,11 +75,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns></returns>
         public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).Select(properties);
-        }
+            => DbOperation.Create(connection, timeout).Select(properties);
 
 
         /// <summary>
@@ -108,11 +88,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns></returns>
         public static List<T> Select<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).Select(predicate, properties);
-        }
+            => DbOperation.Create(connection, timeout).Select(predicate, properties);
 
 
         /// <summary>
@@ -125,11 +101,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, object?>>? properties = null, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).SelectAsync(properties, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).SelectAsync(properties, cancellationToken);
 
 
         /// <summary>
@@ -143,11 +115,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public static Task<List<T>> SelectAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).SelectAsync(predicate, properties, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).SelectAsync(predicate, properties, cancellationToken);
         #endregion
 
 
@@ -162,11 +130,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int Insert<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).Insert(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).Insert(data, createdAt);
 
 
         /// <summary>
@@ -180,11 +144,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> InsertAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).InsertAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -199,11 +159,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int InsertMulti<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertMulti(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).InsertMulti(data, createdAt);
 
 
         /// <summary>
@@ -217,11 +173,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> InsertMultiAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertMultiAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).InsertMultiAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -236,11 +188,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int BulkInsert<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).BulkInsert(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).BulkInsert(data, createdAt);
 
 
         /// <summary>
@@ -254,11 +202,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> BulkInsertAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).BulkInsertAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).BulkInsertAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -272,11 +216,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Auto incremented ID</returns>
         public static long InsertAndGetId<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertAndGetId(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).InsertAndGetId(data, createdAt);
 
 
         /// <summary>
@@ -288,11 +228,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Auto incremented ID</returns>
         public static Task<long> InsertAndGetIdAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertAndGetIdAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).InsertAndGetIdAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -308,11 +244,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected row count</returns>
         public static int InsertIgnore<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertIgnore(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).InsertIgnore(data, createdAt);
 
 
         /// <summary>
@@ -327,11 +259,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected row count</returns>
         public static Task<int> InsertIgnoreAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertIgnoreAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).InsertIgnoreAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -347,11 +275,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected row count</returns>
         public static int InsertIgnoreMulti<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertIgnoreMulti(data, createdAt);
-        }
+            => DbOperation.Create(connection, timeout).InsertIgnoreMulti(data, createdAt);
 
 
         /// <summary>
@@ -366,11 +290,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected row count</returns>
         public static Task<int> InsertIgnoreMultiAsync<T>(this IDbConnection connection, IEnumerable<T> data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).InsertIgnoreMultiAsync(data, createdAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).InsertIgnoreMultiAsync(data, createdAt, cancellationToken);
         #endregion
 
 
@@ -386,11 +306,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).Update(data, properties, modifiedAt);
-        }
+            => DbOperation.Create(connection, timeout).Update(data, properties, modifiedAt);
 
 
         /// <summary>
@@ -405,12 +321,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int Update<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).Update(data, predicate, properties, modifiedAt);
-        }
+            => DbOperation.Create(connection, timeout).Update(data, predicate, properties, modifiedAt);
 
 
         /// <summary>
@@ -425,11 +336,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            return DbOperation.Create(connection, timeout).UpdateAsync(data, properties, modifiedAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).UpdateAsync(data, properties, modifiedAt, cancellationToken);
 
 
         /// <summary>
@@ -445,12 +352,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> UpdateAsync<T>(this IDbConnection connection, T data, Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties = null, ValuePriority modifiedAt = default, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (data is null) throw new ArgumentNullException(nameof(data));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).UpdateAsync(data, predicate, properties, modifiedAt, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).UpdateAsync(data, predicate, properties, modifiedAt, cancellationToken);
         #endregion
 
 
@@ -463,11 +365,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int Delete<T>(this IDbConnection connection, int? timeout = null)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).Delete<T>();
-        }
+            => DbOperation.Create(connection, timeout).Delete<T>();
 
 
         /// <summary>
@@ -479,11 +377,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>Effected rows count</returns>
         public static int Delete<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).Delete(predicate);
-        }
+            => DbOperation.Create(connection, timeout).Delete(predicate);
 
 
         /// <summary>
@@ -495,11 +389,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> DeleteAsync<T>(this IDbConnection connection, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).DeleteAsync<T>(cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).DeleteAsync<T>(cancellationToken);
 
 
         /// <summary>
@@ -512,11 +402,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>Effected rows count</returns>
         public static Task<int> DeleteAsync<T>(this IDbConnection connection, Expression<Func<T, bool>> predicate, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null) throw new ArgumentNullException(nameof(connection));
-            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
-            return DbOperation.Create(connection, timeout).DeleteAsync(predicate, cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).DeleteAsync(predicate, cancellationToken);
         #endregion
 
 
@@ -529,11 +415,7 @@ namespace DeclarativeSql
         /// <param name="timeout"></param>
         /// <returns>-1</returns>
         public static int Truncate<T>(this IDbConnection connection, int? timeout = null)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).Truncate<T>();
-        }
+            => DbOperation.Create(connection, timeout).Truncate<T>();
 
 
         /// <summary>
@@ -545,11 +427,7 @@ namespace DeclarativeSql
         /// <param name="cancellationToken"></param>
         /// <returns>-1</returns>
         public static Task<int> TruncateAsync<T>(this IDbConnection connection, int? timeout = null, CancellationToken cancellationToken = default)
-        {
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-            return DbOperation.Create(connection, timeout).TruncateAsync<T>(cancellationToken);
-        }
+            => DbOperation.Create(connection, timeout).TruncateAsync<T>(cancellationToken);
         #endregion
     }
 }
