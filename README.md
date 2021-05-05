@@ -246,12 +246,12 @@ These CRUD methods are provided not only synchronous but also asynchronous.
 
 ### Enable environment specific feature
 
-`BulkInsert` / `InsertAndGetId` (etc.) methods are environment specific feature. If you want to use them, please call follows once.
+`BulkInsert` / `InsertAndGetId` (etc.) methods are environment specific feature. If you want to use them, please install following package.
 
 
-```cs
-MicrosoftSqlClientInitializer.Initialize();
-SystemSqlClientInitializer.Initialize();
+```
+dotnet add package DeclarativeSql.MicrosoftSqlClient
+dotnet add package DeclarativeSql.SystemSqlClient
 ```
 
 
@@ -295,9 +295,7 @@ Of course, by using the same connection string for the master database and for t
 Getting started from downloading [NuGet](https://www.nuget.org/packages/DeclarativeSql) package.
 
 ```
-PM> Install-Package DeclarativeSql
-PM> Install-Package DeclarativeSql.MicrosoftSqlClient
-PM> Install-Package DeclarativeSql.SystemSqlClient
+dotnet add package DeclarativeSql
 ```
 
 
