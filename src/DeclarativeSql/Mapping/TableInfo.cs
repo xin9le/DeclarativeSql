@@ -19,43 +19,43 @@ namespace DeclarativeSql.Mapping
         /// <summary>
         /// Gets the kind of database.
         /// </summary>
-        public DbKind Database { get; private set; }
+        public DbKind Database { get; private init; }
 
 
         /// <summary>
         /// Gets the type that is mapped to the table.
         /// </summary>
-        public Type Type { get; private set; }
+        public Type Type { get; private init; }
 
 
         /// <summary>
         /// Gets the schema name.
         /// </summary>
-        public string? Schema { get; private set; }
+        public string? Schema { get; private init; }
 
 
         /// <summary>
         /// Gets the table name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; private init; }
 
 
         /// <summary>
         /// Gets the full table name.
         /// </summary>
-        public string FullName { get; private set; }
+        public string FullName { get; private init; }
 
 
         /// <summary>
         /// Gets the column mapping information.
         /// </summary>
-        public ReadOnlyArray<ColumnInfo> Columns { get; private set; }
+        public ReadOnlyArray<ColumnInfo> Columns { get; private init; }
 
 
         /// <summary>
         /// Gets the column mapping information by member name.
         /// </summary>
-        public FrozenStringKeyDictionary<ColumnInfo> ColumnsByMemberName { get; private set; }
+        public FrozenStringKeyDictionary<ColumnInfo> ColumnsByMemberName { get; private init; }
         #endregion
 
 
