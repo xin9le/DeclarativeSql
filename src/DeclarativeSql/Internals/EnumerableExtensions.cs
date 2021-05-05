@@ -25,7 +25,7 @@ namespace DeclarativeSql.Internals
 
         #region Materialize
         /// <summary>
-        /// Gets collection count if <see cref="source"/> is materialized, otherwise null.
+        /// Gets collection count if <paramref name="source"/> is materialized, otherwise null.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -42,7 +42,7 @@ namespace DeclarativeSql.Internals
 
 
         /// <summary>
-        /// Gets collection if <see cref="source"/> is materialized, otherwise ToArray();ed collection.
+        /// Gets collection if <paramref name="source"/> is materialized, otherwise ToArray();ed collection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>

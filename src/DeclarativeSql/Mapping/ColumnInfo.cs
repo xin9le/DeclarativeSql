@@ -114,6 +114,7 @@ namespace DeclarativeSql.Mapping
         /// </summary>
         /// <param name="database"></param>
         /// <param name="member"></param>
+        /// <param name="memberType"></param>
         private ColumnInfo(DbKind database, MemberInfo member, Type memberType)
         {
             var column = member.GetCustomAttributes<ColumnAttribute>(true).FirstOrDefault(x => x.Database == database);

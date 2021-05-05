@@ -211,6 +211,7 @@ namespace DeclarativeSql
         /// Inserts the specified data into the table and returns the automatically incremented ID.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
         /// <param name="timeout"></param>
@@ -223,8 +224,10 @@ namespace DeclarativeSql
         /// Inserts the specified data into the table and returns the automatically incremented ID.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="connection"></param>
         /// <param name="data"></param>
         /// <param name="createdAt"></param>
+        /// <param name="timeout"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Auto incremented ID</returns>
         public static Task<long> InsertAndGetIdAsync<T>(this IDbConnection connection, T data, ValuePriority createdAt = default, int? timeout = null, CancellationToken cancellationToken = default)

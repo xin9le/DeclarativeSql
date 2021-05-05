@@ -32,7 +32,6 @@ namespace DeclarativeSql.Sql.Clauses
         /// <summary>
         /// Creates instance.
         /// </summary>
-        /// <param name="parent"></param>
         /// <param name="predicate"></param>
         public Where(Expression<Func<T, bool>> predicate)
             => this.Predicate = predicate;
@@ -301,6 +300,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// Build in clause.
             /// </summary>
             /// <param name="expression"></param>
+            /// <param name="isExtensionMethod"></param>
             private void BuildInClause(MethodCallExpression expression, bool isExtensionMethod)
             {
                 //--- Gets property name
@@ -481,7 +481,7 @@ namespace DeclarativeSql.Sql.Clauses
             Unknown = 0,
 
             /// <summary>
-            /// a && b
+            /// a &amp;&amp; b
             /// </summary>
             AndAlso,
 
@@ -491,12 +491,12 @@ namespace DeclarativeSql.Sql.Clauses
             OrElse,
 
             /// <summary>
-            /// a < b
+            /// a &lt; b
             /// </summary>
             LessThan,
 
             /// <summary>
-            /// a <= b
+            /// a &lt;= b
             /// </summary>
             LessThanOrEqual,
 
@@ -555,7 +555,7 @@ namespace DeclarativeSql.Sql.Clauses
             /// <summary>
             /// Inverts the specified operator.
             /// </summary>
-            /// <param name="@operator"></param>
+            /// <param name="operator"></param>
             /// <returns></returns>
             public static Operator Flip(Operator @operator)
                 => @operator switch

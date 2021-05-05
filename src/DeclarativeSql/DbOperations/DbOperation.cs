@@ -225,6 +225,7 @@ namespace DeclarativeSql.DbOperations
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="properties"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, object?>>? properties, CancellationToken cancellationToken)
         {
@@ -241,6 +242,7 @@ namespace DeclarativeSql.DbOperations
         /// <typeparam name="T"></typeparam>
         /// <param name="predicate"></param>
         /// <param name="properties"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual async Task<List<T>> SelectAsync<T>(Expression<Func<T, bool>> predicate, Expression<Func<T, object?>>? properties, CancellationToken cancellationToken)
         {

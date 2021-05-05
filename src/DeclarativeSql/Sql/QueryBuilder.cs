@@ -216,7 +216,6 @@ namespace DeclarativeSql.Sql
         /// <summary>
         /// Append default line terminator to the end.
         /// </summary>
-        /// <param name="value"></param>
         internal void AppendLine()
             => this.stringBuilder.AppendLine();
 
