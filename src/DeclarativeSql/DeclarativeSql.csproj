@@ -5,6 +5,7 @@
         <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- NuGet -->
         <IsPackable>true</IsPackable>
         <PackageId>DeclarativeSql</PackageId>

@@ -5,6 +5,7 @@
         <RootNamespace>DeclarativeSql</RootNamespace>
         <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- NuGet -->
         <IsPackable>true</IsPackable>
         <PackageId>DeclarativeSql.SystemSqlClient</PackageId>
