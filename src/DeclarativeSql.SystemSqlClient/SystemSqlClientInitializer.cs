@@ -9,7 +9,7 @@ namespace DeclarativeSql
     /// <summary>
     /// Provides initializer to use System.Data.SqlClient specific feature.
     /// </summary>
-    internal static class SystemSqlClientInitializer
+    public static class SystemSqlClientInitializer
     {
         /// <summary>
         /// Initialize.
