@@ -246,7 +246,7 @@ These CRUD methods are provided not only synchronous but also asynchronous.
 
 ### Enable environment specific feature
 
-`BulkInsert` / `InsertAndGetId` (etc.) methods are environment specific feature. If you want to use them, please install following package.
+`BulkInsert` / `InsertAndGetId` (etc.) methods are environment specific feature. If you want to use them, please install following package and call follows once.
 
 
 ```
@@ -254,6 +254,10 @@ dotnet add package DeclarativeSql.MicrosoftSqlClient
 dotnet add package DeclarativeSql.SystemSqlClient
 ```
 
+```cs
+MicrosoftSqlClientInitializer.Initialize();
+SystemSqlClientInitializer.Initialize();
+```
 
 
 ## High availability connection
