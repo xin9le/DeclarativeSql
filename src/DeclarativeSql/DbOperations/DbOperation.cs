@@ -118,6 +118,9 @@ namespace DeclarativeSql.DbOperations
                 "Microsoft.Data.SqlClient.SqlConnection"
                     => new SqlServerOperation(connection, transaction, DbProvider.SqlServer, timeout),
 
+                "MySqlConnector.MySqlConnection"
+                    => new MySqlOperation(connection, transaction, DbProvider.MySql, timeout),
+
                 "MySql.Data.MySqlClient.MySqlConnection"
                     => new MySqlOperation(connection, transaction, DbProvider.MySql, timeout),
 
