@@ -16,7 +16,7 @@ namespace DeclarativeSql.Tests.Cases
         public void All()
         {
             var actual = QueryBuilder.Count<Person>(this.DbProvider);
-            var expect = "select count(*) as Count from [dbo].[Person]";
+            var expect = "select count(*) as [Count] from [dbo].[Person]";
             actual.Statement.Should().Be(expect);
             actual.BindParameter.Should().BeNull();
         }
@@ -27,7 +27,7 @@ namespace DeclarativeSql.Tests.Cases
         {
             var actual = QueryBuilder.Count<Person>(this.DbProvider, x => x.Age >= 30);
             var expect =
-@"select count(*) as Count from [dbo].[Person]
+@"select count(*) as [Count] from [dbo].[Person]
 where
     [Age] >= @p1";
             actual.Statement.Should().Be(expect);

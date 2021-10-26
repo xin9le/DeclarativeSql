@@ -55,7 +55,9 @@ namespace DeclarativeSql.Sql.Statements
                     builder.Append(x.ColumnName);
                     builder.Append(bracket.End);
                     builder.Append(" as ");
+                    builder.Append(bracket.Begin);
                     builder.Append(x.MemberName);
+                    builder.Append(bracket.End);
                     builder.Append(',');
                 }
             }

@@ -17,7 +17,7 @@ namespace DeclarativeSql.Tests.Cases
         {
             var actual = CreateActualQuery();
             var expect =
-@"select count(*) as Count from [dbo].[Person]
+@"select count(*) as [Count] from [dbo].[Person]
 where
     [Id] = @p1";
             actual.Statement.Should().Be(expect);
@@ -42,12 +42,12 @@ where
             var actual = CreateActualQuery();
             var expect =
 @"select
-    [Id] as Id,
-    [名前] as Name,
-    [Age] as Age,
-    [HasChildren] as HasChildren,
-    [CreatedAt] as CreatedAt,
-    [ModifiedAt] as ModifiedAt
+    [Id] as [Id],
+    [名前] as [Name],
+    [Age] as [Age],
+    [HasChildren] as [HasChildren],
+    [CreatedAt] as [CreatedAt],
+    [ModifiedAt] as [ModifiedAt]
 from [dbo].[Person]
 where
     [Id] = @p1";
@@ -126,12 +126,12 @@ where
             var actual = CreateActualQuery();
             var expect =
 @"select
-    [Id] as Id,
-    [名前] as Name,
-    [Age] as Age,
-    [HasChildren] as HasChildren,
-    [CreatedAt] as CreatedAt,
-    [ModifiedAt] as ModifiedAt
+    [Id] as [Id],
+    [名前] as [Name],
+    [Age] as [Age],
+    [HasChildren] as [HasChildren],
+    [CreatedAt] as [CreatedAt],
+    [ModifiedAt] as [ModifiedAt]
 from [dbo].[Person]
 order by
     [Id]";
@@ -156,12 +156,12 @@ order by
             var actual = CreateActualQuery();
             var expect =
 @"select
-    [Id] as Id,
-    [名前] as Name,
-    [Age] as Age,
-    [HasChildren] as HasChildren,
-    [CreatedAt] as CreatedAt,
-    [ModifiedAt] as ModifiedAt
+    [Id] as [Id],
+    [名前] as [Name],
+    [Age] as [Age],
+    [HasChildren] as [HasChildren],
+    [CreatedAt] as [CreatedAt],
+    [ModifiedAt] as [ModifiedAt]
 from [dbo].[Person]
 order by
     [Id] desc";
@@ -186,12 +186,12 @@ order by
             var actual = CreateActualQuery();
             var expect =
 @"select
-    [Id] as Id,
-    [名前] as Name,
-    [Age] as Age,
-    [HasChildren] as HasChildren,
-    [CreatedAt] as CreatedAt,
-    [ModifiedAt] as ModifiedAt
+    [Id] as [Id],
+    [名前] as [Name],
+    [Age] as [Age],
+    [HasChildren] as [HasChildren],
+    [CreatedAt] as [CreatedAt],
+    [ModifiedAt] as [ModifiedAt]
 from [dbo].[Person]
 where
     [Id] = @p1

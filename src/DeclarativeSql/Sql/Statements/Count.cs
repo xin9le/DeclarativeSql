@@ -15,7 +15,12 @@ namespace DeclarativeSql.Sql.Statements
         /// <inheritdoc/>
         public void Build(DbProvider dbProvider, TableInfo table, ref Utf16ValueStringBuilder builder, ref BindParameter? bindParameter)
         {
-            builder.Append("select count(*) as Count from ");
+            var bracket = dbProvider.KeywordBracket;
+            builder.Append("select count(*) as ");
+            builder.Append(bracket.Begin);
+            builder.Append("Count");
+            builder.Append(bracket.End);
+            builder.Append(" from ");
             builder.Append(table.FullName);
         }
         #endregion
