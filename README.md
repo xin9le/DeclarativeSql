@@ -78,8 +78,8 @@ var sql
 
 /*
 select
-    [名前] as Name,
-    [Age] as Age
+    [名前] as [Name],
+    [Age] as [Age]
 from [dbo].[T_Person]
 where
     [Age] >= @p1
@@ -100,8 +100,8 @@ using (var builder = new QueryBuilder<Person>(DbProvider.SqlServer))
 
 /*
 select
-    [Id] as Id,
-    [名前] as Name
+    [Id] as [Id],
+    [名前] as [Name]
 from [dbo].[T_Person]
 where
     [名前] = @p1
