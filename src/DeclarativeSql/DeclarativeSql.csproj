@@ -9,7 +9,7 @@
         <!-- NuGet -->
         <IsPackable>true</IsPackable>
         <PackageId>DeclarativeSql</PackageId>
-        <Version>1.4.3.0</Version>
+        <Version>1.4.4.0</Version>
         <Description>Attribute-based table mapping and simple database access.</Description>
         <PackageProjectUrl>https://github.com/xin9le/DeclarativeSql</PackageProjectUrl>
         <PackageTags>Database, SQL, CRUD</PackageTags>
