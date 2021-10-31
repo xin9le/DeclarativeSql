@@ -114,26 +114,26 @@ namespace DeclarativeSql.Sql.Clauses
                     case ExpressionType.NotEqual:
                         {
                             #region Local Functions
-                            (Operator @operator, string propertyName, object? value) GetParameter()
+                            static (Operator @operator, string propertyName, object? value) GetParameter(Parser parser, BinaryExpression expression)
                             {
                                 //--- 'x.Hoge == value'
                                 {
-                                    var propertyName = this.ExtractMemberName(expression.Left);
+                                    var propertyName = parser.ExtractMemberName(expression.Left);
                                     if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
-                                        var value = this.ExtractValue(expression.Right);
+                                        var value = parser.ExtractValue(expression.Right);
                                         return (@operator, propertyName, value);
                                     }
                                 }
                                 //--- 'value == x.Hoge'
                                 {
-                                    var propertyName = this.ExtractMemberName(expression.Right);
+                                    var propertyName = parser.ExtractMemberName(expression.Right);
                                     if (propertyName is not null)
                                     {
                                         var @operator = OperatorExtensions.From(expression.NodeType);
                                         @operator = OperatorExtensions.Flip(@operator);
-                                        var value = this.ExtractValue(expression.Left);
+                                        var value = parser.ExtractValue(expression.Left);
                                         return (@operator, propertyName, value);
                                     }
                                 }
@@ -142,7 +142,7 @@ namespace DeclarativeSql.Sql.Clauses
                             }
                             #endregion
 
-                            var p = GetParameter();
+                            var p = GetParameter(this, expression);
                             this.BuildBinary(p.@operator, p.propertyName, p.value);
                             return expression;
                         }
