@@ -114,7 +114,7 @@ namespace DeclarativeSql.Sql.Clauses
                     case ExpressionType.NotEqual:
                         {
                             #region Local Functions
-                            static (Operator @operator, string propertyName, object? value) GetParameter(Parser parser, BinaryExpression expression)
+                            static (Operator @operator, string propertyName, object? value) getParameter(Parser parser, BinaryExpression expression)
                             {
                                 //--- 'x.Hoge == value'
                                 {
@@ -142,7 +142,7 @@ namespace DeclarativeSql.Sql.Clauses
                             }
                             #endregion
 
-                            var p = GetParameter(this, expression);
+                            var p = getParameter(this, expression);
                             this.BuildBinary(p.@operator, p.propertyName, p.value);
                             return expression;
                         }
