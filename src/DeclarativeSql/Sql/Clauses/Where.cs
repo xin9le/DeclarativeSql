@@ -434,7 +434,7 @@ internal readonly struct Where<T> : ISql
             //--- Field / Property
             var memberNames = new List<string>();
             var temp = expression;
-            while (!(temp is ConstantExpression))
+            while (temp is not ConstantExpression)
             {
                 //--- cast
                 if (temp is UnaryExpression unary)
