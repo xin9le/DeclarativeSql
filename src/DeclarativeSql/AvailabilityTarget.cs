@@ -1,18 +1,19 @@
-﻿namespace DeclarativeSql
+﻿namespace DeclarativeSql;
+
+
+
+/// <summary>
+/// Represents the availability database reference.
+/// </summary>
+public enum AvailabilityTarget
 {
     /// <summary>
-    /// Represents the availability database reference.
+    /// Master
     /// </summary>
-    public enum AvailabilityTarget
-    {
-        /// <summary>
-        /// Master
-        /// </summary>
-        Master = 0,
+    Master = 0,
 
-        /// <summary>
-        /// Slave
-        /// </summary>
-        Slave,
-    }
+    /// <summary>
+    /// Slave
+    /// </summary>
+    Slave,
 }

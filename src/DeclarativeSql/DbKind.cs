@@ -1,33 +1,34 @@
-﻿namespace DeclarativeSql
+﻿namespace DeclarativeSql;
+
+
+
+/// <summary>
+/// Represents kind of database.
+/// </summary>
+public enum DbKind
 {
     /// <summary>
-    /// Represents kind of database.
+    /// SQL Server
     /// </summary>
-    public enum DbKind
-    {
-        /// <summary>
-        /// SQL Server
-        /// </summary>
-        SqlServer = 0,
+    SqlServer = 0,
 
-        /// <summary>
-        /// MySQL / Amazon Aurora / MariaDB
-        /// </summary>
-        MySql,
+    /// <summary>
+    /// MySQL / Amazon Aurora / MariaDB
+    /// </summary>
+    MySql,
 
-        /// <summary>
-        /// SQLite
-        /// </summary>
-        Sqlite,
+    /// <summary>
+    /// SQLite
+    /// </summary>
+    Sqlite,
 
-        /// <summary>
-        /// PostgreSQL
-        /// </summary>
-        PostgreSql,
+    /// <summary>
+    /// PostgreSQL
+    /// </summary>
+    PostgreSql,
 
-        /// <summary>
-        /// Oracle
-        /// </summary>
-        Oracle,
-    }
+    /// <summary>
+    /// Oracle
+    /// </summary>
+    Oracle,
 }
