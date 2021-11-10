@@ -1,5 +1,4 @@
 ﻿using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
 using DeclarativeSql.DbOperations;
 
 
@@ -14,7 +13,6 @@ namespace DeclarativeSql
         /// <summary>
         /// Initialize.
         /// </summary>
-        [ModuleInitializer]
         public static void Initialize()
             => DbOperation.Factory[typeof(SqlConnection)] = SystemSqlClientOperation.Create;
     }
