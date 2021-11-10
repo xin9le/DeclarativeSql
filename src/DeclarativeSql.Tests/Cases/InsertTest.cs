@@ -3,20 +3,20 @@ using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
+namespace DeclarativeSql.Tests.Cases;
 
 
-namespace DeclarativeSql.Tests.Cases
+
+public class InsertTest
 {
-    public class InsertTest
+    private DbProvider DbProvider { get; } = DbProvider.SqlServer;
+
+
+    [Fact]
+    public void CreatedAt_PreferAttribute()
     {
-        private DbProvider DbProvider { get; } = DbProvider.SqlServer;
-
-
-        [Fact]
-        public void CreatedAt_PreferAttribute()
-        {
-            var actual = QueryBuilder.Insert<Person>(this.DbProvider);
-            var expect =
+        var actual = QueryBuilder.Insert<Person>(this.DbProvider);
+        var expect =
 @"insert into [dbo].[Person]
 (
     [名前],
@@ -33,16 +33,16 @@ values
     SYSDATETIME(),
     @ModifiedAt
 )";
-            actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
-        }
+        actual.Statement.Should().Be(expect);
+        actual.BindParameter.Should().BeNull();
+    }
 
 
-        [Fact]
-        public void CreatedAt_PreferProperty()
-        {
-            var actual = QueryBuilder.Insert<Person>(this.DbProvider, ValuePriority.Property);
-            var expect =
+    [Fact]
+    public void CreatedAt_PreferProperty()
+    {
+        var actual = QueryBuilder.Insert<Person>(this.DbProvider, ValuePriority.Property);
+        var expect =
 @"insert into [dbo].[Person]
 (
     [名前],
@@ -59,8 +59,7 @@ values
     @CreatedAt,
     @ModifiedAt
 )";
-            actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
-        }
+        actual.Statement.Should().Be(expect);
+        actual.BindParameter.Should().BeNull();
     }
 }

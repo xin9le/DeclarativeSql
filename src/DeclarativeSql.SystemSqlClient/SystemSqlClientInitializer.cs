@@ -1,21 +1,18 @@
 ﻿using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
 using DeclarativeSql.DbOperations;
 
+namespace DeclarativeSql;
 
 
-namespace DeclarativeSql
+
+/// <summary>
+/// Provides initializer to use System.Data.SqlClient specific feature.
+/// </summary>
+public static class SystemSqlClientInitializer
 {
     /// <summary>
-    /// Provides initializer to use System.Data.SqlClient specific feature.
+    /// Initialize.
     /// </summary>
-    public static class SystemSqlClientInitializer
-    {
-        /// <summary>
-        /// Initialize.
-        /// </summary>
-        [ModuleInitializer]
-        public static void Initialize()
-            => DbOperation.Factory[typeof(SqlConnection)] = SystemSqlClientOperation.Create;
-    }
+    public static void Initialize()
+        => DbOperation.Factory[typeof(SqlConnection)] = SystemSqlClientOperation.Create;
 }

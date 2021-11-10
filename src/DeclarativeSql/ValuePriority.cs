@@ -1,19 +1,20 @@
-﻿namespace DeclarativeSql
+﻿namespace DeclarativeSql;
+
+
+
+/// <summary>
+/// Represents value priority.
+/// </summary>
+public enum ValuePriority
 {
     /// <summary>
-    /// Represents value priority.
+    /// Use default value if specified, then fallback to property value.
     /// </summary>
-    public enum ValuePriority
-    {
-        /// <summary>
-        /// Use default value if specified, then fallback to property value.
-        /// </summary>
-        Default = 0,
+    Default = 0,
 
 
-        /// <summary>
-        /// Use property value.
-        /// </summary>
-        Property,
-    }
+    /// <summary>
+    /// Use property value.
+    /// </summary>
+    Property,
 }
