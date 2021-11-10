@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.2" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.1" />
     </ItemGroup>
 
     <ItemGroup>
