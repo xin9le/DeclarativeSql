@@ -3,57 +3,56 @@ using DeclarativeSql.Tests.Models;
 using FluentAssertions;
 using Xunit;
 
+namespace DeclarativeSql.Tests.Cases;
 
 
-namespace DeclarativeSql.Tests.Cases
+
+public class ThenByTest
 {
-    public class ThenByTest
+    private DbProvider DbProvider { get; } = DbProvider.SqlServer;
+
+
+    [Fact]
+    public void Ascending()
     {
-        private DbProvider DbProvider { get; } = DbProvider.SqlServer;
-
-
-        [Fact]
-        public void Ascending()
-        {
-            var actual = CreateActualQuery();
-            var expect =
+        var actual = CreateActualQuery();
+        var expect =
 @"order by
     [名前],
     [CreatedAt]";
-            actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+        actual.Statement.Should().Be(expect);
+        actual.BindParameter.Should().BeNull();
 
-            Query CreateActualQuery()
+        Query CreateActualQuery()
+        {
+            using (var builder = new QueryBuilder<Person>(this.DbProvider))
             {
-                using (var builder = new QueryBuilder<Person>(this.DbProvider))
-                {
-                    builder.OrderBy(x => x.Name);
-                    builder.ThenBy(x => x.CreatedAt);
-                    return builder.Build();
-                }
+                builder.OrderBy(x => x.Name);
+                builder.ThenBy(x => x.CreatedAt);
+                return builder.Build();
             }
         }
+    }
 
 
-        [Fact]
-        public void Descending()
-        {
-            var actual = CreateActualQuery();
-            var expect =
+    [Fact]
+    public void Descending()
+    {
+        var actual = CreateActualQuery();
+        var expect =
 @"order by
     [Age] desc,
     [ModifiedAt] desc";
-            actual.Statement.Should().Be(expect);
-            actual.BindParameter.Should().BeNull();
+        actual.Statement.Should().Be(expect);
+        actual.BindParameter.Should().BeNull();
 
-            Query CreateActualQuery()
+        Query CreateActualQuery()
+        {
+            using (var builder = new QueryBuilder<Person>(this.DbProvider))
             {
-                using (var builder = new QueryBuilder<Person>(this.DbProvider))
-                {
-                    builder.OrderByDescending(x => x.Age);
-                    builder.ThenByDescending(x => x.ModifiedAt);
-                    return builder.Build();
-                }
+                builder.OrderByDescending(x => x.Age);
+                builder.ThenByDescending(x => x.ModifiedAt);
+                return builder.Build();
             }
         }
     }
