@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeclarativeSql.Tests.Models;
+﻿namespace DeclarativeSql.Tests.Models;
 
 
 
