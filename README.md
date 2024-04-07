@@ -1,5 +1,9 @@
 # DeclarativeSql
 
+> [!Important]
+> **This project has already stopped development. Please consider using [QLimitive](https://github.com/xin9le/QLimitive) as an alternative.**
+
+
 This library provides attribute-based table mapping and simple database access. It mainly contains following features.
 
 - Unified connection to the some databases (SQL Server / Oracle / MySQL / SQLite etc.)
